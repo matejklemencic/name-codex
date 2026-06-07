@@ -913,9 +913,9 @@ const CONFIG = {
             { id: 'project',     type: 'text',   label: 'Project Name',         example: 'e.g. PhoenixMigration2025, OperationNightHawk, ProjectAtlas', patterns: ['p4'], hint: 'The name of the project or initiative this app registration is scoped to. Include a year suffix if the project is time-bound, for example PhoenixMigration2025 or ProjectAtlas. When the project concludes the registration should be reviewed for decommissioning.' },
             { id: 'accessLevel', type: 'select', label: 'Access Level',
               options: [
-                { value: 'RO',       label: 'RO — Read Only' },
-                { value: 'RW',       label: 'RW — Read and Write' },
-                { value: 'AuthOnly', label: 'AuthOnly — Authentication Only (SSO)' }
+                { value: 'RO',       label: 'Read Only' },
+                { value: 'RW',       label: 'Read and Write' },
+                { value: 'AuthOnly', label: 'Authentication Only (SSO)' }
               ],
               patterns: ['p1','p2','p3','p4'], hint: 'The access level this app registration requires. RO: the app only reads data and has no write, manage, or delete permissions. RW: the app has at least one write, manage, full control, or delete permission. AuthOnly: the app is used exclusively for SSO authentication and has no API permissions assigned. This is the most stable and security-relevant segment of the name — choose carefully at creation time.' },
             { id: 'environment', type: 'select', label: 'Environment',          options: ['','Prod','Test','Dev','Staging'], example: 'e.g. Prod — leave blank for production-only tools', patterns: ['p1','p2','p3','p4'], hint: 'The deployment stage this app registration targets. Use Prod for production, Test for validation, Dev for development, and Staging for pre-production environments. Keeping environments separated reduces the risk of misconfiguration in production. Leave blank if the registration applies to all environments or if your organisation uses a single environment.' },
