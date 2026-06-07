@@ -927,16 +927,16 @@ const CONFIG = {
         patterns: [
             {
                 id: 'p1',
-                name: 'CA[NNN]-[Target]-[Scope]-[Effect]-[Platform]-[Location]-[Condition]-[UserRisk]-[Version]',
-                desc: 'Full context pattern following the Entra ID Conditional Access wizard order. Platform supports multiple selections. Effect is derived automatically from Grant and Session control selections. UserRisk and Version are optional.',
+                name: 'CA[NNN]-[Target]-[Scope]-[Effect]-[Platform]-[Condition]-[Version]',
+                desc: 'Full context pattern following the Entra ID Conditional Access wizard order. Platform supports multiple selections. Condition supports multiple selections and includes location conditions. Effect is derived automatically from Grant and Session control selections. Version is optional.',
                 badge: 'EXTENDED', badgeColor: 'blue',
-                segments: ['number', 'target', 'cloudApps', 'grantControl', 'sessionControl', 'platform', 'location', 'condition', 'version'],
+                segments: ['number', 'target', 'cloudApps', 'grantControl', 'sessionControl', 'platform', 'condition', 'version'],
                 numberPrefix: 'CA'
             },
             {
                 id: 'p3',
                 name: 'CA[NNN]-[Target]-[Scope]-[Effect]-[Condition]-[Version]',
-                desc: 'Compact pattern with only the essential segments. Best for broad global policies that apply to all users and all apps. Platform, Location and UserRisk are omitted for brevity.',
+                desc: 'Compact pattern with only the essential segments. Omits Platform for brevity. Best for broad global policies that apply to all users and all apps. Location conditions are available via the Condition field. Version is optional.',
                 badge: 'COMPACT', badgeColor: 'gray',
                 segments: ['number', 'target', 'cloudApps', 'grantControl', 'sessionControl', 'condition', 'version'],
                 numberPrefix: 'CA'
@@ -944,7 +944,7 @@ const CONFIG = {
             {
                 id: 'p2',
                 name: 'CA[NNN]-[Scope]-[Effect]-[Target]-[Condition]',
-                desc: 'Sequence number → scope → response → who → when',
+                desc: 'Based on the naming standard recommended in the official Microsoft Entra ID Conditional Access deployment guide. Follows the sequence: number, scope, effect, target, condition. Does not include Platform or Version segments. Condition supports multiple selections including location conditions.',
                 badge: 'MICROSOFT RECOMMENDED', badgeColor: '',
                 source: 'Microsoft Learn: Plan a Conditional Access deployment',
                 sourceUrl: 'https://learn.microsoft.com/entra/identity/conditional-access/plan-conditional-access#set-naming-standards-for-your-policies',
@@ -1024,29 +1024,23 @@ const CONFIG = {
                 { value: 'Linux',       label: 'Linux' }
               ],
               patterns: ['p1'], hint: 'The device operating system(s) this policy targets. Select Any Platform for broad policies. Select one or more specific platforms when policy requirements differ per operating system. Multiple selections are joined with the same separator used for the rest of the policy name.' },
-            { id: 'location',  label: 'Location',              type: 'select',
+            { id: 'condition', label: 'Condition / When',      type: 'multiselect',
               options: [
-                { value: 'AnyLocation',        label: 'Any Location' },
-                { value: 'TrustedLocation',    label: 'Trusted Location' },
-                { value: 'NonTrustedLocation', label: 'Non-Trusted Location' },
-                { value: 'BlockedLocations',   label: 'Blocked Locations' },
-                { value: 'Custom',             label: 'Custom' }
-              ],
-              subField: { triggerValue: 'Custom', id: 'locationCustom', label: 'Custom Location', placeholder: 'e.g. EuropeanOffices, CorporateVPN, DataCenterLocations' },
-              example: 'e.g. AnyLocation, TrustedLocation', patterns: ['p1'], hint: 'The network location condition for this policy. Trusted Location refers to named locations defined in Microsoft Entra. Non-Trusted Location targets sign-ins from outside known networks. Blocked Locations targets countries or regions from which you never expect sign-ins.' },
-            { id: 'condition', label: 'Condition / When',      type: 'select',
-              options: [
-                { value: 'LegacyAuth',       label: 'Legacy Authentication' },
-                { value: 'DeviceCode',       label: 'Device Code' },
-                { value: 'UnsupportedOS',    label: 'Unsupported OS' },
-                { value: 'RiskySignIn',      label: 'Risky Sign-In' },
-                { value: 'UserRisk',         label: 'User Risk' },
-                { value: 'NonTrustedDevice', label: 'Non-Trusted Device' },
-                { value: 'TrustedDevice',    label: 'Trusted Device' },
-                { value: 'Custom',           label: 'Custom' }
+                { value: 'LegacyAuth',          label: 'Legacy Authentication' },
+                { value: 'DeviceCode',          label: 'Device Code' },
+                { value: 'UnsupportedOS',       label: 'Unsupported OS' },
+                { value: 'RiskySignIn',         label: 'Risky Sign-In' },
+                { value: 'UserRisk',            label: 'User Risk' },
+                { value: 'InsiderRisk',         label: 'Insider Risk' },
+                { value: 'TrustedDevice',       label: 'Trusted Device' },
+                { value: 'NonTrustedDevice',    label: 'Non-Trusted Device' },
+                { value: 'TrustedLocation',     label: 'Trusted Location' },
+                { value: 'NonTrustedLocation',  label: 'Non-Trusted Location' },
+                { value: 'BlockedLocations',    label: 'Blocked Locations' },
+                { value: 'Custom',              label: 'Custom' }
               ],
               subField: { triggerValue: 'Custom', id: 'conditionCustom', label: 'Custom Condition', placeholder: 'e.g. AuthFlow, PasswordlessOnly' },
-              example: 'e.g. LegacyAuth, RiskySignIn', patterns: ['p1','p2','p3'], hint: 'The specific sign-in condition that triggers this policy. Use Legacy Authentication to block older protocols that do not support modern authentication. Use Risky Sign-In to target sign-ins flagged by Entra ID Protection. Use User Risk to target users whose credentials may be compromised. Use Insider Risk to target users with elevated insider risk scores from Microsoft Purview. Use Non-Trusted Device or Trusted Device to apply the organizational trust model to device state. Select Custom to enter a condition not covered by the predefined options.' },
+              patterns: ['p1','p2','p3'], hint: 'The conditions that trigger this policy. Select one or more conditions that apply. Location conditions (Trusted Location, Non-Trusted Location, Blocked Locations) can be combined with other conditions. Multiple selections are joined with the same separator used for the rest of the policy name.' },
             { id: 'version',   label: 'Version',               type: 'text',     example: 'e.g. v1.0, v1.1, v2.0', patterns: ['p1','p3'], hint: 'An optional version identifier to track policy changes over time. Use semantic versioning (e.g. v1.0, v1.1) and increment the minor version for small changes and the major version for significant restructuring. Helps with change management and audit trails.' },
             { id: 'disruption', label: 'Disruption Type', type: 'select',
               options: [
@@ -1536,11 +1530,26 @@ function generateName() {
     pattern.segments.forEach(segId => {
         const field = type.fields.find(f => f.id === segId);
 
-        // ── Platform multiselect: join checked values with '+' ──────
+        // ── Platform multiselect: join checked values with sep ────
         if (segId === 'platform') {
             const vals = [...document.querySelectorAll('#fld_platform input[type="checkbox"]:checked')]
                 .map(cb => applyCase(sanitize(cb.value), casing))
                 .filter(Boolean);
+            if (vals.length) segs.push({ value: vals.join(sep), fixed: false });
+            return;
+        }
+
+        // ── Condition multiselect: join checked values with sep ────
+        if (segId === 'condition') {
+            const vals = [...document.querySelectorAll('#fld_condition input[type="checkbox"]:checked')]
+                .map(cb => {
+                    if (cb.value === 'Custom') {
+                        const el = document.getElementById('fld_conditionCustom');
+                        const cv = el?.value?.trim();
+                        return cv ? applyCase(sanitize(cv), casing) : null;
+                    }
+                    return applyCase(cb.value, casing);
+                }).filter(Boolean);
             if (vals.length) segs.push({ value: vals.join(sep), fixed: false });
             return;
         }
