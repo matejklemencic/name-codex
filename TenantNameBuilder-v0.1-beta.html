@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenant Name Builder</title>
+    <style>
+        /* ── Light Theme Variables ────────────────── */
+        :root {
+            --blue:         #0078d4;
+            --blue-dark:    #005a9e;
+            --blue-light:   #cce4f6;
+            --blue-xs:      #f0f6fc;
+            --green:        #107c10;
+            --gray-dark:    #444;
+            --gray:         #666;
+            --gray-light:   #ddd;
+            --gray-xs:      #f5f5f5;
+            --text:         #1a1a1a;
+            --text-muted:   #888;
+            --bg-page:      #edf2f7;
+            --bg-panel:     #ffffff;
+            --bg-header:    #0078d4;
+            --bg-input:     #ffffff;
+            --bg-preview:   #f8fafc;
+            --bg-history:   #f5f5f5;
+            --border:       #ddd;
+            --shadow:       0 2px 10px rgba(0,0,0,0.08);
+            --chip-bg:      #0078d4;
+            --chip-fixed:   #005a9e;
+            --empty-color:  #aaa;
+            --radius:       6px;
+            --danger:       #c50f1f;
+            --danger-bg:    #fff0f0;
+            --tooltip-bg:   #1e2030;
+            --tooltip-text: #e8edf2;
+        }
+
+        /* ── Dark Theme Variables ─────────────────── */
+        [data-theme="dark"] {
+            --blue:         #3aa0f3;
+            --blue-dark:    #2b8fd4;
+            --blue-light:   #1a3a55;
+            --blue-xs:      #152030;
+            --green:        #3cb371;
+            --gray-dark:    #c8d0da;
+            --gray:         #8a95a3;
+            --gray-light:   #343848;
+            --gray-xs:      #1e2130;
+            --text:         #e2e8f0;
+            --text-muted:   #6a7585;
+            --bg-page:      #111520;
+            --bg-panel:     #1c1f2e;
+            --bg-header:    #0d1117;
+            --bg-input:     #252840;
+            --bg-preview:   #161926;
+            --bg-history:   #1e2130;
+            --border:       #343848;
+            --shadow:       0 2px 12px rgba(0,0,0,0.35);
+            --chip-bg:      #1a5fa0;
+            --chip-fixed:   #0d4a80;
+            --empty-color:  #4a5060;
+            --danger:       #e3223a;
+            --danger-bg:    #2a0a0e;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            background: var(--bg-page);
+            min-height: 100vh;
+            transition: background 0.25s, color 0.25s;
+        }
+
+        /* ── Header ───────────────────────────────── */
+        header {
+            background: var(--bg-header);
+            color: #fff;
+            padding: 0 24px 0 32px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+
+        header .header-text { flex: 1; }
+
+        header h1 {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+
+        header p {
+            font-size: 11px;
+            opacity: 0.75;
+            margin-top: 1px;
+        }
+
+        /* ── Theme Toggle ─────────────────────────── */
+        #themeToggle {
+            margin-left: auto;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: #fff;
+            font-size: 17px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, transform 0.2s;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        #themeToggle:hover {
+            background: rgba(255,255,255,0.25);
+            transform: rotate(20deg);
+        }
+
+        /* ── Layout ───────────────────────────────── */
+        .container {
+            max-width: 1100px;
+            margin: 28px auto;
+            padding: 0 20px 40px;
+        }
+
+        /* ── Type Selector ────────────────────────── */
+        .type-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .type-card {
+            flex: 1;
+            background: var(--bg-panel);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 12px 13px;
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s, transform 0.15s, box-shadow 0.15s;
+            text-align: center;
+            user-select: none;
+        }
+
+        .type-card:hover {
+            border-color: var(--blue);
+            background: var(--blue-xs);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .type-card.active {
+            border-color: var(--blue);
+            background: var(--blue-xs);
+            box-shadow: 0 0 0 3px var(--blue-light);
+        }
+
+        .type-card .icon {
+            font-size: 26px;
+            display: block;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .type-card .label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--blue);
+            line-height: 1.35;
+        }
+
+        .type-card.coming-soon {
+            opacity: 0.45;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .type-card.coming-soon .label {
+            color: var(--gray);
+        }
+
+        .coming-soon-badge {
+            display: inline-block;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray);
+            background: var(--gray-light);
+            border-radius: 10px;
+            padding: 1px 6px;
+            margin-top: 3px;
+        }
+
+        /* ── Workspace ────────────────────────────── */
+        .workspace {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        @media (max-width: 720px) {
+            .workspace { grid-template-columns: 1fr; }
+            .type-selector { flex-wrap: wrap; }
+        }
+
+        /* ── Panel ────────────────────────────────── */
+        .panel {
+            background: var(--bg-panel);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 22px;
+            transition: background 0.25s, box-shadow 0.25s;
+        }
+
+        .panel-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* ── Options Row ──────────────────────────── */
+        .options-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .option-group { flex: 1; }
+
+        /* ── Form Elements ────────────────────────── */
+        .field-group { margin-bottom: 13px; }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-dark);
+            margin-bottom: 5px;
+        }
+
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 13px;
+            color: var(--text);
+            background: var(--bg-input);
+            transition: border-color 0.15s, box-shadow 0.15s, background 0.25s, color 0.25s;
+            appearance: auto;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 2px var(--blue-light);
+        }
+
+        input[type="text"]::placeholder { color: var(--empty-color); }
+
+        select:has(option[value=""]:checked) { color: var(--empty-color); }
+        select option[value=""] { color: var(--empty-color); }
+
+        /* ── Pattern Selector ─────────────────────── */
+        .pattern-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-dark);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .pattern-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            padding: 9px 11px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: background 0.12s, border-color 0.12s;
+            background: var(--bg-panel);
+        }
+
+        .pattern-option:hover {
+            background: var(--blue-xs);
+            border-color: var(--blue);
+        }
+
+        .pattern-option.selected {
+            background: var(--blue-xs);
+            border-color: var(--blue);
+        }
+
+        .pattern-option input[type="radio"] {
+            margin-top: 3px;
+            accent-color: var(--blue);
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .pattern-name {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--blue);
+            font-family: 'Courier New', monospace;
+            line-height: 1.4;
+        }
+
+        .pattern-desc {
+            font-size: 11px;
+            color: var(--gray);
+            margin-top: 2px;
+            line-height: 1.35;
+        }
+
+        .pattern-badge {
+            display: inline-block;
+            background: #107c10;
+            color: #fff;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 1px 7px;
+            border-radius: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 7px;
+            vertical-align: middle;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .pattern-badge.emergency { background: #d83b01; }
+        .pattern-badge.blue     { background: #0078d4; }
+        .pattern-badge.teal     { background: #00827f; }
+        .pattern-badge.amber    { background: #b06000; }
+        .pattern-badge.purple   { background: #7054a0; }
+        .pattern-badge.gray     { background: #767676; }
+        .pattern-badge.cyan     { background: #0099bc; }
+        .pattern-badge.red      { background: #c50f1f; }
+
+        .sequence-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sequence-row input[type="number"] {
+            width: 72px;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 13px;
+            color: var(--text);
+            background: var(--bg-input);
+            transition: border-color 0.15s, box-shadow 0.15s, background 0.25s, color 0.25s;
+        }
+
+        .sequence-row input[type="number"]:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 2px var(--blue-light);
+        }
+
+        .sequence-of {
+            font-size: 13px;
+            color: var(--gray);
+            white-space: nowrap;
+        }
+
+        .subfield-wrap { margin-top: 8px; }
+
+        [data-theme="dark"] .pattern-badge.teal   { background: #00a09c; }
+        [data-theme="dark"] .pattern-badge.amber  { background: #c87000; }
+        [data-theme="dark"] .pattern-badge.purple { background: #9070c0; }
+        [data-theme="dark"] .pattern-badge.cyan   { background: #00b4d8; }
+        [data-theme="dark"] .pattern-badge.red    { background: #e3223a; }
+
+        .pattern-option-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            justify-content: space-between;
+        }
+
+        .pattern-source {
+            font-size: 10px;
+            color: var(--blue);
+            margin-top: 3px;
+            display: inline-block;
+            opacity: 0.8;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .pattern-source:hover { opacity: 1; }
+
+        /* ── Divider ──────────────────────────────── */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 16px 0;
+        }
+
+        /* ── Field Hint Tooltip ──────────────────── */
+        .field-hint {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--gray-light);
+            color: var(--gray);
+            font-size: 9px;
+            font-weight: 800;
+            font-style: normal;
+            font-family: 'Segoe UI', sans-serif;
+            cursor: help;
+            margin-left: 6px;
+            position: relative;
+            flex-shrink: 0;
+            vertical-align: middle;
+            transition: background 0.15s, color 0.15s;
+            line-height: 1;
+            border: 1px solid var(--border);
+        }
+
+        .field-hint:hover {
+            background: var(--blue);
+            color: #fff;
+            border-color: var(--blue);
+        }
+
+        .field-hint::after {
+            content: attr(data-hint);
+            position: absolute;
+            left: 50%;
+            bottom: calc(100% + 8px);
+            transform: translateX(-50%);
+            background: var(--tooltip-bg);
+            color: var(--tooltip-text);
+            padding: 9px 12px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 400;
+            line-height: 1.55;
+            white-space: normal;
+            width: 240px;
+            text-align: left;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s;
+            z-index: 9000;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+        }
+
+        .field-hint:hover::after { opacity: 1; }
+
+
+        /* ── Preview Panel ────────────────────────── */
+        .preview-box {
+            background: var(--bg-preview);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            min-height: 58px;
+            margin-bottom: 14px;
+            transition: border-color 0.2s, background 0.25s;
+        }
+
+        .preview-box.has-value {
+            border-color: var(--blue);
+            background: var(--blue-xs);
+        }
+
+        .preview-name {
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--blue);
+            word-break: break-all;
+            letter-spacing: 0.3px;
+            line-height: 1.5;
+        }
+
+        .preview-name.empty {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--empty-color);
+        }
+
+        /* ── Segment Chips ────────────────────────── */
+        .segments-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 7px;
+        }
+
+        .segments {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            align-items: center;
+            min-height: 28px;
+            margin-bottom: 18px;
+        }
+
+        .seg-chip {
+            background: var(--chip-bg);
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .seg-fixed { background: var(--chip-fixed); }
+
+        .seg-sep {
+            color: var(--gray);
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        /* ── Buttons ──────────────────────────────── */
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary       { background: var(--blue); color: #fff; }
+        .btn-primary:hover { background: var(--blue-dark); }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--blue);
+            border: 1.5px solid var(--blue);
+        }
+        .btn-outline:hover { background: var(--blue-xs); }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 22px;
+        }
+
+        /* ── History ──────────────────────────────── */
+        .history-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 8px;
+        }
+
+        .history-empty {
+            font-size: 12px;
+            color: var(--empty-color);
+            font-style: italic;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            background: var(--bg-history);
+            border-radius: 4px;
+            margin-bottom: 5px;
+            border: 1px solid var(--border);
+            transition: background 0.25s;
+        }
+
+        .history-name {
+            flex: 1;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: var(--text);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .history-type {
+            font-size: 10px;
+            color: var(--gray);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .history-copy-btn {
+            font-size: 10px;
+            color: var(--blue);
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 2px 6px;
+            border-radius: 3px;
+            flex-shrink: 0;
+            font-weight: 600;
+        }
+
+        .history-copy-btn:hover { background: var(--blue-light); }
+
+        /* ── Toast ────────────────────────────────── */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--green);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            transform: translateY(60px);
+            opacity: 0;
+            transition: transform 0.25s ease, opacity 0.25s ease;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        #toast.show { transform: translateY(0); opacity: 1; }
+
+        /* ── Generated Description ──────────────────── */
+        .desc-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 8px;
+        }
+
+        .desc-box {
+            background: var(--bg-preview);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            padding: 12px 16px;
+            margin-bottom: 14px;
+            transition: border-color 0.2s, background 0.25s;
+        }
+
+        .desc-box.has-value {
+            border-color: var(--blue);
+            background: var(--blue-xs);
+        }
+
+        .desc-text {
+            font-size: 13px;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .desc-text.empty {
+            color: var(--empty-color);
+            font-style: italic;
+        }
+
+        /* ── Grant Logic Radio ───────────────────── */
+        .grant-logic-group {
+            margin-top: 8px;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--bg-preview);
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12px;
+            color: var(--text);
+            cursor: pointer;
+            padding: 3px 0;
+            margin-bottom: 0;
+        }
+
+        .radio-option input[type="radio"] {
+            accent-color: var(--blue);
+            width: 13px;
+            height: 13px;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin: 0;
+        }
+
+        /* ── Multiselect Checkboxes ──────────────── */
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--text);
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 4px;
+            transition: background 0.12s;
+            margin-bottom: 0;
+        }
+
+        .checkbox-option:hover { background: var(--blue-xs); }
+
+        .checkbox-option input[type="checkbox"] {
+            accent-color: var(--blue);
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin: 0;
+        }
+
+        /* ── Footer ───────────────────────────────── */
+        footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 11px;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-text">
+        <h1>Tenant Name Builder</h1>
+        <p>Consistent naming conventions for your Microsoft 365 tenant</p>
+    </div>
+    <button id="themeToggle" onclick="toggleTheme()" title="Toggle dark / light mode">&#127769;</button>
+</header>
+
+<div class="container">
+
+    <!-- Object Type Selector -->
+    <div class="type-selector">
+        <div class="type-card active" data-type="ca-policy" onclick="selectType('ca-policy')">
+            <span class="icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 18 18"><defs><linearGradient id="ca-grad" x1="9" y1="16.79" x2="9" y2="1.21" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#0078d4"/><stop offset="0.06" stop-color="#0a7cd7"/><stop offset="0.34" stop-color="#2e8ce1"/><stop offset="0.59" stop-color="#4897e9"/><stop offset="0.82" stop-color="#589eed"/><stop offset="1" stop-color="#5ea0ef"/></linearGradient></defs><path d="M16.08,8.44c0,4.57-5.62,8.25-6.85,9a.43.43,0,0,1-.46,0c-1.23-.74-6.85-4.42-6.85-9V2.94a.44.44,0,0,1,.43-.44C6.73,2.39,5.72.5,9,.5s2.27,1.89,6.65,2a.44.44,0,0,1,.43.44Z" fill="#0078d4"/><path d="M15.5,8.48c0,4.2-5.16,7.57-6.29,8.25a.4.4,0,0,1-.42,0C7.66,16.05,2.5,12.68,2.5,8.48v-5A.41.41,0,0,1,2.9,3C6.92,2.93,6,1.21,9,1.21S11.08,2.93,15.1,3a.41.41,0,0,1,.4.4Z" fill="url(#ca-grad)"/><path d="M11.85,7.66h-.4V6.24a2.62,2.62,0,0,0-.7-1.81,2.37,2.37,0,0,0-3.48,0,2.61,2.61,0,0,0-.7,1.81V7.66h-.4A.32.32,0,0,0,5.82,8v3.68a.32.32,0,0,0,.33.32h5.7a.32.32,0,0,0,.33-.32V8A.32.32,0,0,0,11.85,7.66Zm-1.55,0H7.7V6.22a1.43,1.43,0,0,1,.41-1,1.19,1.19,0,0,1,1.78,0,1.56,1.56,0,0,1,.16.2h0a1.4,1.4,0,0,1,.25.79Z" fill="#ffbd02"/><path d="M6.15,7.66h5.7a.32.32,0,0,1,.21.08L5.94,11.9a.33.33,0,0,1-.12-.24V8A.32.32,0,0,1,6.15,7.66Z" fill="#ffe452"/><path d="M11.85,7.66H6.15a.32.32,0,0,0-.21.08l6.12,4.16a.3.3,0,0,0,.12-.24V8A.32.32,0,0,0,11.85,7.66Z" fill="#ffd400" opacity="0.5"/></svg>
+            </span>
+            <span class="label">Conditional Access Policy</span>
+        </div>
+        <div class="type-card" data-type="app-reg" onclick="selectType('app-reg')">
+            <span class="icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 18 18"><defs><linearGradient id="ar-grad" x1="-6518.78" y1="1118.86" x2="-6518.78" y2="1090.06" gradientTransform="matrix(0.5, 0, 0, -0.5, 3267.42, 559.99)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#5ea0ef"/><stop offset="0.18" stop-color="#589eed"/><stop offset="0.41" stop-color="#4897e9"/><stop offset="0.66" stop-color="#2e8ce1"/><stop offset="0.94" stop-color="#0a7cd7"/><stop offset="1" stop-color="#0078d4"/></linearGradient></defs><path d="M5.67,10.61H10v4.32H5.67Zm-5-5.76H5V.53H1.23a.6.6,0,0,0-.6.6Zm.6,10.08H5V10.61H.63v3.72A.6.6,0,0,0,1.23,14.93Zm-.6-5H5V5.57H.63Zm10.08,5h3.72a.6.6,0,0,0,.6-.6V10.61H10.71Zm-5-5H10V5.57H5.67Zm5,0H15V5.57H10.71Zm0-9.36V4.85H15V1.13a.6.6,0,0,0-.6-.6Zm-5,4.32H10V.53H5.67Z" fill="url(#ar-grad)"/><polygon points="17.37 10.7 17.37 15.21 13.5 17.47 13.5 12.96 17.37 10.7" fill="#32bedd"/><polygon points="17.37 10.7 13.5 12.97 9.63 10.7 13.5 8.44 17.37 10.7" fill="#9cebff"/><polygon points="13.5 12.97 13.5 17.47 9.63 15.21 9.63 10.7 13.5 12.97" fill="#50e6ff"/><polygon points="9.63 15.21 13.5 12.96 13.5 17.47 9.63 15.21" fill="#9cebff"/><polygon points="17.37 15.21 13.5 12.96 13.5 17.47 17.37 15.21" fill="#50e6ff"/></svg>
+            </span>
+            <span class="label">App Registration</span>
+        </div>
+        <div class="type-card" data-type="security-group" onclick="selectType('security-group')">
+            <span class="icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 18 18"><defs><linearGradient id="sg-grad-1" x1="6.7" y1="7.26" x2="6.7" y2="18.36" gradientUnits="userSpaceOnUse"><stop offset="0.22" stop-color="#32d4f5"/><stop offset="1" stop-color="#198ab3"/></linearGradient><linearGradient id="sg-grad-2" x1="6.42" y1="1.32" x2="7.23" y2="11.39" gradientUnits="userSpaceOnUse"><stop offset="0.22" stop-color="#32d4f5"/><stop offset="1" stop-color="#198ab3"/></linearGradient></defs><path d="M17.22,13.92a.79.79,0,0,0,.8-.79A.28.28,0,0,0,18,13c-.31-2.5-1.74-4.54-4.46-4.54S9.35,10.22,9.07,13a.81.81,0,0,0,.72.88h7.43Z" fill="#0078d4"/><path d="M13.55,9.09a2.44,2.44,0,0,1-1.36-.4l1.35,3.52,1.33-3.49A2.54,2.54,0,0,1,13.55,9.09Z" fill="#fff" opacity="0.8"/><circle cx="13.55" cy="6.58" r="2.51" fill="#0078d4"/><path d="M12.19,16.36a1.19,1.19,0,0,0,1.19-1.19.66.66,0,0,0,0-.14c-.47-3.74-2.6-6.78-6.66-6.78S.44,10.83,0,15a1.2,1.2,0,0,0,1.07,1.31h11.1Z" fill="url(#sg-grad-1)"/><path d="M6.77,9.14a3.72,3.72,0,0,1-2-.6l2,5.25,2-5.21A3.81,3.81,0,0,1,6.77,9.14Z" fill="#fff" opacity="0.8"/><circle cx="6.74" cy="5.39" r="3.75" fill="url(#sg-grad-2)"/></svg>
+            </span>
+            <span class="label">Groups</span>
+        </div>
+        <div class="type-card coming-soon">
+            <span class="icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 18 18"><defs><linearGradient id="intune-grad-1" x1="8.05" y1="11.32" x2="8.05" y2="1.26" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#0078d4"/><stop offset="0.82" stop-color="#5ea0ef"/></linearGradient><linearGradient id="intune-grad-2" x1="8.05" y1="15.21" x2="8.05" y2="11.32" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1490df"/><stop offset="0.98" stop-color="#1f56a3"/></linearGradient><linearGradient id="intune-grad-3" x1="8.05" y1="7.87" x2="8.05" y2="4.94" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#d2ebff"/><stop offset="1" stop-color="#f0fffd"/></linearGradient></defs><rect x="0.5" y="1.26" width="15.1" height="10.06" rx="0.5" fill="url(#intune-grad-1)"/><rect x="1.34" y="2.1" width="13.42" height="8.39" rx="0.28" fill="#fff"/><path d="M11.08,14.37c-1.5-.23-1.56-1.31-1.55-3h-3c0,1.74-.06,2.82-1.55,3a.87.87,0,0,0-.74.84h7.54A.88.88,0,0,0,11.08,14.37Z" fill="url(#intune-grad-2)"/><path d="M17.17,5.91H10.29a2.31,2.31,0,1,0,0,.92H11v9.58a.33.33,0,0,0,.33.33h5.83a.33.33,0,0,0,.33-.33V6.24A.33.33,0,0,0,17.17,5.91Z" fill="#32bedd"/><rect x="11.62" y="6.82" width="5.27" height="8.7" rx="0.12" fill="#fff"/><circle cx="8.05" cy="6.41" r="1.46" opacity="0.9" fill="url(#intune-grad-3)"/><path d="M14.88,10.82,13.76,9.7a.06.06,0,0,0-.1.05v.68a.06.06,0,0,1-.06.06H11v.83H13.6a.06.06,0,0,1,.06.06v.69a.06.06,0,0,0,.1,0L14.88,11A.12.12,0,0,0,14.88,10.82Z" fill="#0078d4"/></svg>
+            </span>
+            <span class="label">Intune</span>
+            <span class="coming-soon-badge">Coming Soon</span>
+        </div>
+        <div class="type-card coming-soon">
+            <span class="icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 18 18"><defs><linearGradient id="defender-grad" x1="9" y1="16.795" x2="9" y2="1.205" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#5e9624"/><stop offset="0.321" stop-color="#639d26"/><stop offset="0.794" stop-color="#6fb12a"/><stop offset="0.999" stop-color="#76bc2d"/></linearGradient></defs><g><path d="M16.083,8.438c0,4.571-5.626,8.25-6.85,9a.449.449,0,0,1-.466,0c-1.224-.747-6.85-4.426-6.85-9v-5.5A.44.44,0,0,1,2.351,2.5C6.728,2.386,5.72.5,9,.5s2.272,1.886,6.649,2a.44.44,0,0,1,.434.435Z" fill="#76bc2d"/><path d="M15.5,8.485c0,4.191-5.16,7.566-6.282,8.25a.412.412,0,0,1-.428,0C7.664,16.051,2.5,12.676,2.5,8.485V3.441a.4.4,0,0,1,.4-.4C6.916,2.935,5.992,1.205,9,1.205s2.084,1.73,6.1,1.837a.4.4,0,0,1,.4.4Z" fill="url(#defender-grad)"/><path d="M11.853,7.66h-.408l0-1.417a2.652,2.652,0,0,0-.7-1.809,2.358,2.358,0,0,0-3.483,0,2.606,2.606,0,0,0-.7,1.808V7.66H6.147a.328.328,0,0,0-.326.32v3.682a.329.329,0,0,0,.326.32h5.706a.329.329,0,0,0,.326-.32V7.98A.328.328,0,0,0,11.853,7.66Zm-1.549,0H7.7V6.219a1.434,1.434,0,0,1,.41-.99,1.2,1.2,0,0,1,1.788,0,1.394,1.394,0,0,1,.153.2h0a1.445,1.445,0,0,1,.258.791Z" fill="#fff"/></g></svg>
+            </span>
+            <span class="label">Defender</span>
+            <span class="coming-soon-badge">Coming Soon</span>
+        </div>
+    </div>
+
+    <!-- Workspace -->
+    <div class="workspace">
+
+        <!-- LEFT: Form Panel -->
+        <div class="panel">
+            <div class="panel-title">&#9998;&nbsp; Configure &mdash; <span id="formTypeLabel">App Registration</span></div>
+
+            <div class="options-row">
+                <div class="option-group">
+                    <label>Separator</label>
+                    <select id="separator" onchange="updatePreview()">
+                        <option value="-">Hyphen ( - )</option>
+                        <option value="_">Underscore ( _ )</option>
+                    </select>
+                </div>
+                <div class="option-group">
+                    <label>Case Style</label>
+                    <select id="casing" onchange="updatePreview()">
+                        <option value="pascal" selected>PascalCase</option>
+                        <option value="upper">UPPERCASE</option>
+                        <option value="lower">lowercase</option>
+                        <option value="none">No Transform</option>
+                    </select>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <span class="pattern-label">Naming Pattern</span>
+            <div id="patternSelector"></div>
+
+            <hr class="divider">
+
+            <div id="fieldsContainer"></div>
+        </div>
+
+        <!-- RIGHT: Preview Panel -->
+        <div class="panel">
+            <div class="panel-title">&#128203;&nbsp; Generated Name</div>
+
+            <div class="preview-box" id="previewBox">
+                <div class="preview-name empty" id="previewName">Fill in the form to generate a name&hellip;</div>
+            </div>
+
+            <div class="segments-title">Segments</div>
+            <div class="segments" id="segments"></div>
+
+            <div class="actions">
+                <button class="btn btn-primary" onclick="copyName()">&#128203; Copy</button>
+                <button class="btn btn-outline" onclick="resetForm()">&#8635; Reset</button>
+            </div>
+
+            <div id="descSection" style="display:none;">
+                <hr class="divider">
+                <div class="desc-title">Generated Description</div>
+                <div class="desc-box" id="descBox">
+                    <div class="desc-text empty" id="descText">Fill in the form to generate a description&hellip;</div>
+                </div>
+                <div class="actions" style="margin-bottom:0;">
+                    <button class="btn btn-outline" onclick="copyDesc()">&#128203; Copy Description</button>
+                </div>
+            </div>
+
+            <hr class="divider">
+
+            <div class="history-title">Recent Names</div>
+            <div id="history"><div class="history-empty">No names generated yet.</div></div>
+        </div>
+
+    </div>
+</div>
+
+<footer>Tenant Name Builder &mdash; v0.1 beta</footer>
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// CONFIGURATION
+// ═══════════════════════════════════════════════════════════════
+const CONFIG = {
+
+    'app-reg': {
+        label: 'App Registration',
+        abbrev: 'App',
+        patterns: [
+            {
+                id: 'p1',
+                name: '[Tool]-[Function]-[Perm]-[Env]',
+                desc: 'Best for smaller organisations with a single tenant. Focuses on what the app does and what access it has.',
+                badge: 'GENERIC', badgeColor: 'blue',
+                segments: ['tool', 'function', 'accessType', 'environment']
+            },
+            {
+                id: 'p2',
+                name: '[Company]-[Dept]-[Tool]-[Function]-[Perm]-[Env]',
+                desc: 'Best for large organisations with department-level segregation. Company and department identify the owner.',
+                badge: 'ENTERPRISE', badgeColor: 'teal',
+                segments: ['company', 'department', 'tool', 'function', 'accessType', 'environment']
+            },
+            {
+                id: 'p3',
+                name: '[Tool]-[Customer]-[Perm]-[Env]',
+                desc: 'Best for MSPs managing multiple customers. Tool is first for quick filtering by product.',
+                badge: 'MSP', badgeColor: 'amber',
+                segments: ['tool', 'company', 'accessType', 'environment']
+            },
+            {
+                id: 'p4',
+                name: '[Project]-[Tool]-[Perm]-[Env]',
+                desc: 'Best for time-bound integrations. Project identifies the context rather than the company.',
+                badge: 'PROJECT', badgeColor: 'purple',
+                segments: ['project', 'tool', 'accessType', 'environment']
+            }
+        ],
+        fields: [
+            { id: 'company',    type: 'text',   labelByPattern: { p2: 'Company Name', p3: 'Customer Name' }, label: 'Company / Customer Name', placeholderByPattern: { p2: 'e.g. Contoso, Zava', p3: 'e.g. Contoso, Zava' }, example: 'e.g. Contoso, Zava', patterns: ['p2','p3'], hintByPattern: { p2: 'The name of your organisation or the primary entity that owns this integration. Use a short recognisable abbreviation if the full name is long.', p3: 'The name of the customer tenant this integration belongs to. Use the same name consistently across all app registrations for that customer.' }, hint: 'The name of your organisation or the primary entity that owns this integration. Use a short recognisable abbreviation if the full name is long.' },
+            { id: 'tool',       type: 'text',   label: 'Tool / Service Name',  placeholderByPattern: { p3: 'e.g. Intune, Veeam, Salesforce' }, example: 'e.g. Intune, Veeam, Salesforce',     patterns: ['p1','p2','p3','p4'], hint: 'The name of the third-party application or Microsoft service this app registration represents. Use the vendor\'s official product name for consistency.' },
+            { id: 'function',   type: 'text',   label: 'Function / Purpose',   example: 'e.g. Backup, Reporting, SSO',               patterns: ['p1','p2'],           hint: 'Describes what this app registration does or enables. Use a concise action-based noun such as Backup or Reporting rather than a full sentence.' },
+            { id: 'department', type: 'text',   label: 'Department',           example: 'e.g. IT, Security, Finance, HR',                         patterns: ['p2'],                hint: 'The business unit or team responsible for this integration. Helps filter and identify ownership in large organisations with multiple app registrations.' },
+            { id: 'project',    type: 'text',   label: 'Project Name',         example: 'e.g. PhoenixMigration2025, OperationNightHawk, ProjectAtlas',                            patterns: ['p4'],                hint: 'The name of the project or initiative this app registration is scoped to. Include a year suffix if the project is time-bound, e.g. PhoenixMigration2025.' },
+            { id: 'accessType', type: 'select', label: 'Permissions',          options: ['Application','Delegated','Mixed','AuthOnly'], example: 'e.g. Application, Delegated', patterns: ['p1','p2','p3','p4'], hint: 'Defines the OAuth permission model used by this app registration. Application permissions run without a signed-in user. Delegated permissions act on behalf of a signed-in user. Mixed combines both. Use AuthOnly for app registrations used solely for authentication with no API permissions assigned.' },
+            { id: 'environment',type: 'select', label: 'Environment',          options: ['','Prod','Test','Dev','Staging'], example: 'e.g. Prod — leave blank for production-only tools', patterns: ['p1','p2','p3','p4'], hint: 'The deployment stage this app registration targets. Keeping production and non-production registrations separate reduces risk during testing and rollouts.' }
+        ]
+    },
+
+    'ca-policy': {
+        label: 'Conditional Access Policy',
+        abbrev: 'CA',
+        patterns: [
+            {
+                id: 'p1',
+                name: 'CA[NNN]-[Scope]-[Effect]-[Target]-[Platform]-[Location]-[Condition]',
+                desc: 'Microsoft Recommended pattern extended with Platform and Location segments for maximum operational context.',
+                badge: 'EXTENDED', badgeColor: 'blue',
+                segments: ['number', 'cloudApps', 'grantControl', 'sessionControl', 'target', 'platform', 'location', 'condition'],
+                numberPrefix: 'CA'
+            },
+            {
+                id: 'p3',
+                name: 'CA[NNN]-[Effect]-[Target]-[Condition]',
+                desc: 'Compact — omits cloud apps and platform. Best for broad global policies that apply to all users and all apps without exceptions.',
+                badge: 'COMPACT', badgeColor: 'gray',
+                segments: ['number', 'grantControl', 'sessionControl', 'target', 'condition'],
+                numberPrefix: 'CA'
+            },
+            {
+                id: 'p2',
+                name: 'CA[NNN]-[Scope]-[Effect]-[Target]-[Condition]',
+                desc: 'Sequence number → scope → response → who → when',
+                badge: 'MICROSOFT RECOMMENDED', badgeColor: '',
+                source: 'Microsoft Learn: Plan a Conditional Access deployment',
+                sourceUrl: 'https://learn.microsoft.com/entra/identity/conditional-access/plan-conditional-access#set-naming-standards-for-your-policies',
+                segments: ['number', 'cloudApps', 'grantControl', 'sessionControl', 'target', 'condition'],
+                numberPrefix: 'CA',
+                recommended: true
+            },
+            {
+                id: 'p4',
+                name: 'EM[NNN]-EnableInEmergency-[Disruption]-[AppCategory]-[Controls]',
+                desc: 'Break-glass / contingency policy for outage and disruption scenarios. Keep in Report-Only mode until activation is required.',
+                badge: 'EMERGENCY', badgeColor: 'emergency',
+                source: 'Microsoft Learn: Resilient access control management strategy',
+                sourceUrl: 'https://learn.microsoft.com/entra/identity/authentication/concept-resilient-controls#before-a-disruption',
+                segments: ['number', 'disruption', 'appCategory', 'controls'],
+                numberPrefix: 'EM',
+                fixedInfix: { afterIndex: 0, value: 'EnableInEmergency' },
+                emergency: true
+            }
+        ],
+        fields: [
+            { id: 'number',    label: 'Policy Number',         type: 'text',     example: 'e.g. 001, 002, 003',      patterns: ['p1','p2','p3','p4'], hint: 'A sequence number used to order and reference policies. Three digits are recommended for consistency (e.g. 001, 002, 003), but use as many digits as your set requires. Any consistent scheme works.' },
+            { id: 'cloudApps', label: 'Scope', type: 'select',
+              options: [
+                { value: 'AllApps',            label: 'All Apps' },
+                { value: 'Office365',          label: 'Office 365' },
+                { value: 'ExchangeOnline',     label: 'Exchange Online' },
+                { value: 'SharePointOnline',   label: 'SharePoint Online' },
+                { value: 'Teams',              label: 'Microsoft Teams' },
+                { value: 'AzureMgmt',          label: 'Azure Management' },
+                { value: 'AdminPortals',       label: 'Admin Portals' },
+                { value: 'MFARegistration',    label: 'MFA Registration' },
+                { value: 'RegisterJoinDevice', label: 'Register or Join Device' },
+                { value: 'CustomApp',          label: 'Custom App' }
+              ],
+              subField: { triggerValue: 'CustomApp', id: 'cloudAppsCustom', label: 'Custom Scope', placeholder: 'e.g. Salesforce, Workday, InternalPortal' },
+              example: 'e.g. AllApps, MFARegistration', patterns: ['p1','p2'], hint: 'The scope this policy targets — can be a cloud application, a user action, or an authentication context. Use All Apps to ensure every resource is covered by at least one policy. Select MFA Registration or Register or Join Device for policies targeting user actions rather than apps. Choose Custom to enter a specific third-party or internal application name.' },
+            { id: 'grantControl', label: 'Grant', type: 'multiselect', keepCase: true,
+              options: [
+                { value: 'Block',           label: 'Block Access',                       exclusive: true },
+                { value: 'MFA',             label: 'Require MFA',                        mutuallyExclusive: ['AuthStrength'] },
+                { value: 'AuthStrength',    label: 'Require Authentication Strength',     mutuallyExclusive: ['MFA'] },
+                { value: 'CompliantDevice', label: 'Require Compliant Device' },
+                { value: 'HybridJoined',    label: 'Require Hybrid Joined Device' },
+                { value: 'AppProtection',   label: 'Require App Protection Policy' },
+                { value: 'PasswordChange',  label: 'Require Password Change',             exclusive: true },
+                { value: 'Custom',          label: 'Custom Control' }
+              ],
+              subField: { triggerValue: 'Custom', id: 'grantControlCustom', label: 'Custom Grant Control', placeholder: 'e.g. TermsOfUse, RiskRemediation' },
+              patterns: ['p1','p2','p3'], hint: 'Select Block Access to deny access entirely — all other grant controls will be disabled. Otherwise select one or more controls to enforce when access is allowed. MFA and Authentication Strength are mutually exclusive. Require Password Change cannot be combined with other grant controls. Use AND to require all selected controls, or OR to require at least one.' },
+            { id: 'sessionControl', label: 'Session', type: 'multiselect', keepCase: true,
+              options: [
+                { value: 'AppRestrictions',   label: 'App Enforced Restrictions' },
+                { value: 'CAAC',              label: 'Conditional Access App Control' },
+                { value: 'SignInFrequency',   label: 'Sign-in Frequency' },
+                { value: 'PersistentSession', label: 'Persistent Browser Session' },
+                { value: 'TokenProtection',   label: 'Token Protection' },
+                { value: 'Custom',            label: 'Custom Control' }
+              ],
+              subField: { triggerValue: 'Custom', id: 'sessionControlCustom', label: 'Custom Session Control', placeholder: 'e.g. GlobalSecureAccess, ContinuousAccessEvaluation' },
+              patterns: ['p1','p2','p3'], hint: 'The session controls to apply during an active session. Multiple session controls can be combined freely.' },
+            { id: 'target',    label: 'Users, Agents or Workload Identities', type: 'select',
+              options: [
+                { value: 'AllUsers',               label: 'All Users' },
+                { value: 'Admins',                 label: 'Admins' },
+                { value: 'InternalAdmins',         label: 'Internal Admins' },
+                { value: 'ExternalAdmins',         label: 'External Admins' },
+                { value: 'GuestUsers',             label: 'Guest Users' },
+                { value: 'ServiceAccounts',        label: 'Service Accounts' },
+                { value: 'ServiceProviders',       label: 'Service Providers' },
+                { value: 'RiskyUsers',             label: 'Risky Users' },
+                { value: 'AllServicePrincipals',   label: 'All Owned Service Principals' },
+                { value: 'AllAgentIdentities',     label: 'All Agent Identities' },
+                { value: 'NamedIdentity',          label: 'Specific Identity or Group' }
+              ],
+              subField: { triggerValue: 'NamedIdentity', id: 'targetIdentity', label: 'Identity Name', placeholder: 'Enter a group name, agent identity, or service principal name' },
+              example: 'e.g. AllUsers, Admins', patterns: ['p1','p2','p3'], hint: 'The users, agents, or workload identities this policy applies to. Use All Users for baseline policies and narrow down with specific roles or groups for targeted policies. Use All Owned Service Principals or All Agent Identities for policies targeting workload identities. Select Specific Identity or Group to enter a named security group, service principal, or agent identity. Always exclude emergency access accounts from every policy.' },
+            { id: 'platform',  label: 'Platform',              type: 'select',
+              options: [
+                { value: 'AnyPlatform', label: 'Any Platform' },
+                { value: 'Windows',     label: 'Windows' },
+                { value: 'iOS',         label: 'iOS' },
+                { value: 'Android',     label: 'Android' },
+                { value: 'macOS',       label: 'macOS' },
+                { value: 'Linux',       label: 'Linux' }
+              ],
+              example: 'e.g. AnyPlatform, Windows', patterns: ['p1'], hint: 'The device operating system this policy targets. Use Any Platform for broad policies. Specify a platform only when the policy requirements differ per operating system, for example requiring a compliant device on Windows but an app protection policy on iOS and Android.' },
+            { id: 'location',  label: 'Location',              type: 'select',
+              options: [
+                { value: 'AnyLocation',        label: 'Any Location' },
+                { value: 'TrustedLocation',    label: 'Trusted Location' },
+                { value: 'NonTrustedLocation', label: 'Non-Trusted Location' },
+                { value: 'BlockedLocations',   label: 'Blocked Locations' }
+              ],
+              example: 'e.g. AnyLocation, TrustedLocation', patterns: ['p1'], hint: 'The network location condition for this policy. Trusted Location refers to named locations defined in Microsoft Entra. Use Non-Trusted Location to target sign-ins from outside known networks. Blocked Locations targets countries or regions from which you never expect sign-ins.' },
+            { id: 'condition', label: 'Condition / When',      type: 'select',
+              options: [
+                { value: 'AnyCondition',     label: 'Any Condition' },
+                { value: 'LegacyAuth',       label: 'Legacy Authentication' },
+                { value: 'DeviceCode',       label: 'Device Code' },
+                { value: 'UnsupportedOS',    label: 'Unsupported OS' },
+                { value: 'RiskySignIn',      label: 'Risky Sign-In' },
+                { value: 'NonTrustedDevice', label: 'Non-Trusted Device' },
+                { value: 'TrustedDevice',    label: 'Trusted Device' },
+                { value: 'MFARequired',      label: 'MFA Required' }
+              ],
+              example: 'e.g. LegacyAuth, RiskySignIn', patterns: ['p1','p2','p3'], hint: 'The specific sign-in condition that triggers this policy. Use Legacy Authentication to block older protocols that do not support modern authentication. Use Risky Sign-In to target sign-ins flagged by Microsoft Entra ID Protection. Use Device Code to restrict the device code OAuth flow.' },
+            { id: 'disruption', label: 'Disruption Type', type: 'select',
+              options: [
+                { value: 'MFAOutage',               label: 'MFA Outage' },
+                { value: 'ThirdPartyMFAOutage',     label: 'Third-Party MFA Outage' },
+                { value: 'DeviceComplianceOutage',  label: 'Device Compliance Outage' },
+                { value: 'RiskBasedControlsOutage', label: 'Risk-Based Controls Outage' },
+                { value: 'NetworkOutage',           label: 'Network Outage' },
+                { value: 'Custom',                  label: 'Custom' }
+              ],
+              subField: { triggerValue: 'Custom', id: 'disruptionCustom', label: 'Custom Disruption', placeholder: 'e.g. CustomDisruption' },
+              patterns: ['p4'], hint: 'The access control mechanism that is disrupted or unavailable. A contingency CA policy is a backup policy that omits Microsoft Entra MFA, third-party MFA, risk-based, or device-based controls. Select the control type that has failed: MFA Outage for Microsoft Entra MFA, Third-Party MFA Outage for external MFA providers, Device Compliance Outage for Intune or Hybrid Join, Risk-Based Controls Outage for Microsoft Entra ID Protection policies, or Network Outage for named locations or VPN.' },
+            { id: 'appCategory', label: 'App Category',         type: 'select',
+              options: [
+                { value: 'MissionCritical', label: 'Category 1 — Mission Critical' },
+                { value: 'Important',       label: 'Category 2 — Important' },
+                { value: 'LowPriority',     label: 'Category 3 — Low Priority' },
+                { value: 'Custom',          label: 'Custom' }
+              ],
+              subField: { triggerValue: 'Custom', id: 'appCategoryCustom', label: 'Custom Category', placeholder: 'e.g. Regulated, PartnerFacing' },
+              patterns: ['p4'], hint: 'The Microsoft-recommended app category for contingency planning. Category 1: mission critical apps that cannot be unavailable for more than a few minutes — for example, apps that directly affect revenue. Category 2: important apps the business needs accessible within a few hours. Category 3: low-priority apps that can withstand a disruption of a few days. Select Custom to enter a category name specific to your organization. The value shown in the policy name is concise (e.g. MissionCritical) while the dropdown label remains descriptive.' },
+            { id: 'controls',  label: 'Controls',              type: 'select',
+              options: [
+                { value: 'HybridJoinOnly',      label: 'Hybrid Join Only' },
+                { value: 'NoMFARequired',       label: 'No MFA Required' },
+                { value: 'BlockNonWindows',     label: 'Block Non-Windows' },
+                { value: 'BlockNonCorpNetwork', label: 'Block Non-Corporate Network' },
+                { value: 'ReadOnlySession',     label: 'Read Only Session' },
+                { value: 'BlockMobileDevices',  label: 'Block Mobile Devices' },
+                { value: 'Custom',              label: 'Custom' }
+              ],
+              subField: { triggerValue: 'Custom', id: 'controlsCustom', label: 'Custom Control', placeholder: 'e.g. CustomControl' },
+              patterns: ['p4'], hint: 'The access controls applied or relaxed during the emergency scenario. Keep it concise so the policy name remains readable at a glance.' }
+        ]
+    },
+
+    'security-group': {
+        label: 'Groups',
+        abbrev: 'GRP',
+        patterns: [
+            {
+                id: 'p1',
+                name: '[SEC]-[Function]-[Scope]',
+                desc: 'Best for security groups used in Conditional Access, resource access, or licensing assignments.',
+                badge: 'SECURITY', badgeColor: 'blue',
+                fixedPrefix: 'SEC',
+                segments: ['function', 'scope', 'environment']
+            },
+            {
+                id: 'p2',
+                name: '[M365]-[Department]-[Name]',
+                desc: 'Best for Microsoft 365 Groups used in Teams, SharePoint, and collaboration workloads.',
+                badge: 'M365 GROUP', badgeColor: 'teal',
+                fixedPrefix: 'M365',
+                segments: ['department', 'groupName', 'environment']
+            },
+            {
+                id: 'p3',
+                name: '[DL]-[Department]-[Purpose]',
+                desc: 'Best for distribution lists used to send email to a group of recipients.',
+                badge: 'DISTRIBUTION', badgeColor: 'gray',
+                fixedPrefix: 'DL',
+                segments: ['department', 'purpose']
+            },
+            {
+                id: 'p4',
+                name: '[DYN]-[Attribute]-[Value]',
+                desc: 'Best for dynamic groups with automatic membership based on user or device attributes.',
+                badge: 'DYNAMIC', badgeColor: 'purple',
+                fixedPrefix: 'DYN',
+                segments: ['attribute', 'attributeValue']
+            },
+            {
+                id: 'p5',
+                name: '[MB]-[Department]-[Function]',
+                desc: 'Best for shared mailboxes used by a team to monitor and send from a common email address.',
+                badge: 'SHARED MAILBOX', badgeColor: 'cyan',
+                fixedPrefix: 'MB',
+                segments: ['department', 'mbFunction']
+            },
+            {
+                id: 'p6',
+                name: '[Room/Equip]-[Location]-[Name]',
+                desc: 'Best for room and equipment mailboxes used for resource booking and calendar reservations.',
+                badge: 'ROOM / EQUIP', badgeColor: 'amber',
+                segments: ['roomType', 'location', 'resourceName']
+            },
+            {
+                id: 'p7',
+                name: '[PIM]-[Resource]-[Role]-[AccessType]',
+                desc: 'Best for Privileged Identity Management groups providing just-in-time access to privileged roles and resources.',
+                badge: 'PIM', badgeColor: 'red',
+                fixedPrefix: 'PIM',
+                segments: ['resource', 'role', 'accessType']
+            }
+        ],
+        fields: [
+            { id: 'function',       label: 'Function / Purpose', type: 'text',   example: 'e.g. Admins, MFAExclude, LicenseE3, AppAccess',            patterns: ['p1'],           hint: 'Describes what this group is used for or what access it grants. Use a concise noun such as Admins, MFAExclude, or LicenseE3 that makes the group purpose immediately clear in the directory.' },
+            { id: 'scope',          label: 'Scope',               type: 'text',   example: 'e.g. AllUsers, IT, Finance, Guests',                        patterns: ['p1'],           hint: 'The set of users or resources this group applies to. Use AllUsers for tenant-wide groups, or a department or role name for targeted groups.' },
+            { id: 'department',     label: 'Department',          type: 'text',   example: 'e.g. Marketing, IT, Finance, HR',                           patterns: ['p2','p3','p5'], hint: 'The business unit or team that owns or uses this group. Use the official department abbreviation for consistency across the directory.' },
+            { id: 'groupName',      label: 'Group Name',          type: 'text',   example: 'e.g. Campaigns, SecurityTeam, BudgetPlanning',              patterns: ['p2'],           hint: 'A short descriptive name for the collaboration space. Should reflect the project, workload, or team purpose.' },
+            { id: 'purpose',        label: 'Purpose',             type: 'text',   example: 'e.g. Alerts, Invoices, Announcements, Recruitment',         patterns: ['p3'],           hint: 'Describes the communication function of this list. Use a noun such as Alerts, Announcements, or Invoices.' },
+            { id: 'attribute',      label: 'Attribute',           type: 'select',
+              options: ['Department','JobTitle','Location','License','Device','Custom'],
+              subField: { triggerValue: 'Custom', id: 'attributeCustom', label: 'Custom Attribute', placeholder: 'e.g. CompanyName, UsageLocation' },
+              patterns: ['p4'], hint: 'The user or device attribute used as the membership rule filter. Choose the attribute that best identifies the target population. Select Custom to enter a non-standard attribute.' },
+            { id: 'attributeValue', label: 'Attribute Value',     type: 'text',   example: 'e.g. IT, E3, ManagedDevices, Finance',                      patterns: ['p4'],           hint: 'The specific value of the attribute that triggers group membership. For example, if Attribute is Department, the value might be IT or Finance.' },
+            { id: 'mbFunction',     label: 'Function',            type: 'text',   example: 'e.g. Invoices, Helpdesk, Recruitment, Info',                patterns: ['p5'],           hint: 'The operational purpose of this shared mailbox. Use a functional noun such as Helpdesk, Invoices, or Recruitment rather than a personal name.' },
+            { id: 'roomType',       label: 'Type',                type: 'select', options: ['Room','Equip'],                                              patterns: ['p6'],           hint: 'Select Room for meeting rooms and conference spaces, or Equip for bookable equipment such as projectors or vehicles.' },
+            { id: 'location',       label: 'Location',            type: 'text',   example: 'e.g. LJ, MB, AMS, NYC',                                    patterns: ['p6'],           hint: 'A short location code identifying the building, city, or office where this resource is located. Use consistent abbreviations across all resources.' },
+            { id: 'resourceName',   label: 'Name / Number',       type: 'text',   example: 'e.g. BoardRoom01, MeetingRoom02, Projector01',              patterns: ['p6'],           hint: 'A unique identifier for this resource within its location. Use a descriptive name followed by a two-digit number for consistent sorting, e.g. BoardRoom01.' },
+            { id: 'resource',       label: 'Resource',            type: 'text',   example: 'e.g. GlobalAdmin, ExchangeAdmin, FinReport, AzureKeyVault', patterns: ['p7'],           hint: 'The application, role, or system this PIM group controls access to. Use the official product or role name, e.g. GlobalAdmin, ExchangeAdmin, or FinReport.' },
+            { id: 'role',           label: 'Role',                type: 'text',   example: 'e.g. SeniorAnalyst, Owner, Contributor, Reader',            patterns: ['p7'],           hint: 'The job function or responsibility level within the resource. Reflects the type of access being granted just-in-time, e.g. SeniorAnalyst, Owner, or Contributor.' },
+            { id: 'accessType',     label: 'Access Type',         type: 'select', options: ['Eligible','Active'],                                         patterns: ['p7'],           hint: 'Eligible means the user must activate the role before gaining access, requiring MFA or approval. Active means access is granted immediately without activation. Microsoft recommends Eligible for all privileged roles.' },
+            { id: 'environment',    label: 'Environment',         type: 'select', options: ['','Prod','Test','Dev'],                                       patterns: ['p1','p2'],      hint: 'The deployment stage this group targets. Use Prod for production groups, Test for validation, and Dev for development environments. Keeping environments separate reduces the risk of misconfiguration in production.' }
+        ]
+    }
+};
+
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+const state = {
+    type:    'ca-policy',
+    pattern: 'p1',
+    history: []
+};
+
+// ═══════════════════════════════════════════════════════════════
+// THEME
+// ═══════════════════════════════════════════════════════════════
+function toggleTheme() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const next   = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    document.getElementById('themeToggle').innerHTML = next === 'dark' ? '&#9728;&#65039;' : '&#127769;';
+    localStorage.setItem('ngen-theme', next);
+}
+
+function applyStoredTheme() {
+    const saved = localStorage.getItem('ngen-theme') || 'light';
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('themeToggle').innerHTML = saved === 'dark' ? '&#9728;&#65039;' : '&#127769;';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+    applyStoredTheme();
+    selectType('ca-policy');
+});
+
+// ═══════════════════════════════════════════════════════════════
+// SELECT OBJECT TYPE
+// ═══════════════════════════════════════════════════════════════
+function selectType(type) {
+    if (state.type === type) return;
+    state.type    = type;
+    state.pattern = CONFIG[type].patterns[0].id;
+
+    document.querySelectorAll('.type-card').forEach(c =>
+        c.classList.toggle('active', c.dataset.type === type)
+    );
+
+    document.getElementById('formTypeLabel').textContent = CONFIG[type].label;
+    renderPatterns();
+    renderFields();
+    updatePreview();
+    generateDescription();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER PATTERNS
+// ═══════════════════════════════════════════════════════════════
+function renderPatterns() {
+    const container = document.getElementById('patternSelector');
+    container.innerHTML = '';
+
+    CONFIG[state.type].patterns.forEach(p => {
+        const typeBadge = p.badge ? `<span class="pattern-badge ${p.badgeColor || ''}">${p.badge}</span>` : '';
+        const source   = p.source && p.sourceUrl
+            ? `<a class="pattern-source" href="${p.sourceUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">&#128279; ${p.source}</a>`
+            : '';
+
+        const div = document.createElement('div');
+        div.className = 'pattern-option' + (p.id === state.pattern ? ' selected' : '');
+        div.innerHTML = `
+            <input type="radio" name="pattern" value="${p.id}" ${p.id === state.pattern ? 'checked' : ''}>
+            <div class="pattern-option-right">
+                <div>
+                    <div class="pattern-name">${p.name}</div>
+                    <div class="pattern-desc">${p.desc}</div>
+                    ${source}
+                </div>
+                ${typeBadge}
+            </div>
+        `;
+        div.addEventListener('click', () => selectPattern(p.id));
+        container.appendChild(div);
+    });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SELECT PATTERN
+// ═══════════════════════════════════════════════════════════════
+function selectPattern(patternId) {
+    const snapshot = {};
+    document.querySelectorAll('#fieldsContainer input[type="text"], #fieldsContainer select').forEach(el => {
+        if (el.id) snapshot[el.id] = el.value;
+    });
+
+    state.pattern = patternId;
+
+    document.querySelectorAll('.pattern-option').forEach(el => {
+        const radio  = el.querySelector('input[type="radio"]');
+        const active = radio.value === patternId;
+        el.classList.toggle('selected', active);
+        radio.checked = active;
+    });
+
+    renderFields();
+
+    document.querySelectorAll('#fieldsContainer input[type="text"], #fieldsContainer select').forEach(el => {
+        if (el.id && snapshot[el.id] !== undefined) {
+            el.value = snapshot[el.id];
+            el.dispatchEvent(new Event('change'));
+        }
+    });
+
+    updatePreview();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER FIELDS
+// ═══════════════════════════════════════════════════════════════
+function renderFields() {
+    const container = document.getElementById('fieldsContainer');
+    container.innerHTML = '';
+
+    const patternConfig = CONFIG[state.type].patterns.find(p => p.id === state.pattern);
+    const segmentOrder  = patternConfig ? patternConfig.segments : [];
+    const allFields     = CONFIG[state.type].fields;
+
+    segmentOrder.map(id => allFields.find(f => f.id === id)).filter(Boolean).forEach(field => {
+            const wrap  = document.createElement('div');
+            wrap.className = 'field-group';
+
+            const label = (field.labelByPattern && field.labelByPattern[state.pattern]) || field.label;
+            const hint  = (field.hintByPattern && field.hintByPattern[state.pattern]) || field.hint;
+
+            const lbl   = document.createElement('label');
+            lbl.htmlFor = 'fld_' + field.id;
+            lbl.innerHTML = label
+                + (hint ? `<span class="field-hint" data-hint="${hint.replace(/"/g, '&quot;')}">i</span>` : '');
+
+            let input;
+            if (field.type === 'multiselect') {
+                wrap.id = 'fieldwrap_' + field.id;
+                const cbGroup = document.createElement('div');
+                cbGroup.className = 'checkbox-group';
+                cbGroup.id = 'fld_' + field.id;
+
+                let customSubWrap = null;
+                if (field.subField) {
+                    const sf = field.subField;
+                    customSubWrap = document.createElement('div');
+                    customSubWrap.id = 'subfield_' + sf.id;
+                    customSubWrap.className = 'subfield-wrap';
+                    customSubWrap.style.display = 'none';
+                    const subLbl = document.createElement('label');
+                    subLbl.htmlFor = 'fld_' + sf.id;
+                    subLbl.textContent = sf.label;
+                    const subIn = document.createElement('input');
+                    subIn.type = 'text';
+                    subIn.id = 'fld_' + sf.id;
+                    subIn.placeholder = sf.placeholder;
+                    subIn.autocomplete = 'off';
+                    subIn.addEventListener('input', updatePreview);
+                    customSubWrap.appendChild(subLbl);
+                    customSubWrap.appendChild(subIn);
+                }
+
+                let andOrGroup = null;
+                if (field.id === 'grantControl') {
+                    andOrGroup = document.createElement('div');
+                    andOrGroup.id = 'grantLogicGroup';
+                    andOrGroup.className = 'grant-logic-group';
+                    andOrGroup.style.display = 'none';
+                    [{ value: 'AND', label: 'Require all selected controls' }, { value: 'OR', label: 'Require one of selected controls' }].forEach(opt => {
+                        const rWrap = document.createElement('label');
+                        rWrap.className = 'radio-option';
+                        const r = document.createElement('input');
+                        r.type = 'radio';
+                        r.name = 'grantLogic';
+                        r.value = opt.value;
+                        if (opt.value === 'AND') r.checked = true;
+                        r.addEventListener('change', updatePreview);
+                        rWrap.appendChild(r);
+                        rWrap.appendChild(document.createTextNode(' ' + opt.label));
+                        andOrGroup.appendChild(rWrap);
+                    });
+                }
+
+                const applyMutualExclusion = (optVal, isChecked) => {
+                    const optDef = (field.options || []).find(o => (typeof o === 'string' ? o : o.value) === optVal);
+                    if (!optDef || typeof optDef === 'string') return;
+                    if (optDef.exclusive) {
+                        (field.options || []).forEach(o => {
+                            const v = typeof o === 'string' ? o : o.value;
+                            if (v === optVal) return;
+                            const other = document.getElementById('fld_' + field.id + '_' + v);
+                            if (other) { other.disabled = isChecked; if (isChecked) other.checked = false; }
+                        });
+                    }
+                    if (optDef.mutuallyExclusive) {
+                        optDef.mutuallyExclusive.forEach(exclVal => {
+                            const other = document.getElementById('fld_' + field.id + '_' + exclVal);
+                            if (other) { other.disabled = isChecked; if (isChecked) other.checked = false; }
+                        });
+                    }
+                };
+
+                const updateAndOrVisibility = () => {
+                    if (!andOrGroup) return;
+                    const checkedCount = document.querySelectorAll('#fld_grantControl input[type="checkbox"]:checked').length;
+                    andOrGroup.style.display = checkedCount >= 2 ? 'block' : 'none';
+                };
+
+                (field.options || []).forEach(opt => {
+                    const optVal = typeof opt === 'string' ? opt : opt.value;
+                    const optLbl = typeof opt === 'string' ? opt : opt.label;
+                    const cbWrap = document.createElement('label');
+                    cbWrap.className = 'checkbox-option';
+                    const cb = document.createElement('input');
+                    cb.type = 'checkbox';
+                    cb.id = 'fld_' + field.id + '_' + optVal;
+                    cb.value = optVal;
+                    cb.addEventListener('change', () => {
+                        if (customSubWrap && field.subField && optVal === field.subField.triggerValue) {
+                            customSubWrap.style.display = cb.checked ? 'block' : 'none';
+                            if (!cb.checked) { const si = customSubWrap.querySelector('input[type="text"]'); if (si) si.value = ''; }
+                        }
+                        applyMutualExclusion(optVal, cb.checked);
+                        updateAndOrVisibility();
+                        updatePreview();
+                    });
+                    cbWrap.appendChild(cb);
+                    cbWrap.appendChild(document.createTextNode(' ' + optLbl));
+                    cbGroup.appendChild(cbWrap);
+                });
+
+                wrap.appendChild(lbl);
+                wrap.appendChild(cbGroup);
+                if (andOrGroup) wrap.appendChild(andOrGroup);
+                if (customSubWrap) wrap.appendChild(customSubWrap);
+                container.appendChild(wrap);
+                return;
+            }
+            if (field.type === 'select') {
+                input = document.createElement('select');
+                const blank = document.createElement('option');
+                blank.value = '';
+                blank.textContent = 'Not selected';
+                input.appendChild(blank);
+                (field.options || []).filter(o => (typeof o === 'string' ? o : o.value) !== '').forEach(opt => {
+                    const o = document.createElement('option');
+                    o.value       = typeof opt === 'string' ? opt : opt.value;
+                    o.textContent = typeof opt === 'string' ? opt : opt.label;
+                    input.appendChild(o);
+                });
+            } else {
+                input = document.createElement('input');
+                input.type        = 'text';
+                input.placeholder = (field.placeholderByPattern && field.placeholderByPattern[state.pattern]) || (field.exampleByPattern && field.exampleByPattern[state.pattern]) || field.example || field.placeholder || '';
+                input.autocomplete = 'off';
+            }
+
+            input.id = 'fld_' + field.id;
+            input.addEventListener('input',  updatePreview);
+            input.addEventListener('change', updatePreview);
+
+            wrap.appendChild(lbl);
+            wrap.appendChild(input);
+
+            // Conditional sub-field (e.g. Custom App name, Named Group name)
+            if (field.subField) {
+                const sf = field.subField;
+                const subWrap = document.createElement('div');
+                subWrap.id        = 'subfield_' + sf.id;
+                subWrap.className = 'subfield-wrap';
+                subWrap.style.display = 'none';
+
+                const subLbl = document.createElement('label');
+                subLbl.htmlFor    = 'fld_' + sf.id;
+                subLbl.textContent = sf.label;
+
+                const subIn = document.createElement('input');
+                subIn.type        = 'text';
+                subIn.id          = 'fld_' + sf.id;
+                subIn.placeholder = sf.placeholder;
+                subIn.autocomplete = 'off';
+                subIn.addEventListener('input', updatePreview);
+
+                subWrap.appendChild(subLbl);
+                subWrap.appendChild(subIn);
+                wrap.appendChild(subWrap);
+
+                input.addEventListener('change', () => {
+                    subWrap.style.display = input.value === sf.triggerValue ? 'block' : 'none';
+                    updatePreview();
+                });
+            }
+
+            container.appendChild(wrap);
+        });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GENERATE NAME
+// ═══════════════════════════════════════════════════════════════
+function generateName() {
+    const sep     = document.getElementById('separator').value;
+    const casing  = document.getElementById('casing').value;
+    const type    = CONFIG[state.type];
+    const pattern = type.patterns.find(p => p.id === state.pattern);
+    const segs    = [];
+
+    if (pattern.fixedPrefix) {
+        segs.push({ value: pattern.fixedPrefix, fixed: true });
+    }
+
+    let grantPart = '';
+    let sessionPart = '';
+    pattern.segments.forEach(segId => {
+        const field = type.fields.find(f => f.id === segId);
+
+        if (segId === 'grantControl') {
+            const blockCb = document.getElementById('fld_grantControl_Block');
+            if (blockCb?.checked) { segs.push({ value: applyCase('Block', casing), fixed: false }); return; }
+            const vals = [...document.querySelectorAll('#fld_grantControl input[type="checkbox"]:checked')].map(cb => {
+                if (cb.value === 'Custom') { const el = document.getElementById('fld_grantControlCustom'); const cv = el?.value?.trim(); return cv ? applyCase(sanitize(cv), casing) : null; }
+                return applyCase(sanitize(cb.value), casing);
+            }).filter(Boolean);
+            if (vals.length) {
+                const logicRaw = document.querySelector('input[name="grantLogic"]:checked')?.value || 'AND';
+                const logicSep = sep + applyCase(logicRaw, casing) + sep;
+                grantPart = applyCase('Grant', casing) + sep + (vals.length > 1 ? vals.join(logicSep) : vals[0]);
+            }
+            return;
+        }
+        if (segId === 'sessionControl') {
+            const vals = [...document.querySelectorAll('#fld_sessionControl input[type="checkbox"]:checked')].map(cb => {
+                if (cb.value === 'Custom') { const el = document.getElementById('fld_sessionControlCustom'); const cv = el?.value?.trim(); return cv ? applyCase(sanitize(cv), casing) : null; }
+                return applyCase(sanitize(cb.value), casing);
+            }).filter(Boolean);
+            if (vals.length) {
+                const andSep = sep + applyCase('And', casing) + sep;
+                sessionPart = applyCase('Session', casing) + sep + (vals.length > 1 ? vals.join(andSep) : vals[0]);
+            }
+            if (grantPart && sessionPart) segs.push({ value: grantPart + sep + applyCase('And', casing) + sep + sessionPart, fixed: false });
+            else if (grantPart)           segs.push({ value: grantPart, fixed: false });
+            else if (sessionPart)         segs.push({ value: sessionPart, fixed: false });
+            return;
+        }
+
+        const el  = document.getElementById('fld_' + segId);
+        if (!el)  return;
+
+        const raw = el.value.trim();
+        if (!raw) return;
+
+        // Prefix selects (SG…) always stay uppercase
+        if (field && field.type === 'select' && segId === 'prefix') {
+            segs.push({ value: raw.toUpperCase(), fixed: false });
+            return;
+        }
+
+        // keepCase fields (e.g. effect: BLOCK, MFA) stay as typed
+        if (field && field.keepCase) {
+            segs.push({ value: sanitize(raw), fixed: false });
+            return;
+        }
+
+        // Sub-field override: use custom text input value when trigger option selected
+        if (field && field.subField && raw === field.subField.triggerValue) {
+            const subEl = document.getElementById('fld_' + field.subField.id);
+            const subVal = subEl?.value?.trim();
+            if (subVal) segs.push({ value: applyCase(sanitize(subVal), casing), fixed: false });
+            return;
+        }
+
+        let val = applyCase(sanitize(raw), casing);
+
+        // CA/EM policy: prepend numberPrefix to the number segment
+        if (state.type === 'ca-policy' && pattern.numberPrefix && segId === 'number') {
+            val = pattern.numberPrefix + val;
+        }
+
+        segs.push({ value: val, fixed: false });
+    });
+
+    // Guard: push grantPart if the pattern has grantControl but no sessionControl
+    if (grantPart && !pattern.segments.includes('sessionControl')) {
+        segs.push({ value: grantPart, fixed: false });
+    }
+
+    // Inject fixed infix segment at the specified position (e.g. EnableInEmergency)
+    if (pattern.fixedInfix && segs.length > pattern.fixedInfix.afterIndex) {
+        segs.splice(pattern.fixedInfix.afterIndex + 1, 0, { value: pattern.fixedInfix.value, fixed: true });
+    }
+
+    if (segs.length === 0) return { name: '', segs: [] };
+
+    return { name: segs.map(s => s.value).join(sep), segs };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// UPDATE PREVIEW
+// ═══════════════════════════════════════════════════════════════
+function updatePreview() {
+    const { name, segs } = generateName();
+    const sep = document.getElementById('separator').value;
+
+    const previewEl  = document.getElementById('previewName');
+    const previewBox = document.getElementById('previewBox');
+    const segmentsEl = document.getElementById('segments');
+
+    if (!name) {
+        previewEl.textContent = 'Fill in the form to generate a name…';
+        previewEl.className   = 'preview-name empty';
+        previewBox.classList.remove('has-value');
+        segmentsEl.innerHTML  = '';
+        generateDescription();
+        return;
+    }
+
+    previewEl.textContent = name;
+    previewEl.className   = 'preview-name';
+    previewBox.classList.add('has-value');
+
+    segmentsEl.innerHTML = '';
+    segs.forEach((seg, i) => {
+        const chip       = document.createElement('span');
+        chip.className   = 'seg-chip' + (seg.fixed ? ' seg-fixed' : '');
+        chip.textContent = seg.value;
+        segmentsEl.appendChild(chip);
+
+        if (i < segs.length - 1) {
+            const s       = document.createElement('span');
+            s.className   = 'seg-sep';
+            s.textContent = sep;
+            segmentsEl.appendChild(s);
+        }
+    });
+
+    generateDescription();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// COPY
+// ═══════════════════════════════════════════════════════════════
+function copyName() {
+    const { name } = generateName();
+    if (!name) return;
+
+    const write = () => { showToast('Copied to clipboard!'); addToHistory(name); };
+
+    navigator.clipboard.writeText(name).then(write).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = name;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        write();
+    });
+}
+
+function copyText(text) {
+    const write = () => showToast('Copied!');
+    navigator.clipboard.writeText(text).then(write).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        write();
+    });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RESET
+// ═══════════════════════════════════════════════════════════════
+function resetForm() {
+    document.querySelectorAll('#fieldsContainer input, #fieldsContainer select').forEach(el => {
+        if (el.tagName === 'SELECT') el.selectedIndex = 0;
+        else if (el.type === 'checkbox' || el.type === 'radio') { el.checked = false; el.disabled = false; }
+        else el.value = '';
+    });
+    document.querySelectorAll('.subfield-wrap, #grantLogicGroup').forEach(el => el.style.display = 'none');
+    updatePreview();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════════════════════════════
+function addToHistory(name) {
+    const abbrev = CONFIG[state.type].abbrev;
+    state.history = state.history.filter(h => h.name !== name);
+    state.history.unshift({ name, abbrev });
+    if (state.history.length > 8) state.history.pop();
+    renderHistory();
+}
+
+function renderHistory() {
+    const el = document.getElementById('history');
+    el.innerHTML = '';
+
+    if (!state.history.length) {
+        el.innerHTML = '<div class="history-empty">No names generated yet.</div>';
+        return;
+    }
+
+    state.history.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'history-item';
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'history-name';
+        nameSpan.title = item.name;
+        nameSpan.textContent = item.name;
+
+        const typeSpan = document.createElement('span');
+        typeSpan.className = 'history-type';
+        typeSpan.textContent = item.abbrev;
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'history-copy-btn';
+        copyBtn.textContent = 'copy';
+        copyBtn.addEventListener('click', () => copyText(item.name));
+
+        div.appendChild(nameSpan);
+        div.appendChild(typeSpan);
+        div.appendChild(copyBtn);
+        el.appendChild(div);
+    });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = '✓ ' + msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// GENERATED DESCRIPTION (Groups tab)
+// ═══════════════════════════════════════════════════════════════
+function generateDescription() {
+    const section = document.getElementById('descSection');
+    const textEl  = document.getElementById('descText');
+    const descBox = document.getElementById('descBox');
+    if (!section) return;
+
+    if (state.type !== 'security-group') {
+        section.style.display = 'none';
+        return;
+    }
+    section.style.display = 'block';
+
+    const get = id => { const el = document.getElementById('fld_' + id); return el ? el.value.trim() : ''; };
+
+    const pat       = state.pattern;
+    const envVal    = get('environment');
+    const envClause = envVal ? ` in the ${envVal} environment` : '';
+
+    let desc = '';
+
+    if (pat === 'p1') {
+        const fn = get('function'), sc = get('scope');
+        if (fn || sc)
+            desc = `This security group is used for ${fn || '[Function]'} and applies to ${sc || '[Scope]'}${envClause}.`;
+    } else if (pat === 'p2') {
+        const dept = get('department'), gn = get('groupName');
+        if (dept || gn)
+            desc = `This Microsoft 365 Group supports ${gn || '[Name]'} collaboration for the ${dept || '[Department]'} department${envClause}.`;
+    } else if (pat === 'p3') {
+        const dept = get('department'), pur = get('purpose');
+        if (dept || pur)
+            desc = `This distribution list delivers ${pur || '[Purpose]'} communications to the ${dept || '[Department]'} department.`;
+    } else if (pat === 'p4') {
+        const attrRaw = get('attribute');
+        const attr    = attrRaw === 'Custom' ? (get('attributeCustom') || '[Attribute]') : (attrRaw || '[Attribute]');
+        const val     = get('attributeValue');
+        if (attrRaw || val)
+            desc = `This dynamic group automatically assigns membership based on the ${attr} attribute with value ${val || '[Attribute Value]'}.`;
+    } else if (pat === 'p5') {
+        const dept = get('department'), fn = get('mbFunction');
+        if (dept || fn)
+            desc = `This shared mailbox provides ${dept || '[Department]'} team members access to ${fn || '[Function]'} communications.`;
+    } else if (pat === 'p6') {
+        const rt = get('roomType'), loc = get('location'), nm = get('resourceName');
+        if (rt || loc || nm)
+            desc = `This ${rt || '[Type]'} resource is located at ${loc || '[Location]'} and is identified as ${nm || '[Name]'}.`;
+    } else if (pat === 'p7') {
+        const res = get('resource'), rol = get('role'), at = get('accessType');
+        if (res || rol || at)
+            desc = `This PIM group provides ${at || '[Access Type]'} just-in-time access to ${res || '[Resource]'} for users in the ${rol || '[Role]'} role.`;
+    }
+
+    if (desc) {
+        textEl.textContent = desc;
+        textEl.className   = 'desc-text';
+        descBox.classList.add('has-value');
+    } else {
+        textEl.textContent = 'Fill in the form to generate a description…';
+        textEl.className   = 'desc-text empty';
+        descBox.classList.remove('has-value');
+    }
+}
+
+function copyDesc() {
+    const el = document.getElementById('descText');
+    if (!el || el.classList.contains('empty')) return;
+    const text = el.textContent;
+    const write = () => showToast('Description copied!');
+    navigator.clipboard.writeText(text).then(write).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        write();
+    });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════
+function sanitize(val) {
+    return val.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+}
+
+function applyCase(val, casing) {
+    const words = val.split(/\s+/).filter(Boolean);
+    switch (casing) {
+        case 'pascal': return words.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('');
+        case 'upper':  return words.join('').toUpperCase();
+        case 'lower':  return words.join('').toLowerCase();
+        default:       return words.join('');
+    }
+}
+</script>
+</body>
+</html>
