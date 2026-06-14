@@ -929,10 +929,11 @@ const CONFIG = {
         patterns: [
             {
                 id: 'p1',
-                name: 'CA[NNN]-[Target]-[Scope]-[Effect]-[Platform]-[Condition]-[Version]',
+                name: 'CA[NNN]-[Scope]-[Effect]-[Platform]-[Target]-[Condition]-[Version]',
                 desc: 'Use for full context policies. Includes Platform and Version segments not available in the Microsoft Recommended pattern. Recommended when platform-specific targeting or change tracking is required.',
                 badge: 'EXTENDED', badgeColor: 'blue',
-                segments: ['number', 'target', 'cloudApps', 'grantControl', 'sessionControl', 'platform', 'condition', 'version'],
+                segments: ['number', 'cloudApps', 'grantControl', 'sessionControl', 'platform', 'target', 'condition', 'version'],
+                fieldOrder: ['number', 'target', 'cloudApps', 'grantControl', 'sessionControl', 'platform', 'condition', 'version'],
                 numberPrefix: 'CA'
             },
             {
@@ -943,6 +944,7 @@ const CONFIG = {
                 source: 'Microsoft Learn: Plan a Conditional Access deployment',
                 sourceUrl: 'https://learn.microsoft.com/entra/identity/conditional-access/plan-conditional-access#set-naming-standards-for-your-policies',
                 segments: ['number', 'cloudApps', 'grantControl', 'sessionControl', 'target', 'condition'],
+                fieldOrder: ['number', 'target', 'cloudApps', 'grantControl', 'sessionControl', 'condition'],
                 numberPrefix: 'CA',
                 recommended: true
             },
@@ -1313,7 +1315,7 @@ function renderFields() {
     container.innerHTML = '';
 
     const patternConfig = CONFIG[state.type].patterns.find(p => p.id === state.pattern);
-    const segmentOrder  = patternConfig ? patternConfig.segments : [];
+    const segmentOrder  = patternConfig ? (patternConfig.fieldOrder || patternConfig.segments) : [];
     const allFields     = CONFIG[state.type].fields;
 
     segmentOrder.map(id => allFields.find(f => f.id === id)).filter(Boolean).forEach(field => {
@@ -1469,6 +1471,13 @@ function renderFields() {
                             customSubWrap.style.display = cb.checked ? 'block' : 'none';
                             if (!cb.checked) { const si = customSubWrap.querySelector('input[type="text"]'); if (si) si.value = ''; }
                         }
+                        if (field.id === 'grantControl' && optVal === 'AuthStrength') {
+                            const authSubWrap = document.getElementById('subfield_grantControlAuthStrength');
+                            if (authSubWrap) {
+                                authSubWrap.style.display = cb.checked ? 'block' : 'none';
+                                if (!cb.checked) { const authIn = document.getElementById('fld_grantControlAuthStrength'); if (authIn) authIn.value = 'Phishing Resistant MFA'; }
+                            }
+                        }
                         applyMutualExclusion(optVal, cb.checked);
                         updateAndOrVisibility();
                         updatePreview();
@@ -1476,6 +1485,20 @@ function renderFields() {
                     cbWrap.appendChild(cb);
                     cbWrap.appendChild(document.createTextNode(' ' + optLbl));
                     cbGroup.appendChild(cbWrap);
+                    if (field.id === 'grantControl' && optVal === 'AuthStrength') {
+                        const authSubWrap = document.createElement('div');
+                        authSubWrap.id = 'subfield_grantControlAuthStrength';
+                        authSubWrap.className = 'subfield-wrap';
+                        authSubWrap.style.display = 'none';
+                        const authIn = document.createElement('input');
+                        authIn.type = 'text';
+                        authIn.id = 'fld_grantControlAuthStrength';
+                        authIn.value = 'Phishing Resistant MFA';
+                        authIn.autocomplete = 'off';
+                        authIn.addEventListener('input', updatePreview);
+                        authSubWrap.appendChild(authIn);
+                        cbGroup.appendChild(authSubWrap);
+                    }
                 });
 
                 wrap.appendChild(lbl);
@@ -1592,7 +1615,7 @@ function generateName() {
                 const subEl = document.getElementById('fld_disruptionCustom');
                 const cv = subEl?.value?.trim();
                 if (!cv) return;
-                disruptionVal = applyCase(sanitize(cv), casing);
+                disruptionVal = applyCaseToUserInput(sanitize(cv), casing);
             } else {
                 disruptionVal = applyCase(raw, casing);
             }
@@ -1615,7 +1638,7 @@ function generateName() {
                     if (cb.value === 'Custom') {
                         const el = document.getElementById('fld_conditionCustom');
                         const cv = el?.value?.trim();
-                        return cv ? applyCase(sanitize(cv), casing) : null;
+                        return cv ? applyCaseToUserInput(sanitize(cv), casing) : null;
                     }
                     return applyCase(cb.value, casing);
                 }).filter(Boolean);
@@ -1633,7 +1656,6 @@ function generateName() {
             if (useEffectMapping) {
                 const grantValMap = {
                     MFA:            'MFA',
-                    AuthStrength:   'PhishingMFA',
                     CompliantDevice:'CompliantDevice',
                     HybridJoined:   'HybridJoined',
                     AppProtection:  'AppProtection',
@@ -1641,7 +1663,8 @@ function generateName() {
                 };
                 const grantVals = [...document.querySelectorAll('#fld_grantControl input[type="checkbox"]:checked')]
                     .map(cb => {
-                        if (cb.value === 'Custom') { const el = document.getElementById('fld_grantControlCustom'); const cv = el?.value?.trim(); return cv ? applyCase(sanitize(cv), casing) : null; }
+                        if (cb.value === 'Custom') { const el = document.getElementById('fld_grantControlCustom'); const cv = el?.value?.trim(); return cv ? applyCaseToUserInput(sanitize(cv), casing) : null; }
+                        if (cb.value === 'AuthStrength') { const el = document.getElementById('fld_grantControlAuthStrength'); const cv = el?.value?.trim(); return cv ? applyCaseToUserInput(sanitize(cv), casing) : null; }
                         return grantValMap[cb.value] ? applyCase(grantValMap[cb.value], casing) : null;
                     }).filter(Boolean);
                 if (grantVals.length) {
@@ -1666,7 +1689,7 @@ function generateName() {
                 };
                 const sessionVals = [...document.querySelectorAll('#fld_sessionControl input[type="checkbox"]:checked')]
                     .map(cb => {
-                        if (cb.value === 'Custom') { const el = document.getElementById('fld_sessionControlCustom'); const cv = el?.value?.trim(); return cv ? applyCase(sanitize(cv), casing) : null; }
+                        if (cb.value === 'Custom') { const el = document.getElementById('fld_sessionControlCustom'); const cv = el?.value?.trim(); return cv ? applyCaseToUserInput(sanitize(cv), casing) : null; }
                         return sessionValMap[cb.value] ? applyCase(sessionValMap[cb.value], casing) : null;
                     }).filter(Boolean);
                 if (sessionVals.length) {
@@ -1700,14 +1723,14 @@ function generateName() {
         if (field && field.subField && raw === field.subField.triggerValue) {
             const subEl  = document.getElementById('fld_' + field.subField.id);
             const subVal = subEl?.value?.trim();
-            if (subVal) segs.push({ value: applyCase(sanitize(subVal), casing), fixed: false });
+            if (subVal) segs.push({ value: applyCaseToUserInput(sanitize(subVal), casing), fixed: false });
             return;
         }
 
         const sanitized = segId === 'version'
             ? raw.replace(/[^a-zA-Z0-9.\-]/g, '').trim()
             : sanitize(raw);
-        let val = applyCase(sanitized, casing);
+        let val = (field && field.type === 'text') ? applyCaseToUserInput(sanitized, casing) : applyCase(sanitized, casing);
 
         // CA/EM policy: prepend numberPrefix to the number segment
         if (state.type === 'ca-policy' && pattern.numberPrefix && segId === 'number') {
@@ -2012,6 +2035,16 @@ function sanitize(val) {
 
 function applyCase(val, casing) {
     const words = val.split(/\s+/).filter(Boolean);
+    switch (casing) {
+        case 'pascal': return words.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('');
+        case 'upper':  return words.join('').toUpperCase();
+        case 'lower':  return words.join('').toLowerCase();
+        default:       return words.join('');
+    }
+}
+
+function applyCaseToUserInput(val, casing) {
+    const words = (casing === 'pascal' ? val.toLowerCase() : val).split(/\s+/).filter(Boolean);
     switch (casing) {
         case 'pascal': return words.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('');
         case 'upper':  return words.join('').toUpperCase();
