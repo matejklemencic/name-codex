@@ -93,6 +93,14 @@
 
         header .header-text { flex: 1; }
 
+        header .header-logo {
+            height: 38px;
+            width: auto;
+            object-fit: contain;
+            flex-shrink: 0;
+            opacity: 0.92;
+        }
+
         header h1 {
             font-size: 16px;
             font-weight: 600;
@@ -752,6 +760,7 @@
 <body>
 
 <header>
+    <img src="namecodex.png" alt="Name Codex logo" class="header-logo">
     <div class="header-text">
         <h1>Name Codex</h1>
         <p>Your naming convention reference for Microsoft 365 tenant</p>
