@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tenant Name Builder</title>
+    <title>Name Codex</title>
     <style>
         /* ── Light Theme Variables ────────────────── */
         :root {
@@ -753,8 +753,8 @@
 
 <header>
     <div class="header-text">
-        <h1>Tenant Name Builder</h1>
-        <p>Consistent naming conventions for your Microsoft 365 tenant</p>
+        <h1>Name Codex</h1>
+        <p>Your naming convention reference for Microsoft 365 tenant</p>
     </div>
     <button id="themeToggle" onclick="toggleTheme()" title="Toggle dark / light mode">&#127769;</button>
 </header>
@@ -775,16 +775,73 @@
             </span>
             <span class="label">App Registration</span>
         </div>
-        <div class="type-card coming-soon" data-type="security-group" onclick="selectType('security-group')">
+        <div class="type-card" data-type="security-group" onclick="selectType('security-group')">
             <span class="icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 18 18"><defs><linearGradient id="sg-grad-1" x1="6.7" y1="7.26" x2="6.7" y2="18.36" gradientUnits="userSpaceOnUse"><stop offset="0.22" stop-color="#32d4f5"/><stop offset="1" stop-color="#198ab3"/></linearGradient><linearGradient id="sg-grad-2" x1="6.42" y1="1.32" x2="7.23" y2="11.39" gradientUnits="userSpaceOnUse"><stop offset="0.22" stop-color="#32d4f5"/><stop offset="1" stop-color="#198ab3"/></linearGradient></defs><path d="M17.22,13.92a.79.79,0,0,0,.8-.79A.28.28,0,0,0,18,13c-.31-2.5-1.74-4.54-4.46-4.54S9.35,10.22,9.07,13a.81.81,0,0,0,.72.88h7.43Z" fill="#0078d4"/><path d="M13.55,9.09a2.44,2.44,0,0,1-1.36-.4l1.35,3.52,1.33-3.49A2.54,2.54,0,0,1,13.55,9.09Z" fill="#fff" opacity="0.8"/><circle cx="13.55" cy="6.58" r="2.51" fill="#0078d4"/><path d="M12.19,16.36a1.19,1.19,0,0,0,1.19-1.19.66.66,0,0,0,0-.14c-.47-3.74-2.6-6.78-6.66-6.78S.44,10.83,0,15a1.2,1.2,0,0,0,1.07,1.31h11.1Z" fill="url(#sg-grad-1)"/><path d="M6.77,9.14a3.72,3.72,0,0,1-2-.6l2,5.25,2-5.21A3.81,3.81,0,0,1,6.77,9.14Z" fill="#fff" opacity="0.8"/><circle cx="6.74" cy="5.39" r="3.75" fill="url(#sg-grad-2)"/></svg>
             </span>
             <span class="label">Groups</span>
-            <span class="coming-soon-badge">Coming Soon</span>
         </div>
         <div class="type-card coming-soon">
             <span class="icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 18 18"><defs><linearGradient id="intune-grad-1" x1="8.05" y1="11.32" x2="8.05" y2="1.26" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#0078d4"/><stop offset="0.82" stop-color="#5ea0ef"/></linearGradient><linearGradient id="intune-grad-2" x1="8.05" y1="15.21" x2="8.05" y2="11.32" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#1490df"/><stop offset="0.98" stop-color="#1f56a3"/></linearGradient><linearGradient id="intune-grad-3" x1="8.05" y1="7.87" x2="8.05" y2="4.94" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#d2ebff"/><stop offset="1" stop-color="#f0fffd"/></linearGradient></defs><rect x="0.5" y="1.26" width="15.1" height="10.06" rx="0.5" fill="url(#intune-grad-1)"/><rect x="1.34" y="2.1" width="13.42" height="8.39" rx="0.28" fill="#fff"/><path d="M11.08,14.37c-1.5-.23-1.56-1.31-1.55-3h-3c0,1.74-.06,2.82-1.55,3a.87.87,0,0,0-.74.84h7.54A.88.88,0,0,0,11.08,14.37Z" fill="url(#intune-grad-2)"/><path d="M17.17,5.91H10.29a2.31,2.31,0,1,0,0,.92H11v9.58a.33.33,0,0,0,.33.33h5.83a.33.33,0,0,0,.33-.33V6.24A.33.33,0,0,0,17.17,5.91Z" fill="#32bedd"/><rect x="11.62" y="6.82" width="5.27" height="8.7" rx="0.12" fill="#fff"/><circle cx="8.05" cy="6.41" r="1.46" opacity="0.9" fill="url(#intune-grad-3)"/><path d="M14.88,10.82,13.76,9.7a.06.06,0,0,0-.1.05v.68a.06.06,0,0,1-.06.06H11v.83H13.6a.06.06,0,0,1,.06.06v.69a.06.06,0,0,0,.1,0L14.88,11A.12.12,0,0,0,14.88,10.82Z" fill="#0078d4"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0.69 5.4 400 390.62">
+<g clip-path="url(#clip0_10641_164)">
+<path d="M0.685165 65.8523C0.685165 14.7648 67.4855 -13.2029 111.616 19.4083L207.551 90.2535L288.514 44.373C331.305 21.0394 399.874 37.7748 400.685 101.559L400.685 336.622C400.685 387.71 335.845 414.343 291.715 381.732L194.031 309.34L112.973 355.23C69.7783 378.784 0.752625 360.714 0.752625 298.637C0.752654 224.124 0.685165 252.734 0.685165 65.8523Z" fill="url(#paint0_linear_10641_164)"/>
+<path d="M0.685165 65.8523C0.685165 14.7648 67.4855 -13.2029 111.616 19.4083L207.551 90.2535L288.514 44.373C331.305 21.0394 399.874 37.7748 400.685 101.559L400.685 336.622C400.685 387.71 335.845 414.343 291.715 381.732L194.031 309.34L112.973 355.23C69.7783 378.784 0.752625 360.714 0.752625 298.637C0.752654 224.124 0.685165 252.734 0.685165 65.8523Z" fill="url(#paint1_radial_10641_164)"/>
+<path d="M0.685165 65.8523C0.685165 14.7648 67.4855 -13.2029 111.616 19.4083L207.551 90.2535L288.514 44.373C331.305 21.0394 399.874 37.7748 400.685 101.559L400.685 336.622C400.685 387.71 335.845 414.343 291.715 381.732L194.031 309.34L112.973 355.23C69.7783 378.784 0.752625 360.714 0.752625 298.637C0.752654 224.124 0.685165 252.734 0.685165 65.8523Z" fill="url(#paint2_radial_10641_164)"/>
+<path d="M111.616 19.4083C67.4855 -13.2029 0.685165 14.7648 0.685165 65.8523V295.742C0.685165 290.153 3.5327 279.026 3.5327 279.026C16.6954 236.001 72.6487 219.869 111.36 248.223L291.715 381.732C335.845 414.343 400.685 387.71 400.685 336.622V101.559C400.685 145.201 343.643 189.011 289.755 151.051L111.616 19.4083Z" fill="url(#paint3_radial_10641_164)"/>
+<path d="M111.616 19.4083C67.4855 -13.2029 0.685165 14.7648 0.685165 65.8523V295.742C0.685165 290.153 3.5327 279.026 3.5327 279.026C16.6954 236.001 72.6487 219.869 111.36 248.223L291.715 381.732C335.845 414.343 400.685 387.71 400.685 336.622V101.559C400.685 145.201 343.643 189.011 289.755 151.051L111.616 19.4083Z" fill="url(#paint4_radial_10641_164)" fill-opacity="0.25"/>
+<path d="M111.616 19.4083C67.4855 -13.2029 0.685165 14.7648 0.685165 65.8523V295.742C0.685165 290.153 3.5327 279.026 3.5327 279.026C16.6954 236.001 72.6487 219.869 111.36 248.223L291.715 381.732C335.845 414.343 400.685 387.71 400.685 336.622V101.559C400.685 145.201 343.643 189.011 289.755 151.051L111.616 19.4083Z" fill="url(#paint5_radial_10641_164)" fill-opacity="0.55"/>
+<path d="M111.616 149.691C67.4855 117.08 0.685165 145.048 0.685165 196.135L0.685179 65.8523C0.685183 14.7648 67.4855 -13.2029 111.616 19.4083C170.996 63.2888 230.374 107.171 289.755 151.051C343.643 189.011 400.685 145.201 400.685 101.559V234.89C400.685 285.978 333.885 313.946 289.755 281.334C230.374 237.454 170.996 193.572 111.616 149.691Z" fill="url(#paint6_linear_10641_164)"/>
+<path d="M111.616 149.691C67.4855 117.08 0.685165 145.048 0.685165 196.135L0.685179 65.8523C0.685183 14.7648 67.4855 -13.2029 111.616 19.4083C170.996 63.2888 230.374 107.171 289.755 151.051C343.643 189.011 400.685 145.201 400.685 101.559V234.89C400.685 285.978 333.885 313.946 289.755 281.334C230.374 237.454 170.996 193.572 111.616 149.691Z" fill="url(#paint7_radial_10641_164)" fill-opacity="0.35"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_10641_164" x1="171.501" y1="396.026" x2="314.256" y2="90.5646" gradientUnits="userSpaceOnUse">
+<stop offset="0.02" stop-color="#1169DA"/>
+<stop offset="0.434784" stop-color="#0151BD"/>
+<stop offset="0.614436" stop-color="#014DB7"/>
+<stop offset="1" stop-color="#126AD9"/>
+</linearGradient>
+<radialGradient id="paint1_radial_10641_164" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(358.656 -48.704) rotate(110.224) scale(292.248 218.917)">
+<stop offset="0.422966" stop-color="#004AFF" stop-opacity="0.1"/>
+<stop offset="0.728672" stop-color="#014DB9"/>
+<stop offset="0.836135" stop-color="#014DB9" stop-opacity="0.9"/>
+<stop offset="0.955" stop-color="#014DB9" stop-opacity="0"/>
+</radialGradient>
+<radialGradient id="paint2_radial_10641_164" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(54.0821 384.087) rotate(-73.6432) scale(232.668 283.419)">
+<stop offset="0.0908532" stop-color="#004AFF" stop-opacity="0.1"/>
+<stop offset="0.56036" stop-color="#014DB9"/>
+<stop offset="0.749466" stop-color="#014DB9" stop-opacity="0.99"/>
+<stop offset="1" stop-color="#014DB9" stop-opacity="0"/>
+</radialGradient>
+<radialGradient id="paint3_radial_10641_164" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(439.444 5.40101) rotate(134.068) scale(563.957 434.374)">
+<stop offset="0.249322" stop-color="#23C0FE"/>
+<stop offset="0.717207" stop-color="#23C0FE"/>
+<stop offset="0.995168" stop-color="#1C91FF"/>
+</radialGradient>
+<radialGradient id="paint4_radial_10641_164" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(119.961 37.1103) rotate(45.9092) scale(403.457 95.9789)">
+<stop offset="0.165" stop-color="#096DD6" stop-opacity="0"/>
+<stop offset="0.484233" stop-color="#096DD6"/>
+<stop offset="0.900505" stop-color="#0876DE" stop-opacity="0.813868"/>
+<stop offset="1" stop-color="#029AFF" stop-opacity="0"/>
+</radialGradient>
+<radialGradient id="paint5_radial_10641_164" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(385.776 245.022) rotate(91.6099) scale(64.799 58.3555)">
+<stop stop-color="#0068B3"/>
+<stop offset="0.93" stop-color="#006CB8" stop-opacity="0"/>
+</radialGradient>
+<linearGradient id="paint6_linear_10641_164" x1="114.72" y1="97.5227" x2="182.067" y2="383.699" gradientUnits="userSpaceOnUse">
+<stop stop-color="#92EEFE"/>
+<stop offset="0.564559" stop-color="#35DDFF"/>
+<stop offset="1" stop-color="#08B1F9"/>
+</linearGradient>
+<radialGradient id="paint7_radial_10641_164" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(67.7807 5.4011) rotate(69.461) scale(99.6637 80.4988)">
+<stop stop-color="#CCF9FF" stop-opacity="0.93"/>
+<stop offset="1" stop-color="#35DDFF"/>
+</radialGradient>
+<clipPath id="clip0_10641_164">
+<rect width="400" height="400" fill="white" transform="translate(0.685181 0.713501)"/>
+</clipPath>
+</defs>
+</svg>
             </span>
             <span class="label">Intune</span>
             <span class="coming-soon-badge">Coming Soon</span>
@@ -851,6 +908,7 @@
                 </div>
                 <div class="actions" style="margin-bottom:0;">
                     <button class="btn btn-outline" onclick="copyDesc()">&#128203; Copy Description</button>
+                    <button class="btn btn-outline" onclick="copyAIPrompt()">&#10024; Copy AI Prompt</button>
                 </div>
             </div>
 
@@ -863,7 +921,7 @@
     </div>
 </div>
 
-<footer>Tenant Name Builder &mdash; v0.4 beta &middot; Built by Matej Klemen&#269;i&#269; &middot; <a href="https://www.matej.guru" target="_blank" rel="noopener" style="color: rgba(255,255,255,0.75); text-decoration: none;">www.matej.guru</a> &middot; &copy; 2026</footer>
+<footer>Name Codex v0.5 beta &middot; Built by Matej Klemen&#269;i&#269; &middot; <a href="https://www.matej.guru" target="_blank" rel="noopener" style="color: rgba(255,255,255,0.75); text-decoration: none;">www.matej.guru</a> &middot; &copy; 2026</footer>
 <div id="toast"></div>
 
 <script>
@@ -1079,57 +1137,65 @@ const CONFIG = {
         patterns: [
             {
                 id: 'p1',
-                name: '[SEC]-[Function]-[Scope]',
-                desc: 'Best for security groups used in Conditional Access, resource access, or licensing assignments.',
+                name: '[Prefix]-[Function]-[Scope]',
+                desc: 'General-purpose security group for access control, policy assignment, or resource scoping.',
                 badge: 'SECURITY', badgeColor: 'blue',
-                fixedPrefix: 'SEC',
-                segments: ['function', 'scope', 'environment']
+                prefixOptions: ['SEC','SG','GRP'],
+                segments: ['function', 'scope']
             },
             {
                 id: 'p2',
-                name: '[M365]-[Department]-[Name]',
-                desc: 'Best for Microsoft 365 Groups used in Teams, SharePoint, and collaboration workloads.',
+                name: '[Prefix]-[Department]-[Name]',
+                desc: 'Microsoft 365 Group with a shared mailbox, calendar, and collaboration space across Microsoft 365 services.',
                 badge: 'M365 GROUP', badgeColor: 'teal',
-                fixedPrefix: 'M365',
-                segments: ['department', 'groupName', 'environment']
+                prefixOptions: ['M365','O365','GRP','TEAM'],
+                segments: ['department', 'groupName']
             },
             {
                 id: 'p3',
-                name: '[DL]-[Department]-[Purpose]',
-                desc: 'Best for distribution lists used to send email to a group of recipients.',
+                name: '[Prefix]-[Department]-[Purpose]',
+                desc: 'Distribution list for sending email to a defined set of recipients.',
                 badge: 'DISTRIBUTION', badgeColor: 'gray',
-                fixedPrefix: 'DL',
+                prefixOptions: ['DL','DG','DIST'],
                 segments: ['department', 'purpose']
             },
             {
                 id: 'p4',
-                name: '[DYN]-[Attribute]-[Value]',
-                desc: 'Best for dynamic groups with automatic membership based on user or device attributes.',
+                name: '[Prefix]-[Attribute]-[Value]',
+                desc: 'Dynamic group with membership automatically maintained by a rule based on user or device attributes.',
                 badge: 'DYNAMIC', badgeColor: 'purple',
-                fixedPrefix: 'DYN',
+                prefixOptions: ['DYN','DYNGRP','AUTO'],
                 segments: ['attribute', 'attributeValue']
             },
             {
                 id: 'p5',
-                name: '[MB]-[Department]-[Function]',
-                desc: 'Best for shared mailboxes used by a team to monitor and send from a common email address.',
+                name: '[Prefix]-[Department]-[Function]',
+                desc: 'Shared mailbox accessible by multiple users for monitoring and sending from a common email address.',
                 badge: 'SHARED MAILBOX', badgeColor: 'cyan',
-                fixedPrefix: 'MB',
+                prefixOptions: ['MB','SM','SMB','SHARED'],
                 segments: ['department', 'mbFunction']
             },
             {
                 id: 'p6',
                 name: '[Room/Equip]-[Location]-[Name]',
-                desc: 'Best for room and equipment mailboxes used for resource booking and calendar reservations.',
+                desc: 'Resource mailbox for bookable rooms or equipment, integrated with Outlook calendar scheduling.',
                 badge: 'ROOM / EQUIP', badgeColor: 'amber',
                 segments: ['roomType', 'location', 'resourceName']
             },
             {
+                id: 'p8',
+                name: '[Prefix]-[Role]-[Scope]',
+                desc: 'Role-assignable group mapped to a Microsoft Entra ID directory role. The isAssignableToRole flag is set at creation and cannot be changed afterward.',
+                badge: 'ROLE-ASSIGNABLE', badgeColor: 'green',
+                prefixOptions: ['RAG','ROLE'],
+                segments: ['entraRole', 'roleScope']
+            },
+            {
                 id: 'p7',
-                name: '[PIM]-[Resource]-[Role]-[AccessType]',
-                desc: 'Best for Privileged Identity Management groups providing just-in-time access to privileged roles and resources.',
+                name: '[Prefix]-[Resource]-[Role]-[AccessType]',
+                desc: 'Privileged Identity Management group for just-in-time access to privileged roles and resources.',
                 badge: 'PIM', badgeColor: 'red',
-                fixedPrefix: 'PIM',
+                prefixOptions: ['PIM','JIT'],
                 segments: ['resource', 'role', 'accessType']
             }
         ],
@@ -1146,12 +1212,29 @@ const CONFIG = {
             { id: 'attributeValue', label: 'Attribute Value',     type: 'text',   example: 'e.g. IT, E3, ManagedDevices, Finance',                      patterns: ['p4'],           hint: 'The specific value of the attribute that triggers group membership. For example, if Attribute is Department, the value might be IT or Finance.' },
             { id: 'mbFunction',     label: 'Function',            type: 'text',   example: 'e.g. Invoices, Helpdesk, Recruitment, Info',                patterns: ['p5'],           hint: 'The operational purpose of this shared mailbox. Use a functional noun such as Helpdesk, Invoices, or Recruitment rather than a personal name.' },
             { id: 'roomType',       label: 'Type',                type: 'select', options: ['Room','Equip'],                                              patterns: ['p6'],           hint: 'Select Room for meeting rooms and conference spaces, or Equip for bookable equipment such as projectors or vehicles.' },
-            { id: 'location',       label: 'Location',            type: 'text',   example: 'e.g. LJ, MB, AMS, NYC',                                    patterns: ['p6'],           hint: 'A short location code identifying the building, city, or office where this resource is located. Use consistent abbreviations across all resources.' },
+            { id: 'location',       label: 'Location',            type: 'text',   example: 'e.g. AMS, NYC, LON, SYD',                                    patterns: ['p6'],           hint: 'A short location code identifying the building, city, or office where this resource is located. Use consistent abbreviations across all resources.' },
             { id: 'resourceName',   label: 'Name / Number',       type: 'text',   example: 'e.g. BoardRoom01, MeetingRoom02, Projector01',              patterns: ['p6'],           hint: 'A unique identifier for this resource within its location. Use a descriptive name followed by a two-digit number for consistent sorting, e.g. BoardRoom01.' },
             { id: 'resource',       label: 'Resource',            type: 'text',   example: 'e.g. GlobalAdmin, ExchangeAdmin, FinReport, AzureKeyVault', patterns: ['p7'],           hint: 'The application, role, or system this PIM group controls access to. Use the official product or role name, e.g. GlobalAdmin, ExchangeAdmin, or FinReport.' },
             { id: 'role',           label: 'Role',                type: 'text',   example: 'e.g. SeniorAnalyst, Owner, Contributor, Reader',            patterns: ['p7'],           hint: 'The job function or responsibility level within the resource. Reflects the type of access being granted just-in-time, e.g. SeniorAnalyst, Owner, or Contributor.' },
             { id: 'accessType',     label: 'Access Type',         type: 'select', options: ['Eligible','Active'],                                         patterns: ['p7'],           hint: 'Eligible means the user must activate the role before gaining access, requiring MFA or approval. Active means access is granted immediately without activation. Microsoft recommends Eligible for all privileged roles.' },
-            { id: 'environment',    label: 'Environment',         type: 'select', options: ['','Prod','Test','Dev'],                                       patterns: ['p1','p2'],      hint: 'The deployment stage this group targets. Use Prod for production groups, Test for validation, and Dev for development environments. Keeping environments separate reduces the risk of misconfiguration in production.' }
+            { id: 'environment',    label: 'Environment',         type: 'select', options: ['','Prod','Test','Dev'],                                       patterns: [],               hint: 'The deployment stage this group targets. Use Prod for production groups, Test for validation, and Dev for development environments. Keeping environments separate reduces the risk of misconfiguration in production.' },
+            { id: 'entraRole',      label: 'Entra ID Role',       type: 'select',
+              options: [
+                { value: 'GlobalAdmin',              label: 'Global Administrator' },
+                { value: 'PrivilegedRoleAdmin',      label: 'Privileged Role Administrator' },
+                { value: 'UserAdmin',                label: 'User Administrator' },
+                { value: 'HelpdeskAdmin',            label: 'Helpdesk Administrator' },
+                { value: 'SecurityAdmin',            label: 'Security Administrator' },
+                { value: 'SecurityReader',           label: 'Security Reader' },
+                { value: 'GlobalReader',             label: 'Global Reader' },
+                { value: 'ExchangeAdmin',            label: 'Exchange Administrator' },
+                { value: 'IntuneAdmin',              label: 'Intune Administrator' },
+                { value: 'ConditionalAccessAdmin',   label: 'Conditional Access Administrator' },
+                { value: 'Custom',                   label: 'Custom' }
+              ],
+              subField: { triggerValue: 'Custom', id: 'entraRoleCustom', label: 'Custom Role', placeholder: 'e.g. ApplicationAdmin, BillingAdmin' },
+              patterns: ['p8'], hint: 'The Microsoft Entra ID directory role this group is assigned to. The list shows the most common privileged roles; choose Custom to enter any other role. Role-assignable groups require the isAssignableToRole flag to be set at creation — this property is immutable and cannot be changed afterward.' },
+            { id: 'roleScope',      label: 'Scope (optional)',    type: 'text',   example: 'e.g. Tier1, EMEA, Audit',                                      patterns: ['p8'],           hint: 'An optional qualifier to distinguish role-assignable groups for the same role, such as an administrative tier, region, or function. Leave blank if not needed — the segment will be omitted from the generated name.' }
         ]
     }
 };
@@ -1246,10 +1329,10 @@ function renderPatterns() {
 // SELECT PATTERN
 // ═══════════════════════════════════════════════════════════════
 function selectPattern(patternId) {
-    // Snapshot text/select values
+    // Snapshot text/select values (exclude prefix controls so each pattern always starts with its own default)
     const snapshot = {};
     document.querySelectorAll('#fieldsContainer input[type="text"], #fieldsContainer select').forEach(el => {
-        if (el.id) snapshot[el.id] = el.value;
+        if (el.id && el.id !== 'fld_prefix' && el.id !== 'fld_prefixCustom') snapshot[el.id] = el.value;
     });
 
     // Snapshot checkbox states
@@ -1317,6 +1400,67 @@ function renderFields() {
     const patternConfig = CONFIG[state.type].patterns.find(p => p.id === state.pattern);
     const segmentOrder  = patternConfig ? (patternConfig.fieldOrder || patternConfig.segments) : [];
     const allFields     = CONFIG[state.type].fields;
+
+    if (patternConfig && patternConfig.prefixOptions) {
+        const prefixWrap = document.createElement('div');
+        prefixWrap.className = 'field-group';
+
+        const prefixLbl = document.createElement('label');
+        prefixLbl.htmlFor = 'fld_prefix';
+        prefixLbl.textContent = 'Prefix';
+        const prefixHint = document.createElement('span');
+        prefixHint.className = 'field-hint';
+        prefixHint.setAttribute('data-hint', 'The leading identifier that classifies the group type in the directory. A default is provided based on the selected pattern; pick another option or choose Custom to enter your own.');
+        prefixHint.textContent = 'i';
+        prefixLbl.appendChild(prefixHint);
+
+        const prefixSel = document.createElement('select');
+        prefixSel.id = 'fld_prefix';
+        patternConfig.prefixOptions.forEach((opt, idx) => {
+            const o = document.createElement('option');
+            o.value = opt;
+            o.textContent = opt;
+            if (idx === 0) o.selected = true;
+            prefixSel.appendChild(o);
+        });
+        const customOpt = document.createElement('option');
+        customOpt.value = 'Custom';
+        customOpt.textContent = 'Custom';
+        prefixSel.appendChild(customOpt);
+
+        const prefixSubWrap = document.createElement('div');
+        prefixSubWrap.id = 'subfield_prefixCustom';
+        prefixSubWrap.className = 'subfield-wrap';
+        prefixSubWrap.style.display = 'none';
+
+        const prefixSubLbl = document.createElement('label');
+        prefixSubLbl.htmlFor = 'fld_prefixCustom';
+        prefixSubLbl.textContent = 'Custom Prefix';
+
+        const prefixSubIn = document.createElement('input');
+        prefixSubIn.type = 'text';
+        prefixSubIn.id = 'fld_prefixCustom';
+        prefixSubIn.placeholder = 'e.g. SecOps, IDENT';
+        prefixSubIn.autocomplete = 'off';
+        prefixSubIn.addEventListener('input', updatePreview);
+
+        prefixSubWrap.appendChild(prefixSubLbl);
+        prefixSubWrap.appendChild(prefixSubIn);
+
+        prefixSel.addEventListener('change', () => {
+            const isCustom = prefixSel.value === 'Custom';
+            prefixSubWrap.style.display = isCustom ? 'block' : 'none';
+            if (isCustom) prefixSubIn.focus();
+            else prefixSubIn.value = '';
+            updatePreview();
+        });
+        prefixSel.addEventListener('input', updatePreview);
+
+        prefixWrap.appendChild(prefixLbl);
+        prefixWrap.appendChild(prefixSel);
+        prefixWrap.appendChild(prefixSubWrap);
+        container.appendChild(prefixWrap);
+    }
 
     segmentOrder.map(id => allFields.find(f => f.id === id)).filter(Boolean).forEach(field => {
             // disruptionTotal is rendered inline with disruptionIndex — skip standalone rendering
@@ -1588,6 +1732,18 @@ function generateName() {
 
     if (pattern.fixedPrefix) {
         segs.push({ value: pattern.fixedPrefix, fixed: true });
+    } else if (pattern.prefixOptions) {
+        const prefixEl = document.getElementById('fld_prefix');
+        if (prefixEl) {
+            const prefixVal = prefixEl.value;
+            if (prefixVal === 'Custom') {
+                const customEl = document.getElementById('fld_prefixCustom');
+                const customVal = sanitize(customEl?.value?.trim() || '');
+                if (customVal) segs.push({ value: customVal, fixed: true });
+            } else if (prefixVal) {
+                segs.push({ value: prefixVal, fixed: true });
+            }
+        }
     }
 
     const useEffectMapping = state.type === 'ca-policy' && (state.pattern === 'p1' || state.pattern === 'p2' || state.pattern === 'p3' || state.pattern === 'p4');
@@ -1963,17 +2119,14 @@ function generateDescription() {
 
     } else {
         // security-group
-        const envVal    = get('environment');
-        const envClause = envVal ? ` in the ${envVal} environment` : '';
-
         if (pat === 'p1') {
             const fn = get('function'), sc = get('scope');
             if (fn || sc)
-                desc = `This security group is used for ${fn || '[Function]'} and applies to ${sc || '[Scope]'}${envClause}.`;
+                desc = `This security group is used for ${fn || '[Function]'} and applies to ${sc || '[Scope]'}.`;
         } else if (pat === 'p2') {
             const dept = get('department'), gn = get('groupName');
             if (dept || gn)
-                desc = `This Microsoft 365 Group supports ${gn || '[Name]'} collaboration for the ${dept || '[Department]'} department${envClause}.`;
+                desc = `This Microsoft 365 Group supports ${gn || '[Name]'} collaboration for the ${dept || '[Department]'} department.`;
         } else if (pat === 'p3') {
             const dept = get('department'), pur = get('purpose');
             if (dept || pur)
@@ -1996,6 +2149,14 @@ function generateDescription() {
             const res = get('resource'), rol = get('role'), at = get('accessType');
             if (res || rol || at)
                 desc = `This PIM group provides ${at || '[Access Type]'} just-in-time access to ${res || '[Resource]'} for users in the ${rol || '[Role]'} role.`;
+        } else if (pat === 'p8') {
+            const roleRaw = get('entraRole');
+            const role    = roleRaw === 'Custom' ? (get('entraRoleCustom') || '[Role]') : (roleRaw || '[Role]');
+            const scope   = get('roleScope');
+            if (roleRaw || scope) {
+                const scopeClause = scope ? ` (scope: ${scope})` : '';
+                desc = `This role-assignable group is mapped to the ${role} Microsoft Entra ID directory role${scopeClause}. The role assignment flag is set when the group is created and cannot be changed afterward.`;
+            }
         }
     }
 
@@ -2018,6 +2179,118 @@ function copyDesc() {
     navigator.clipboard.writeText(text).then(write).catch(() => {
         const ta = document.createElement('textarea');
         ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        write();
+    });
+}
+
+function copyAIPrompt() {
+    const type    = state.type;
+    const pat     = state.pattern;
+    const pattern = CONFIG[type]?.patterns.find(p => p.id === pat);
+    const { name } = generateName();
+    const get = id => document.getElementById('fld_' + id)?.value?.trim() || '';
+
+    const typeName = type === 'app-reg'
+        ? 'Microsoft Entra ID App Registration'
+        : 'Microsoft Entra ID group';
+
+    const lines = [
+        'You are an IT documentation assistant for Microsoft 365 and Microsoft Entra ID.',
+        `Write 2 short alternative descriptions (1-2 sentences each) for the following ${typeName}, suitable for the Description field in the Azure portal. Make each variant slightly different in focus — one more technical, one more business-oriented.`,
+        '',
+        '== INPUT DATA ==',
+        `Generated name: ${name || 'Not yet generated'}`,
+        `Pattern: ${pattern?.badge || pat}`,
+    ];
+
+    const alMap = { RO: 'Read Only', RW: 'Read and Write', AuthOnly: 'Authentication Only (SSO)' };
+
+    if (type === 'app-reg') {
+        if (pat === 'p1') {
+            const tool = get('tool'), fn = get('function'), al = get('accessLevel'), env = get('environment'), inst = get('instance');
+            if (tool)  lines.push(`Tool/Service: ${tool}`);
+            if (fn)    lines.push(`Function: ${fn}`);
+            if (al)    lines.push(`Access Level: ${alMap[al] || al}`);
+            if (env)   lines.push(`Environment: ${env}`);
+            if (inst)  lines.push(`Instance: ${inst}`);
+        } else if (pat === 'p2') {
+            const company = get('company'), dept = get('department'), tool = get('tool'), fn = get('function'), al = get('accessLevel'), env = get('environment'), inst = get('instance');
+            if (company) lines.push(`Company: ${company}`);
+            if (dept)    lines.push(`Department: ${dept}`);
+            if (tool)    lines.push(`Tool/Service: ${tool}`);
+            if (fn)      lines.push(`Function: ${fn}`);
+            if (al)      lines.push(`Access Level: ${alMap[al] || al}`);
+            if (env)     lines.push(`Environment: ${env}`);
+            if (inst)    lines.push(`Instance: ${inst}`);
+        } else if (pat === 'p3') {
+            const customer = get('company'), tool = get('tool'), al = get('accessLevel'), env = get('environment'), inst = get('instance');
+            if (customer) lines.push(`Customer: ${customer}`);
+            if (tool)     lines.push(`Tool/Service: ${tool}`);
+            if (al)       lines.push(`Access Level: ${alMap[al] || al}`);
+            if (env)      lines.push(`Environment: ${env}`);
+            if (inst)     lines.push(`Instance: ${inst}`);
+        } else if (pat === 'p4') {
+            const project = get('project'), tool = get('tool'), al = get('accessLevel'), env = get('environment'), inst = get('instance');
+            if (project) lines.push(`Project: ${project}`);
+            if (tool)    lines.push(`Tool/Service: ${tool}`);
+            if (al)      lines.push(`Access Level: ${alMap[al] || al}`);
+            if (env)     lines.push(`Environment: ${env}`);
+            if (inst)    lines.push(`Instance: ${inst}`);
+        }
+    } else {
+        // security-group
+        if (pat === 'p1') {
+            const fn = get('function'), sc = get('scope');
+            if (fn)  lines.push(`Function: ${fn}`);
+            if (sc)  lines.push(`Scope: ${sc}`);
+        } else if (pat === 'p2') {
+            const dept = get('department'), gn = get('groupName');
+            if (dept) lines.push(`Department: ${dept}`);
+            if (gn)   lines.push(`Group Name: ${gn}`);
+        } else if (pat === 'p3') {
+            const dept = get('department'), pur = get('purpose');
+            if (dept) lines.push(`Department: ${dept}`);
+            if (pur)  lines.push(`Purpose: ${pur}`);
+        } else if (pat === 'p4') {
+            const attrRaw = get('attribute');
+            const attr = attrRaw === 'Custom' ? (get('attributeCustom') || attrRaw) : attrRaw;
+            const val = get('attributeValue');
+            if (attr) lines.push(`Attribute: ${attr}`);
+            if (val)  lines.push(`Attribute Value: ${val}`);
+        } else if (pat === 'p5') {
+            const dept = get('department'), fn = get('mbFunction');
+            if (dept) lines.push(`Department: ${dept}`);
+            if (fn)   lines.push(`Function: ${fn}`);
+        } else if (pat === 'p6') {
+            const rt = get('roomType'), loc = get('location'), nm = get('resourceName');
+            if (rt)  lines.push(`Type: ${rt}`);
+            if (loc) lines.push(`Location: ${loc}`);
+            if (nm)  lines.push(`Name: ${nm}`);
+        } else if (pat === 'p7') {
+            const res = get('resource'), rol = get('role'), at = get('accessType');
+            if (res) lines.push(`Resource: ${res}`);
+            if (rol) lines.push(`Role: ${rol}`);
+            if (at)  lines.push(`Access Type: ${at}`);
+        } else if (pat === 'p8') {
+            const roleRaw = get('entraRole');
+            const role = roleRaw === 'Custom' ? (get('entraRoleCustom') || roleRaw) : roleRaw;
+            const scope = get('roleScope');
+            if (role)  lines.push(`Entra ID Role: ${role}`);
+            if (scope) lines.push(`Scope: ${scope}`);
+        }
+    }
+
+    lines.push('== END INPUT DATA ==');
+
+    const prompt = lines.join('\n');
+    const write = () => showToast('AI Prompt copied!');
+    navigator.clipboard.writeText(prompt).then(write).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = prompt;
         document.body.appendChild(ta);
         ta.select();
         document.execCommand('copy');
