@@ -790,7 +790,7 @@
             </span>
             <span class="label">Groups</span>
         </div>
-        <div class="type-card coming-soon">
+        <div class="type-card" data-type="intune" onclick="selectType('intune')">
             <span class="icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0.69 5.4 400 390.62">
 <g clip-path="url(#clip0_10641_164)">
@@ -853,6 +853,14 @@
 </svg>
             </span>
             <span class="label">Intune</span>
+        </div>
+        <div class="type-card coming-soon">
+            <span class="icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z" fill="#c0c0c0"/>
+                </svg>
+            </span>
+            <span class="label">Defender</span>
             <span class="coming-soon-badge">Coming Soon</span>
         </div>
     </div>
@@ -945,35 +953,35 @@ const CONFIG = {
         patterns: [
             {
                 id: 'p1',
-                name: '[Tool]-[Function]-[AccessLevel]-[Env]-[Instance]',
+                name: '[Tool]-[Function]-[AccessLevel]-[Env]-[Version]',
                 desc: 'Best for single-tenant organisations. Focuses on what the app does, its access level, and deployment environment.',
                 badge: 'GENERIC', badgeColor: 'blue',
-                segments: ['tool', 'function', 'accessLevel', 'environment', 'instance']
+                segments: ['tool', 'function', 'accessLevel', 'environment', 'version']
             },
             {
                 id: 'p2',
-                name: '[Company]-[Dept]-[Tool]-[Function]-[AccessLevel]-[Env]-[Instance]',
+                name: '[Company]-[Dept]-[Tool]-[Function]-[AccessLevel]-[Env]-[Version]',
                 desc: 'Best for large organisations with department-level segregation. Company and department identify ownership.',
                 badge: 'ENTERPRISE', badgeColor: 'teal',
-                segments: ['company', 'department', 'tool', 'function', 'accessLevel', 'environment', 'instance']
+                segments: ['company', 'department', 'tool', 'function', 'accessLevel', 'environment', 'version']
             },
             {
                 id: 'p3',
-                name: '[Tool]-[Customer]-[AccessLevel]-[Env]-[Instance]',
+                name: '[Tool]-[Customer]-[AccessLevel]-[Env]-[Version]',
                 desc: 'Best for MSPs managing multiple customer tenants. Tool is listed first for quick filtering by product.',
                 badge: 'MSP', badgeColor: 'amber',
-                segments: ['tool', 'company', 'accessLevel', 'environment', 'instance']
+                segments: ['tool', 'company', 'accessLevel', 'environment', 'version']
             },
             {
                 id: 'p4',
-                name: '[Project]-[Tool]-[AccessLevel]-[Env]-[Instance]',
+                name: '[Project]-[Tool]-[AccessLevel]-[Env]-[Version]',
                 desc: 'Best for time-bound integrations. Project name identifies the context instead of the company.',
                 badge: 'PROJECT', badgeColor: 'purple',
-                segments: ['project', 'tool', 'accessLevel', 'environment', 'instance']
+                segments: ['project', 'tool', 'accessLevel', 'environment', 'version']
             }
         ],
         fields: [
-            { id: 'company',     type: 'text',   labelByPattern: { p2: 'Company Name', p3: 'Customer Name' }, label: 'Company / Customer Name', placeholderByPattern: { p2: 'e.g. Contoso, Zava', p3: 'e.g. Contoso, Zava' }, example: 'e.g. Contoso, Zava', patterns: ['p2','p3'], hintByPattern: { p2: 'The name of your organisation or the primary entity that owns this integration. Use a short recognisable abbreviation if the full name is long. In the MSP pattern this identifies the customer tenant this registration belongs to — use the same name consistently across all registrations for that customer.', p3: 'The name of the customer tenant this app registration belongs to. Use the same customer name consistently across all registrations for that tenant — this is the primary identifier when managing multiple customers as an MSP. Use a short recognisable abbreviation if the full name is long.' }, hint: 'The name of your organisation or the primary entity that owns this integration. Use a short recognisable abbreviation if the full name is long. In the MSP pattern this identifies the customer tenant this registration belongs to — use the same name consistently across all registrations for that customer.' },
+            { id: 'company',     type: 'text',   labelByPattern: { p2: 'Company Name', p3: 'Customer Name' }, label: 'Company / Customer Name', placeholderByPattern: { p2: 'e.g. Contoso, Zava', p3: 'e.g. Contoso, Zava' }, example: 'e.g. Contoso, Zava', patterns: ['p2','p3'], hintByPattern: { p2: 'The name of your organisation or the primary entity that owns this integration. Use a short recognisable abbreviation if the full name is long. In the MSP pattern this identifies the customer tenant this registration belongs to; use the same name consistently across all registrations for that customer.', p3: 'The name of the customer tenant this app registration belongs to. Use the same customer name consistently across all registrations for that tenant; this is the primary identifier when managing multiple customers as an MSP. Use a short recognisable abbreviation if the full name is long.' }, hint: 'The name of your organisation or the primary entity that owns this integration. Use a short recognisable abbreviation if the full name is long. In the MSP pattern this identifies the customer tenant this registration belongs to; use the same name consistently across all registrations for that customer.' },
             { id: 'tool',        type: 'text',   label: 'Tool / Service Name',  placeholderByPattern: { p3: 'e.g. Intune, Veeam, Salesforce' }, example: 'e.g. Intune, Veeam, Salesforce', patterns: ['p1','p2','p3','p4'], hint: 'The name of the third-party application or Microsoft service this app registration represents. Use the vendor official product name for consistency, for example Veeam, Salesforce, PowerBI, or Intune.' },
             { id: 'function',    type: 'text',   label: 'Function / Purpose',   example: 'e.g. Backup, Reporting, SSO', patterns: ['p1','p2'], hint: 'Describes what this app registration does or enables. Use a concise action-based noun such as Backup, Reporting, or SSO rather than a full sentence. For authentication-only registrations use SSO as the function.' },
             { id: 'department',  type: 'text',   label: 'Department',           example: 'e.g. IT, Security, Finance, HR', patterns: ['p2'], hint: 'The business unit or team responsible for this integration. Helps filter and identify ownership in large organisations with multiple app registrations. Use the official department abbreviation for consistency.' },
@@ -984,9 +992,9 @@ const CONFIG = {
                 { value: 'RW',       label: 'Read and Write' },
                 { value: 'AuthOnly', label: 'Authentication Only (SSO)' }
               ],
-              patterns: ['p1','p2','p3','p4'], hint: 'The access level this app registration requires. RO: the app only reads data and has no write, manage, or delete permissions. RW: the app has at least one write, manage, full control, or delete permission. AuthOnly: the app is used exclusively for SSO authentication and has no API permissions assigned. This is the most stable and security-relevant segment of the name — choose carefully at creation time.' },
-            { id: 'environment', type: 'select', label: 'Environment',          options: ['','Prod','Test','Dev','Staging'], example: 'e.g. Prod — leave blank for production-only tools', patterns: ['p1','p2','p3','p4'], hint: 'The deployment stage this app registration targets. Use Prod for production, Test for validation, Dev for development, and Staging for pre-production environments. Keeping environments separated reduces the risk of misconfiguration in production. Leave blank if the registration applies to all environments or if your organisation uses a single environment.' },
-            { id: 'instance',    type: 'text',   label: 'Instance',             example: 'e.g. 01, 02, Alt, Int', patterns: ['p1','p2','p3','p4'], hint: 'An optional instance identifier used when multiple app registrations exist for the same workload or environment. Use a two-digit number (e.g. 01, 02) or a short qualifier (e.g. Alt, Int, Blue, Green). Leave blank if only one instance exists.' }
+              patterns: ['p1','p2','p3','p4'], hint: 'The access level this app registration requires. RO: the app only reads data and has no write, manage, or delete permissions. RW: the app has at least one write, manage, full control, or delete permission. AuthOnly: the app is used exclusively for SSO authentication and has no API permissions assigned. This is the most stable and security-relevant segment of the name; choose carefully at creation time.' },
+            { id: 'environment', type: 'select', label: 'Environment',          options: ['','Prod','Test','Dev','Staging'], example: 'e.g. Prod (leave blank for production-only tools)', patterns: ['p1','p2','p3','p4'], hint: 'The deployment stage this app registration targets. Use Prod for production, Test for validation, Dev for development, and Staging for pre-production environments. Keeping environments separated reduces the risk of misconfiguration in production. Leave blank if the registration applies to all environments or if your organisation uses a single environment.' },
+            { id: 'version',     type: 'text',   label: 'Version',   example: 'e.g. v1, v2, 2026-06-16', patterns: ['p1','p2','p3','p4'], preserveLiteral: true, hint: 'An optional identifier to track changes to this app registration over time. Use either a sequential format (v1, v2, v3) or a reverse date format (e.g. 2026-06-16), which is easier to sort and compare chronologically. Leave blank if version tracking is not needed.' }
         ]
     },
 
@@ -1010,8 +1018,8 @@ const CONFIG = {
                 badge: 'MICROSOFT RECOMMENDED', badgeColor: '',
                 source: 'Microsoft Learn: Plan a Conditional Access deployment',
                 sourceUrl: 'https://learn.microsoft.com/entra/identity/conditional-access/plan-conditional-access#set-naming-standards-for-your-policies',
-                segments: ['number', 'cloudApps', 'grantControl', 'sessionControl', 'target', 'condition'],
-                fieldOrder: ['number', 'target', 'cloudApps', 'grantControl', 'sessionControl', 'condition'],
+                segments: ['number', 'cloudApps', 'grantControl', 'sessionControl', 'target', 'condition', 'version'],
+                fieldOrder: ['number', 'target', 'cloudApps', 'grantControl', 'sessionControl', 'condition', 'version'],
                 numberPrefix: 'CA',
                 recommended: true
             },
@@ -1022,9 +1030,9 @@ const CONFIG = {
                 badge: 'EMERGENCY', badgeColor: 'emergency',
                 source: 'Microsoft Learn: Resilient access control management strategy',
                 sourceUrl: 'https://learn.microsoft.com/entra/identity/authentication/concept-resilient-controls#before-a-disruption',
-                segments: ['number', 'disruption', 'disruptionIndex', 'disruptionTotal', 'appCategory', 'grantControl', 'platform', 'condition'],
+                segments: ['number', 'disruption', 'disruptionIndex', 'disruptionTotal', 'appCategory', 'grantControl', 'platform', 'condition', 'version'],
                 numberPrefix: 'EM',
-                fixedInfix: { afterIndex: 0, value: 'EnableInEmergency' },
+                fixedInfix: { afterSegmentId: 'number', value: 'EnableInEmergency' },
                 emergency: true
             }
         ],
@@ -1039,7 +1047,7 @@ const CONFIG = {
                 { value: 'Custom',             label: 'Custom' }
               ],
               subField: { triggerValue: 'Custom', id: 'cloudAppsCustom', label: 'Custom Scope', placeholder: 'e.g. Exchange Online, SharePoint Online, Teams, Azure Management, Authentication Context, Salesforce' },
-              example: 'e.g. AllApps, MFARegistration', patterns: ['p1','p2','p3'], hint: 'The scope this policy targets — a cloud application, a user action, or an authentication context. Use All Apps to ensure every resource is covered. Select MFA Registration or Register or Join Device for policies targeting user actions. Choose Custom to enter a specific third-party or internal application name.' },
+              example: 'e.g. AllApps, MFARegistration', patterns: ['p1','p2'], hint: 'The scope this policy targets: a cloud application, a user action, or an authentication context. Use All Apps to ensure every resource is covered. Select MFA Registration or Register or Join Device for policies targeting user actions. Choose Custom to enter a specific third-party or internal application name.' },
             { id: 'grantControl', label: 'Grant', type: 'multiselect', keepCase: true,
               options: [
                 { value: 'Block',           label: 'Block Access',                       exclusive: true },
@@ -1052,7 +1060,7 @@ const CONFIG = {
                 { value: 'Custom',          label: 'Custom' }
               ],
               subField: { triggerValue: 'Custom', id: 'grantControlCustom', label: 'Custom Grant Control', placeholder: 'e.g. TermsOfUse, RiskRemediation' },
-              patterns: ['p1','p2','p3','p4'], hint: 'Select Block Access to deny access entirely — all other grant controls will be disabled. Otherwise select one or more controls to enforce when access is allowed. MFA and Authentication Strength are mutually exclusive. Require Password Change cannot be combined with other grant controls. Use AND to require all selected controls, or OR to require at least one.' },
+              patterns: ['p1','p2','p3','p4'], hint: 'Select Block Access to deny access entirely; all other grant controls will be disabled. Otherwise select one or more controls to enforce when access is allowed. MFA and Authentication Strength are mutually exclusive. Require Password Change cannot be combined with other grant controls. Use AND to require all selected controls, or OR to require at least one.' },
             { id: 'sessionControl', label: 'Session', type: 'multiselect', keepCase: true,
               options: [
                 { value: 'AppRestrictions',   label: 'App Enforced Restrictions' },
@@ -1064,7 +1072,7 @@ const CONFIG = {
                 { value: 'Custom',            label: 'Custom' }
               ],
               subField: { triggerValue: 'Custom', id: 'sessionControlCustom', label: 'Custom Session Control', placeholder: 'e.g. GlobalSecureAccess, ContinuousAccessEvaluation' },
-              patterns: ['p1','p2','p3'], hint: 'The session controls to apply during an active session. Multiple session controls are always combined with AND in the policy name. The session block is always joined to the grant block with AND.' },
+              patterns: ['p1','p2'], hint: 'The session controls to apply during an active session. Multiple session controls are always combined with AND in the policy name. The session block is always joined to the grant block with AND.' },
             { id: 'target',    label: 'Users, Agents or Workload Identities', type: 'select',
               options: [
                 { value: 'AllUsers',             label: 'All Users' },
@@ -1076,7 +1084,7 @@ const CONFIG = {
                 { value: 'Custom',               label: 'Custom' }
               ],
               subField: { triggerValue: 'Custom', id: 'targetCustom', label: 'Identity Name', placeholder: 'Enter a group name, agent identity, or service principal name' },
-              example: 'e.g. AllUsers, Admins', patterns: ['p1','p2','p3'], hint: 'The users, agents, or workload identities this policy applies to. Use All Users for baseline policies and narrow down with specific roles or groups for targeted policies. Use All Owned Service Principals or All Agent Identities for policies targeting workload identities. Select Custom to enter a specific security group, service principal, or agent identity name. Always exclude emergency access accounts from every policy.' },
+              example: 'e.g. AllUsers, Admins', patterns: ['p1','p2'], hint: 'The users, agents, or workload identities this policy applies to. Use All Users for baseline policies and narrow down with specific roles or groups for targeted policies. Use All Owned Service Principals or All Agent Identities for policies targeting workload identities. Select Custom to enter a specific security group, service principal, or agent identity name. Always exclude emergency access accounts from every policy.' },
             { id: 'platform',  label: 'Platform',              type: 'multiselect',
               options: [
                 { value: 'AnyPlatform', label: 'Any Platform', exclusive: true },
@@ -1102,7 +1110,7 @@ const CONFIG = {
               ],
               subField: { triggerValue: 'Custom', id: 'conditionCustom', label: 'Custom Condition', placeholder: 'e.g. AuthFlow, PasswordlessOnly' },
               patterns: ['p1','p2','p3','p4'], hint: 'The conditions that trigger this policy. Select one or more conditions that apply. Location conditions (Trusted Location, Non-Trusted Location, Blocked Locations) can be combined with other conditions. Multiple selections are joined with the same separator used for the rest of the policy name.' },
-            { id: 'version',   label: 'Version',               type: 'text',     example: 'e.g. v1.0, v1.1, v2.0', patterns: ['p1'], hint: 'An optional version identifier to track policy changes over time. Use semantic versioning (e.g. v1.0, v1.1) and increment the minor version for small changes and the major version for significant restructuring. Helps with change management and audit trails.' },
+            { id: 'version',   label: 'Version',     type: 'text',     example: 'e.g. v1, v2, 2026-06-16', patterns: ['p1','p2','p3','p4'], preserveLiteral: true, hint: 'An optional identifier to track changes to this policy over time. Use either a sequential format (v1, v2, v3) or a reverse date format (e.g. 2026-06-16), which is easier to sort and compare chronologically. Leave blank if version tracking is not needed.' },
             { id: 'disruption', label: 'Disruption Type', type: 'select',
               options: [
                 { value: 'MFAServiceOutage',        label: 'MFA Outage' },
@@ -1124,19 +1132,7 @@ const CONFIG = {
                 { value: 'Custom',              label: 'Custom' }
               ],
               subField: { triggerValue: 'Custom', id: 'appCategoryCustom', label: 'Custom Apps', placeholder: 'e.g. Salesforce, ExchangeSharePoint, AllApps, Teams' },
-              patterns: ['p4'], hint: 'The application or group of applications this contingency policy applies to. Select a predefined category if the policy covers a broad set of apps by priority tier, or select Custom to enter a specific application name as used in the policy name — for example Salesforce, ExchangeSharePoint, or AllApps. Microsoft recommends categorising apps as Mission Critical (unavailable for more than a few minutes), Important (accessible within a few hours), or Low Priority (can withstand a disruption of a few days).' },
-            { id: 'controls',  label: 'Controls',              type: 'select',
-              options: [
-                { value: 'HybridJoinOnly',      label: 'Hybrid Join Only' },
-                { value: 'NoMFARequired',       label: 'No MFA Required' },
-                { value: 'BlockNonWindows',     label: 'Block Non-Windows' },
-                { value: 'BlockNonCorpNetwork', label: 'Block Non-Corporate Network' },
-                { value: 'ReadOnlySession',     label: 'Read Only Session' },
-                { value: 'BlockMobileDevices',  label: 'Block Mobile Devices' },
-                { value: 'Custom',              label: 'Custom' }
-              ],
-              subField: { triggerValue: 'Custom', id: 'controlsCustom', label: 'Custom Control', placeholder: 'e.g. CustomControl' },
-              patterns: [], hint: 'The access controls applied or relaxed during the emergency scenario. Keep it concise so the policy name remains readable at a glance.' }
+              patterns: ['p4'], hint: 'The application or group of applications this contingency policy applies to. Select a predefined category if the policy covers a broad set of apps by priority tier, or select Custom to enter a specific application name as used in the policy name, for example Salesforce, ExchangeSharePoint, or AllApps. Microsoft recommends categorising apps as Mission Critical (unavailable for more than a few minutes), Important (accessible within a few hours), or Low Priority (can withstand a disruption of a few days).' },
         ]
     },
 
@@ -1192,20 +1188,20 @@ const CONFIG = {
                 segments: ['roomType', 'location', 'resourceName']
             },
             {
-                id: 'p8',
-                name: '[Prefix]-[Role]-[Scope]',
-                desc: 'Role-assignable group mapped to a Microsoft Entra ID directory role. The isAssignableToRole flag is set at creation and cannot be changed afterward.',
-                badge: 'ROLE-ASSIGNABLE', badgeColor: 'green',
-                prefixOptions: ['RAG','ROLE'],
-                segments: ['entraRole', 'roleScope']
-            },
-            {
                 id: 'p7',
                 name: '[Prefix]-[Resource]-[Role]-[AccessType]',
                 desc: 'Privileged Identity Management group for just-in-time access to privileged roles and resources.',
                 badge: 'PIM', badgeColor: 'red',
                 prefixOptions: ['PIM','JIT'],
                 segments: ['resource', 'role', 'accessType']
+            },
+            {
+                id: 'p8',
+                name: '[Prefix]-[Role]-[Scope]',
+                desc: 'Role-assignable group mapped to a Microsoft Entra ID directory role. The isAssignableToRole flag is set at creation and cannot be changed afterward.',
+                badge: 'ROLE-ASSIGNABLE', badgeColor: 'green',
+                prefixOptions: ['RAG','ROLE'],
+                segments: ['entraRole', 'roleScope']
             }
         ],
         fields: [
@@ -1242,8 +1238,245 @@ const CONFIG = {
                 { value: 'Custom',                   label: 'Custom' }
               ],
               subField: { triggerValue: 'Custom', id: 'entraRoleCustom', label: 'Custom Role', placeholder: 'e.g. ApplicationAdmin, BillingAdmin' },
-              patterns: ['p8'], hint: 'The Microsoft Entra ID directory role this group is assigned to. The list shows the most common privileged roles; choose Custom to enter any other role. Role-assignable groups require the isAssignableToRole flag to be set at creation — this property is immutable and cannot be changed afterward.' },
-            { id: 'roleScope',      label: 'Scope (optional)',    type: 'text',   example: 'e.g. Tier1, EMEA, Audit',                                      patterns: ['p8'],           hint: 'An optional qualifier to distinguish role-assignable groups for the same role, such as an administrative tier, region, or function. Leave blank if not needed — the segment will be omitted from the generated name.' }
+              patterns: ['p8'], hint: 'The Microsoft Entra ID directory role this group is assigned to. The list shows the most common privileged roles; choose Custom to enter any other role. Role-assignable groups require the isAssignableToRole flag to be set at creation; this property is immutable and cannot be changed afterward.' },
+            { id: 'roleScope',      label: 'Scope',               type: 'text',   example: 'e.g. Tier1, EMEA, Audit',                                      patterns: ['p8'],           hint: 'An optional qualifier to distinguish role-assignable groups for the same role, such as an administrative tier, region, or function. Leave blank if not needed; the segment will be omitted from the generated name.' }
+        ]
+    },
+
+    'intune': {
+        label: 'Intune',
+        abbrev: 'INT',
+        patterns: [
+            {
+                id: 'p1',
+                name: '[NNN]-[ScopeTag]-[OSType]-Compliance-[Assignments]-[Descriptor]-[Environment]-[Version]',
+                desc: 'Device compliance policy that evaluates whether a device meets your organization\'s security requirements.',
+                badge: 'COMPLIANCE POLICY', badgeColor: 'blue',
+                segments: ['intuneNumber', 'intuneScopeTag', 'osType', 'cpAssignments', 'cpDescriptor', 'cpEnvironment', 'cpVersion'],
+                fixedInfix: { afterSegmentId: 'osType', value: 'Compliance' }
+            },
+            {
+                id: 'p2',
+                name: '[NNN]-[ScopeTag]-[OSType]-Configuration-[Assignments]-[Descriptor]-[Environment]-[Version]',
+                desc: 'Configuration profile that pushes settings to enrolled devices, such as Wi-Fi, VPN, email, or endpoint protection.',
+                badge: 'CONFIGURATION POLICY', badgeColor: 'teal',
+                segments: ['intuneNumber', 'intuneScopeTag', 'osType2', 'cfgAssignments', 'cfgDescriptor', 'cfgEnvironment', 'cfgVersion'],
+                fixedInfix: { afterSegmentId: 'osType2', value: 'Configuration' }
+            },
+            {
+                id: 'p3',
+                name: '[NNN]-[ScopeTag]-[Platform]-AppProtection-[Assignments]-[Descriptor]-[Environment]-[Version]',
+                desc: 'App protection policy that protects organizational data within managed apps, independent of device enrollment.',
+                badge: 'APP PROTECTION', badgeColor: 'purple',
+                segments: ['intuneNumber', 'intuneScopeTag', 'appProtPlatform', 'appProtAssignments', 'appProtDescriptor', 'appProtEnvironment', 'appProtVersion'],
+                fixedInfix: { afterSegmentId: 'appProtPlatform', value: 'AppProtection' }
+            },
+            {
+                id: 'p4',
+                name: '[NNN]-[ScopeTag]-[EnrollmentType]-AppConfig-[Target]-[Descriptor]-[Environment]-[Version]',
+                desc: 'App configuration policy that pre-configures settings inside a managed app for enrolled devices or managed apps.',
+                badge: 'APP CONFIGURATION', badgeColor: 'amber',
+                segments: ['intuneNumber', 'intuneScopeTag', 'appCfgEnrollmentType', 'appCfgTarget', 'appCfgDescriptor', 'appCfgEnvironment', 'appCfgVersion'],
+                fixedInfix: { afterSegmentId: 'appCfgTarget', value: 'AppConfig' }
+            },
+        ],
+        fields: [
+            {
+                id: 'osType', label: 'Operating System', type: 'select', patterns: ['p1'],
+                options: [
+                    { value: 'Windows', label: 'Windows' },
+                    { value: 'macOS',   label: 'macOS' },
+                    { value: 'iOS',     label: 'iOS' },
+                    { value: 'iPadOS',  label: 'iPadOS' },
+                    { value: 'Android', label: 'Android' }
+                ],
+                hint: 'The platform this policy targets. Each operating system requires its own policy.'
+            },
+            {
+                id: 'cpAssignments', label: 'Assignments', type: 'select', patterns: ['p1'],
+                options: [
+                    { value: 'AllUsers',   label: 'All Users' },
+                    { value: 'AllDevices', label: 'All Devices' },
+                    { value: 'Custom',     label: 'Custom' }
+                ],
+                subField: { triggerValue: 'Custom', id: 'cpAssignmentsCustom', label: 'Group Name', placeholder: 'e.g. FinanceLaptops, ExecutiveDevices' },
+                hint: 'The group this policy is assigned to. Choose All Users or All Devices for a broad rollout, or Custom to target a specific group, optionally narrowed further using assignment filters.'
+            },
+            {
+                id: 'cpDescriptor', label: 'Descriptor', type: 'text', patterns: ['p1'],
+                example: 'e.g. BitLockerAndPasswordPolicy, NonComplianceActions, BaselineSecurityRules',
+                hint: 'An optional description of what this policy covers, such as the rules it enforces. Leave blank if not needed.'
+            },
+            {
+                id: 'cpEnvironment', label: 'Environment', type: 'select', patterns: ['p1'],
+                options: [
+                    { value: '',        label: 'Not selected' },
+                    { value: 'Prod',    label: 'Prod' },
+                    { value: 'Test',    label: 'Test' },
+                    { value: 'Dev',     label: 'Dev' },
+                    { value: 'Staging', label: 'Staging' },
+                    { value: 'Custom',  label: 'Custom' }
+                ],
+                subField: { triggerValue: 'Custom', id: 'cpEnvironmentCustom', label: 'Custom Environment', placeholder: 'e.g. UAT, PreProd, DR' },
+                hint: 'The deployment stage this policy targets. Select Custom for an environment not listed.'
+            },
+            {
+                id: 'cpVersion', label: 'Version', type: 'text', patterns: ['p1'], preserveLiteral: true,
+                example: 'e.g. v1, v2, 2026-06-16',
+                hint: 'An optional identifier to track changes to this policy over time, such as v1 or a date.'
+            },
+
+            // ── p2: Configuration Policy fields ───────────────────
+            {
+                id: 'osType2', label: 'Operating System', type: 'select', patterns: ['p2'],
+                options: [
+                    { value: 'Windows', label: 'Windows' },
+                    { value: 'macOS',   label: 'macOS' },
+                    { value: 'iOS',     label: 'iOS' },
+                    { value: 'iPadOS',  label: 'iPadOS' },
+                    { value: 'Android', label: 'Android' }
+                ],
+                hint: 'The platform this policy targets. Each operating system requires its own policy.'
+            },
+            {
+                id: 'cfgAssignments', label: 'Assignments', type: 'select', patterns: ['p2'],
+                options: [
+                    { value: 'AllUsers',   label: 'All Users' },
+                    { value: 'AllDevices', label: 'All Devices' },
+                    { value: 'Custom',     label: 'Custom' }
+                ],
+                subField: { triggerValue: 'Custom', id: 'cfgAssignmentsCustom', label: 'Group Name', placeholder: 'e.g. FinanceLaptops, ExecutiveDevices' },
+                hint: 'The group this policy is assigned to. Choose All Users or All Devices for a broad rollout, or Custom to target a specific group, optionally narrowed further using assignment filters.'
+            },
+            {
+                id: 'cfgDescriptor', label: 'Descriptor', type: 'text', patterns: ['p2'],
+                example: 'e.g. WiFiCorporate, VPNAlwaysOn, BitLockerAndFirewall',
+                hint: 'An optional description of what this policy covers, such as the rules it enforces. Leave blank if not needed.'
+            },
+            {
+                id: 'cfgEnvironment', label: 'Environment', type: 'select', patterns: ['p2'],
+                options: [
+                    { value: '',        label: 'Not selected' },
+                    { value: 'Prod',    label: 'Prod' },
+                    { value: 'Test',    label: 'Test' },
+                    { value: 'Dev',     label: 'Dev' },
+                    { value: 'Staging', label: 'Staging' },
+                    { value: 'Custom',  label: 'Custom' }
+                ],
+                subField: { triggerValue: 'Custom', id: 'cfgEnvironmentCustom', label: 'Custom Environment', placeholder: 'e.g. UAT, PreProd, DR' },
+                hint: 'The deployment stage this policy targets. Select Custom for an environment not listed.'
+            },
+            {
+                id: 'cfgVersion', label: 'Version', type: 'text', patterns: ['p2'], preserveLiteral: true,
+                example: 'e.g. v1, v2, 2026-06-16',
+                hint: 'An optional identifier to track changes to this policy over time, such as v1 or a date.'
+            },
+
+            // ── p3: App Protection Policy fields ──────────────────
+            {
+                id: 'appProtPlatform', label: 'Platform', type: 'select', patterns: ['p3'],
+                options: [
+                    { value: 'iOS',     label: 'iOS / iPadOS' },
+                    { value: 'Android', label: 'Android' },
+                    { value: 'Windows', label: 'Windows' },
+                    { value: 'WIP',     label: 'Windows Information Protection (WIP)' }
+                ],
+                hint: 'The platform this app protection policy targets.'
+            },
+            {
+                id: 'appProtAssignments', label: 'Assignments', type: 'text', patterns: ['p3'],
+                example: 'e.g. SalesTeam, ExternalContractors, BYODUsers',
+                hint: 'The user group this policy is assigned to.'
+            },
+            {
+                id: 'appProtDescriptor', label: 'Descriptor', type: 'text', patterns: ['p3'],
+                example: 'e.g. DataProtectionOutlook, ConditionalLaunchPIN, BlockCopyPaste',
+                hint: 'An optional description of what this policy enforces, such as a data protection or access rule.'
+            },
+            {
+                id: 'appProtEnvironment', label: 'Environment', type: 'select', patterns: ['p3'],
+                options: [
+                    { value: '',        label: 'Not selected' },
+                    { value: 'Prod',    label: 'Prod' },
+                    { value: 'Test',    label: 'Test' },
+                    { value: 'Dev',     label: 'Dev' },
+                    { value: 'Staging', label: 'Staging' },
+                    { value: 'Custom',  label: 'Custom' }
+                ],
+                subField: { triggerValue: 'Custom', id: 'appProtEnvironmentCustom', label: 'Custom Environment', placeholder: 'e.g. UAT, PreProd, DR' },
+                hint: 'The deployment stage this policy targets. Select Custom for an environment not listed.'
+            },
+            {
+                id: 'appProtVersion', label: 'Version', type: 'text', patterns: ['p3'], preserveLiteral: true,
+                example: 'e.g. v1, v2, 2026-06-16',
+                hint: 'An optional identifier to track changes to this policy over time, such as v1 or a date.'
+            },
+
+            // ── p4: App Configuration Policy fields ───────────────
+            {
+                id: 'appCfgEnrollmentType', label: 'Device Enrollment Type', type: 'select', patterns: ['p4'],
+                options: [
+                    { value: 'ManagedDevices', label: 'Managed Devices' },
+                    { value: 'ManagedApps',    label: 'Managed Apps' }
+                ],
+                hint: 'Managed Devices targets enrolled devices on a specific platform. Managed Apps targets the app itself, regardless of enrollment.'
+            },
+            {
+                id: 'appCfgTarget', label: 'Target', type: 'select', patterns: ['p4'],
+                optionsByParent: {
+                    parentField: 'appCfgEnrollmentType',
+                    'ManagedDevices': [
+                        { value: 'iOS',     label: 'iOS / iPadOS' },
+                        { value: 'Android', label: 'Android Enterprise' }
+                    ],
+                    'ManagedApps': [
+                        { value: 'AllApps',           label: 'All Apps' },
+                        { value: 'AllMicrosoftApps',  label: 'All Microsoft Apps' },
+                        { value: 'CoreMicrosoftApps', label: 'Core Microsoft Apps' },
+                        { value: 'Custom',            label: 'Custom' }
+                    ]
+                },
+                subField: { triggerValue: 'Custom', id: 'appCfgTargetCustom', label: 'App Names', placeholder: 'e.g. Outlook, Teams, CompanyPortal, Salesforce' },
+                hint: 'The platform or app group this configuration targets, based on the enrollment type selected above.'
+            },
+            {
+                id: 'appCfgDescriptor', label: 'Descriptor', type: 'text', patterns: ['p4'],
+                example: 'e.g. OutlookFocusedInbox, TeamsConfig, VPNSettings',
+                hint: 'An optional description of what this policy configures.'
+            },
+            {
+                id: 'appCfgEnvironment', label: 'Environment', type: 'select', patterns: ['p4'],
+                options: [
+                    { value: '',        label: 'Not selected' },
+                    { value: 'Prod',    label: 'Prod' },
+                    { value: 'Test',    label: 'Test' },
+                    { value: 'Dev',     label: 'Dev' },
+                    { value: 'Staging', label: 'Staging' },
+                    { value: 'Custom',  label: 'Custom' }
+                ],
+                subField: { triggerValue: 'Custom', id: 'appCfgEnvironmentCustom', label: 'Custom Environment', placeholder: 'e.g. UAT, PreProd, DR' },
+                hint: 'The deployment stage this policy targets. Select Custom for an environment not listed.'
+            },
+            {
+                id: 'appCfgVersion', label: 'Version', type: 'text', patterns: ['p4'], preserveLiteral: true,
+                example: 'e.g. v1, v2, 2026-06-16',
+                hint: 'An optional identifier to track changes to this policy over time, such as v1 or a date.'
+            },
+
+            // ── shared: Number and Scope Tag ───────────────────────
+            {
+                id: 'intuneNumber', label: 'Number', type: 'text',
+                patterns: ['p1', 'p2', 'p3', 'p4'],
+                example: 'e.g. 001, INT001, CP001',
+                hint: 'An optional sequence number to track and reference this policy, in whatever format your organization prefers. For example: 001, INT001, or CP001.'
+            },
+            {
+                id: 'intuneScopeTag', label: 'Scope Tag', type: 'text',
+                patterns: ['p1', 'p2', 'p3', 'p4'],
+                example: 'e.g. Global, EMEA, US, Finance-BU, HQ',
+                hint: 'An optional tag for a specific business unit or region, such as EMEA or HQ. Leave blank for tenant-wide policies.'
+            },
+
         ]
     }
 };
@@ -1384,7 +1617,7 @@ function selectPattern(patternId) {
     const grantRadio = document.querySelector(`input[name="grantLogic"][value="${grantLogicVal}"]`);
     if (grantRadio) grantRadio.checked = true;
 
-    // grantLogicGroup has no CONFIG representation — restore visibility manually based on checked count
+    // grantLogicGroup has no CONFIG representation; restore visibility manually based on checked count
     const grantCheckedCount = document.querySelectorAll('#fld_grantControl input[type="checkbox"]:checked').length;
     const grantLogicGroup   = document.getElementById('grantLogicGroup');
     if (grantLogicGroup) grantLogicGroup.style.display = grantCheckedCount >= 2 ? 'block' : 'none';
@@ -1472,7 +1705,7 @@ function renderFields() {
     }
 
     segmentOrder.map(id => allFields.find(f => f.id === id)).filter(Boolean).forEach(field => {
-            // disruptionTotal is rendered inline with disruptionIndex — skip standalone rendering
+            // disruptionTotal is rendered inline with disruptionIndex; skip standalone rendering
             if (field.id === 'disruptionTotal') return;
 
             // disruptionIndex: render an inline index/total pair
@@ -1663,16 +1896,32 @@ function renderFields() {
             }
             if (field.type === 'select') {
                 input = document.createElement('select');
-                const blank = document.createElement('option');
-                blank.value = '';
-                blank.textContent = 'Not selected';
-                input.appendChild(blank);
-                (field.options || []).filter(o => (typeof o === 'string' ? o : o.value) !== '').forEach(opt => {
-                    const o = document.createElement('option');
-                    o.value       = typeof opt === 'string' ? opt : opt.value;
-                    o.textContent = typeof opt === 'string' ? opt : opt.label;
-                    input.appendChild(o);
-                });
+                if (field.optionsByParent) {
+                    const parentEl = document.getElementById('fld_' + field.optionsByParent.parentField);
+                    const parentVal = parentEl ? parentEl.value : '';
+                    const initKey = parentVal || Object.keys(field.optionsByParent).find(k => k !== 'parentField') || '';
+                    const blank = document.createElement('option');
+                    blank.value = '';
+                    blank.textContent = 'Not selected';
+                    input.appendChild(blank);
+                    (field.optionsByParent[initKey] || []).forEach(opt => {
+                        const o = document.createElement('option');
+                        o.value       = typeof opt === 'string' ? opt : opt.value;
+                        o.textContent = typeof opt === 'string' ? opt : opt.label;
+                        input.appendChild(o);
+                    });
+                } else {
+                    const blank = document.createElement('option');
+                    blank.value = '';
+                    blank.textContent = 'Not selected';
+                    input.appendChild(blank);
+                    (field.options || []).filter(o => (typeof o === 'string' ? o : o.value) !== '').forEach(opt => {
+                        const o = document.createElement('option');
+                        o.value       = typeof opt === 'string' ? opt : opt.value;
+                        o.textContent = typeof opt === 'string' ? opt : opt.label;
+                        input.appendChild(o);
+                    });
+                }
             } else {
                 input = document.createElement('input');
                 input.type        = 'text';
@@ -1683,6 +1932,35 @@ function renderFields() {
             input.id = 'fld_' + field.id;
             input.addEventListener('input',  updatePreview);
             input.addEventListener('change', updatePreview);
+
+            // Wire parent change listener to repopulate this child select
+            if (field.optionsByParent) {
+                const oByP = field.optionsByParent;
+                const repopulate = () => {
+                    const parentEl = document.getElementById('fld_' + oByP.parentField);
+                    const pVal = parentEl ? parentEl.value : '';
+                    const opts = oByP[pVal] || [];
+                    input.innerHTML = '';
+                    const blank = document.createElement('option');
+                    blank.value = '';
+                    blank.textContent = 'Not selected';
+                    input.appendChild(blank);
+                    opts.forEach(opt => {
+                        const o = document.createElement('option');
+                        o.value       = typeof opt === 'string' ? opt : opt.value;
+                        o.textContent = typeof opt === 'string' ? opt : opt.label;
+                        input.appendChild(o);
+                    });
+                    input.value = '';
+                    input.dispatchEvent(new Event('change'));
+                    if (field.subField) {
+                        const subIn = document.getElementById('fld_' + field.subField.id);
+                        if (subIn) subIn.value = '';
+                    }
+                };
+                const parentEl = document.getElementById('fld_' + oByP.parentField);
+                if (parentEl) parentEl.addEventListener('change', repopulate);
+            }
 
             if (state.type === 'ca-policy' && field.id === 'number') {
                 input.addEventListener('blur', () => {
@@ -1739,9 +2017,7 @@ function generateName() {
 
     if (!pattern) return { name: '', segs: [] };
 
-    if (pattern.fixedPrefix) {
-        segs.push({ value: pattern.fixedPrefix, fixed: true });
-    } else if (pattern.prefixOptions) {
+    if (pattern.prefixOptions) {
         const prefixEl = document.getElementById('fld_prefix');
         if (prefixEl) {
             const prefixVal = prefixEl.value;
@@ -1755,7 +2031,7 @@ function generateName() {
         }
     }
 
-    const useEffectMapping = state.type === 'ca-policy' && (state.pattern === 'p1' || state.pattern === 'p2' || state.pattern === 'p3' || state.pattern === 'p4');
+    const useEffectMapping = state.type === 'ca-policy' && (state.pattern === 'p1' || state.pattern === 'p2' || state.pattern === 'p4');
 
     pattern.segments.forEach(segId => {
         const field = type.fields.find(f => f.id === segId);
@@ -1765,7 +2041,7 @@ function generateName() {
             const vals = [...document.querySelectorAll('#fld_platform input[type="checkbox"]:checked')]
                 .map(cb => applyCase(sanitize(cb.value), casing))
                 .filter(Boolean);
-            if (vals.length) segs.push({ value: vals.join(sep), fixed: false });
+            if (vals.length) segs.push({ value: vals.join(sep), fixed: false, sourceId: segId });
             return;
         }
 
@@ -1789,7 +2065,7 @@ function generateName() {
             let suffix = '';
             if (idxRaw && totRaw) suffix = idxRaw + applyCase('of', casing) + totRaw;
             else if (idxRaw)      suffix = idxRaw;
-            segs.push({ value: disruptionVal + suffix, fixed: false });
+            segs.push({ value: disruptionVal + suffix, fixed: false, sourceId: segId });
             return;
         }
 
@@ -1807,14 +2083,14 @@ function generateName() {
                     }
                     return applyCase(cb.value, casing);
                 }).filter(Boolean);
-            if (vals.length) segs.push({ value: vals.join(sep), fixed: false });
+            if (vals.length) segs.push({ value: vals.join(sep), fixed: false, sourceId: segId });
             return;
         }
 
         if (segId === 'grantControl') {
             const blockCb = document.getElementById('fld_grantControl_Block');
             if (blockCb?.checked) {
-                segs.push({ value: applyCase('Block', casing), fixed: false });
+                segs.push({ value: applyCase('Block', casing), fixed: false, sourceId: segId });
                 return;
             }
 
@@ -1836,7 +2112,7 @@ function generateName() {
                     const logicRaw = document.querySelector('input[name="grantLogic"]:checked')?.value || 'AND';
                     const logicSep = sep + applyCase(logicRaw, casing) + sep;
                     const grantBlock = grantVals.length > 1 ? grantVals.join(logicSep) : grantVals[0];
-                    segs.push({ value: grantBlock, fixed: false });
+                    segs.push({ value: grantBlock, fixed: false, sourceId: segId });
                 }
             }
             return;
@@ -1860,7 +2136,7 @@ function generateName() {
                 if (sessionVals.length) {
                     const andSep = sep + applyCase('AND', casing) + sep;
                     const sessionBlock = sessionVals.length > 1 ? sessionVals.join(andSep) : sessionVals[0];
-                    segs.push({ value: sessionBlock, fixed: false });
+                    segs.push({ value: sessionBlock, fixed: false, sourceId: segId });
                 }
             }
             return;
@@ -1874,13 +2150,13 @@ function generateName() {
 
         // Prefix selects (SG…) always stay uppercase
         if (field && field.type === 'select' && segId === 'prefix') {
-            segs.push({ value: raw.toUpperCase(), fixed: false });
+            segs.push({ value: raw.toUpperCase(), fixed: false, sourceId: segId });
             return;
         }
 
         // keepCase fields stay as typed
         if (field && field.keepCase) {
-            segs.push({ value: sanitize(raw), fixed: false });
+            segs.push({ value: sanitize(raw), fixed: false, sourceId: segId });
             return;
         }
 
@@ -1888,13 +2164,17 @@ function generateName() {
         if (field && field.subField && raw === field.subField.triggerValue) {
             const subEl  = document.getElementById('fld_' + field.subField.id);
             const subVal = subEl?.value?.trim();
-            if (subVal) segs.push({ value: applyCaseToUserInput(sanitize(subVal), casing), fixed: false });
+            if (subVal) segs.push({ value: applyCaseToUserInput(sanitize(subVal), casing), fixed: false, sourceId: segId });
             return;
         }
 
-        const sanitized = segId === 'version'
-            ? raw.replace(/[^a-zA-Z0-9.\-]/g, '').trim()
-            : sanitize(raw);
+        // preserveLiteral fields bypass sanitize and applyCase entirely
+        if (field && field.preserveLiteral) {
+            segs.push({ value: raw.replace(/\s+/g, sep), fixed: false, sourceId: segId });
+            return;
+        }
+
+        const sanitized = sanitize(raw);
         let val = (field && field.type === 'text') ? applyCaseToUserInput(sanitized, casing) : applyCase(sanitized, casing);
 
         // CA/EM policy: prepend numberPrefix to the number segment
@@ -1902,12 +2182,29 @@ function generateName() {
             val = pattern.numberPrefix + val;
         }
 
-        segs.push({ value: val, fixed: false });
+        segs.push({ value: val, fixed: false, sourceId: segId });
     });
 
-    // Inject fixed infix segment at the specified position (e.g. EnableInEmergency)
-    if (pattern.fixedInfix && segs.length > pattern.fixedInfix.afterIndex) {
-        segs.splice(pattern.fixedInfix.afterIndex + 1, 0, { value: pattern.fixedInfix.value, fixed: true });
+    // Inject fixed infix segment after its anchor segment
+    if (pattern.fixedInfix) {
+        const anchorIdx = segs.findIndex(s => s.sourceId === pattern.fixedInfix.afterSegmentId);
+        let insertAt;
+        if (anchorIdx >= 0) {
+            insertAt = anchorIdx + 1;
+        } else {
+            // Anchor segment is blank/omitted: find how many collected segments
+            // come before the anchor's position in the pattern's CONFIG segment order,
+            // and insert immediately after those.
+            const configOrder = pattern.segments;
+            const anchorConfigIdx = configOrder.indexOf(pattern.fixedInfix.afterSegmentId);
+            let count = 0;
+            for (const s of segs) {
+                const segConfigIdx = configOrder.indexOf(s.sourceId);
+                if (segConfigIdx !== -1 && segConfigIdx < anchorConfigIdx) count++;
+            }
+            insertAt = count;
+        }
+        segs.splice(insertAt, 0, { value: pattern.fixedInfix.value, fixed: true });
     }
 
     if (segs.length === 0) return { name: '', segs: [] };
@@ -2088,39 +2385,37 @@ function generateDescription() {
         const project = get('project');
         const alRaw   = get('accessLevel');
         const env     = get('environment');
-        const inst    = get('instance');
 
         const alMap  = { RO: 'Read Only access', RW: 'Read and Write access', AuthOnly: 'authentication only with no API permissions assigned' };
         const alText = alMap[alRaw] || '';
 
         const requiresSentence = alText ? `It requires ${alText}${env ? ` and is deployed in the ${env} environment` : ''}.` : '';
-        const instClause       = inst ? `This is instance ${inst}.` : '';
 
         if (pat === 'p1') {
             if (tool || fn) {
                 const core = fn
                     ? `This app registration enables ${tool || '[Tool]'} to perform ${fn} operations.`
                     : `This app registration enables ${tool || '[Tool]'}.`;
-                desc = [core, requiresSentence, instClause].filter(Boolean).join(' ');
+                desc = [core, requiresSentence].filter(Boolean).join(' ');
             }
         } else if (pat === 'p2') {
             if (company || dept || tool) {
                 const core = fn
                     ? `This app registration is owned by the ${dept || '[Department]'} department at ${company || '[Company]'} and enables ${tool || '[Tool]'} to perform ${fn} operations.`
                     : `This app registration is owned by the ${dept || '[Department]'} department at ${company || '[Company]'} and enables ${tool || '[Tool]'}.`;
-                desc = [core, requiresSentence, instClause].filter(Boolean).join(' ');
+                desc = [core, requiresSentence].filter(Boolean).join(' ');
             }
         } else if (pat === 'p3') {
             if (tool || company) {
                 const core = `This app registration enables ${tool || '[Tool]'} for customer ${company || '[Customer]'}.`;
-                desc = [core, requiresSentence, instClause].filter(Boolean).join(' ');
+                desc = [core, requiresSentence].filter(Boolean).join(' ');
             }
         } else if (pat === 'p4') {
             if (project || tool) {
                 const core = fn
                     ? `This app registration supports the ${project || '[Project]'} project and enables ${tool || '[Tool]'} to perform ${fn} operations.`
                     : `This app registration supports the ${project || '[Project]'} project and enables ${tool || '[Tool]'}.`;
-                desc = [core, requiresSentence, instClause].filter(Boolean).join(' ');
+                desc = [core, requiresSentence].filter(Boolean).join(' ');
             }
         }
 
@@ -2209,7 +2504,7 @@ function copyAIPrompt() {
 
     const lines = [
         'You are an IT documentation assistant for Microsoft 365 and Microsoft Entra ID.',
-        `Write 2 short alternative descriptions (1-2 sentences each) for the following ${typeName}, suitable for the Description field in the Azure portal. Make each variant slightly different in focus — one more technical, one more business-oriented.`,
+        `Write 2 short alternative descriptions (1-2 sentences each) for the following ${typeName}, suitable for the Description field in the Azure portal. Make each variant slightly different in focus: one more technical, one more business-oriented.`,
         '',
         '== INPUT DATA ==',
         `Generated name: ${name || 'Not yet generated'}`,
@@ -2220,35 +2515,31 @@ function copyAIPrompt() {
 
     if (type === 'app-reg') {
         if (pat === 'p1') {
-            const tool = get('tool'), fn = get('function'), al = get('accessLevel'), env = get('environment'), inst = get('instance');
+            const tool = get('tool'), fn = get('function'), al = get('accessLevel'), env = get('environment');
             if (tool)  lines.push(`Tool/Service: ${tool}`);
             if (fn)    lines.push(`Function: ${fn}`);
             if (al)    lines.push(`Access Level: ${alMap[al] || al}`);
             if (env)   lines.push(`Environment: ${env}`);
-            if (inst)  lines.push(`Instance: ${inst}`);
         } else if (pat === 'p2') {
-            const company = get('company'), dept = get('department'), tool = get('tool'), fn = get('function'), al = get('accessLevel'), env = get('environment'), inst = get('instance');
+            const company = get('company'), dept = get('department'), tool = get('tool'), fn = get('function'), al = get('accessLevel'), env = get('environment');
             if (company) lines.push(`Company: ${company}`);
             if (dept)    lines.push(`Department: ${dept}`);
             if (tool)    lines.push(`Tool/Service: ${tool}`);
             if (fn)      lines.push(`Function: ${fn}`);
             if (al)      lines.push(`Access Level: ${alMap[al] || al}`);
             if (env)     lines.push(`Environment: ${env}`);
-            if (inst)    lines.push(`Instance: ${inst}`);
         } else if (pat === 'p3') {
-            const customer = get('company'), tool = get('tool'), al = get('accessLevel'), env = get('environment'), inst = get('instance');
+            const customer = get('company'), tool = get('tool'), al = get('accessLevel'), env = get('environment');
             if (customer) lines.push(`Customer: ${customer}`);
             if (tool)     lines.push(`Tool/Service: ${tool}`);
             if (al)       lines.push(`Access Level: ${alMap[al] || al}`);
             if (env)      lines.push(`Environment: ${env}`);
-            if (inst)     lines.push(`Instance: ${inst}`);
         } else if (pat === 'p4') {
-            const project = get('project'), tool = get('tool'), al = get('accessLevel'), env = get('environment'), inst = get('instance');
+            const project = get('project'), tool = get('tool'), al = get('accessLevel'), env = get('environment');
             if (project) lines.push(`Project: ${project}`);
             if (tool)    lines.push(`Tool/Service: ${tool}`);
             if (al)      lines.push(`Access Level: ${alMap[al] || al}`);
             if (env)     lines.push(`Environment: ${env}`);
-            if (inst)    lines.push(`Instance: ${inst}`);
         }
     } else {
         // security-group
