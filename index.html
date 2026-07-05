@@ -569,14 +569,35 @@
         }
 
         /* ── History ──────────────────────────────── */
+        .history-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
         .history-title {
             font-size: 11px;
             font-weight: 700;
             color: var(--gray);
             text-transform: uppercase;
             letter-spacing: 0.6px;
-            margin-bottom: 8px;
         }
+
+        .history-clear-btn {
+            font-size: 10px;
+            color: var(--danger);
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .history-clear-btn:hover { background: var(--danger-bg); }
 
         .history-empty {
             font-size: 12px;
@@ -873,7 +894,7 @@
 
         <!-- LEFT: Form Panel -->
         <div class="panel">
-            <div class="panel-title">&#9998;&nbsp; Configure &mdash; <span id="formTypeLabel">App Registration</span></div>
+            <div class="panel-title">Configure &mdash; <span id="formTypeLabel">App Registration</span></div>
 
             <div class="options-row">
                 <div class="option-group">
@@ -906,7 +927,7 @@
 
         <!-- RIGHT: Preview Panel -->
         <div class="panel">
-            <div class="panel-title">&#128203;&nbsp; Generated Name</div>
+            <div class="panel-title">Generated Name</div>
 
             <div class="preview-box" id="previewBox">
                 <div class="preview-name empty" id="previewName">Fill in the form to generate a name&hellip;</div>
@@ -916,8 +937,8 @@
             <div class="segments" id="segments"></div>
 
             <div class="actions">
-                <button class="btn btn-primary" onclick="copyName()">&#128203; Copy</button>
-                <button class="btn btn-outline" onclick="resetForm()">&#8635; Reset</button>
+                <button class="btn btn-primary" onclick="copyName()">Copy</button>
+                <button class="btn btn-outline" onclick="resetForm()">Reset</button>
             </div>
 
             <div id="descSection" style="display:none;">
@@ -927,21 +948,24 @@
                     <div class="desc-text empty" id="descText">Fill in the form to generate a description&hellip;</div>
                 </div>
                 <div class="actions" style="margin-bottom:0;">
-                    <button class="btn btn-outline" onclick="copyDesc()">&#128203; Copy Description</button>
-                    <button class="btn btn-outline" onclick="copyAIPrompt()">&#10024; Copy AI Prompt</button>
+                    <button class="btn btn-outline" onclick="copyDesc()">Copy Description</button>
+                    <button class="btn btn-outline" onclick="copyAIPrompt()">Copy AI Prompt</button>
                 </div>
             </div>
 
             <hr class="divider">
 
-            <div class="history-title">Recent Names</div>
+            <div class="history-title-row">
+                <span class="history-title">Recent Names</span>
+                <button class="history-clear-btn" onclick="clearHistory()">Clear</button>
+            </div>
             <div id="history"><div class="history-empty">No names generated yet.</div></div>
         </div>
 
     </div>
 </div>
 
-<footer>Name Codex v0.5 beta &middot; Built by Matej Klemen&#269;i&#269; &middot; <a href="https://www.matej.guru" target="_blank" rel="noopener" style="color: rgba(255,255,255,0.75); text-decoration: none;">www.matej.guru</a> &middot; &copy; 2026</footer>
+<footer>Name Codex v1.0 &middot; Built by Matej Klemen&#269;i&#269; &middot; <a href="https://www.matej.guru" target="_blank" rel="noopener" style="color: rgba(255,255,255,0.75); text-decoration: none;">www.matej.guru</a> &middot; &copy; 2026</footer>
 <div id="toast"></div>
 
 <script>
@@ -952,7 +976,7 @@ const CONFIG = {
 
     'app-reg': {
         label: 'App Registration',
-        abbrev: 'App',
+        abbrev: 'APP',
         patterns: [
             {
                 id: 'p1',
@@ -1003,7 +1027,7 @@ const CONFIG = {
 
     'ca-policy': {
         label: 'Conditional Access Policy',
-        abbrev: 'CA',
+        abbrev: 'CAP',
         patterns: [
             {
                 id: 'p1',
@@ -1145,104 +1169,103 @@ const CONFIG = {
         patterns: [
             {
                 id: 'p1',
-                name: '[Prefix]-[Function]-[Scope]',
-                desc: 'General-purpose security group for access control, policy assignment, or resource scoping.',
+                name: '[Prefix]-[MembershipType]-[Department]-[Function]-[Scope]-[Environment]',
+                desc: 'General-purpose security group for access control, policy assignment, or resource scoping. Supports optional role-assignable or dynamic user/device membership.',
                 badge: 'SECURITY', badgeColor: 'blue',
                 prefixOptions: ['SEC','SG','GRP'],
-                segments: ['function', 'scope']
+                segments: ['membershipType', 'department', 'function', 'scope', 'attribute', 'attributeValue', 'environment']
             },
             {
                 id: 'p2',
-                name: '[Prefix]-[Department]-[Name]',
-                desc: 'Microsoft 365 Group with a shared mailbox, calendar, and collaboration space across Microsoft 365 services.',
+                name: '[Prefix]-[MembershipType]-[Department]-[Purpose]-[Sensitivity]-[Environment]',
+                desc: 'Microsoft 365 Group with a shared mailbox, calendar, and collaboration space across Microsoft 365 services. Supports optional role-assignable or dynamic user membership and a sensitivity label.',
                 badge: 'M365 GROUP', badgeColor: 'teal',
                 prefixOptions: ['M365','O365','GRP','TEAM'],
-                segments: ['department', 'groupName']
+                segments: ['membershipType', 'department', 'purpose', 'attribute', 'attributeValue', 'sensitivity', 'environment']
             },
             {
                 id: 'p3',
-                name: '[Prefix]-[Department]-[Purpose]',
-                desc: 'Distribution list for sending email to a defined set of recipients.',
+                name: '[Prefix]-[Scope]-[Department]-[Purpose]-[Environment]',
+                desc: 'Distribution list for sending email to a defined set of recipients, optionally scoped to internal-only or external senders.',
                 badge: 'DISTRIBUTION', badgeColor: 'gray',
                 prefixOptions: ['DL','DG','DIST'],
-                segments: ['department', 'purpose']
+                segments: ['dlScope', 'department', 'purpose', 'environment']
             },
             {
                 id: 'p4',
-                name: '[Prefix]-[Attribute]-[Value]',
-                desc: 'Dynamic group with membership automatically maintained by a rule based on user or device attributes.',
-                badge: 'DYNAMIC', badgeColor: 'purple',
-                prefixOptions: ['DYN','DYNGRP','AUTO'],
-                segments: ['attribute', 'attributeValue']
-            },
-            {
-                id: 'p5',
-                name: '[Prefix]-[Department]-[Function]',
+                name: '[Prefix]-[Department]-[Function]-[Location]-[Environment]',
                 desc: 'Shared mailbox accessible by multiple users for monitoring and sending from a common email address.',
                 badge: 'SHARED MAILBOX', badgeColor: 'cyan',
                 prefixOptions: ['MB','SM','SMB','SHARED'],
-                segments: ['department', 'mbFunction']
+                segments: ['department', 'mbFunction', 'location', 'environment']
+            },
+            {
+                id: 'p5',
+                name: '[Room/Equip]-[Department]-[Location]-[Name]',
+                desc: 'Resource mailbox for bookable rooms or equipment, integrated with Outlook calendar scheduling.',
+                badge: 'ROOM / EQUIP', badgeColor: 'amber',
+                segments: ['roomType', 'department', 'location', 'resourceName']
             },
             {
                 id: 'p6',
-                name: '[Room/Equip]-[Location]-[Name]',
-                desc: 'Resource mailbox for bookable rooms or equipment, integrated with Outlook calendar scheduling.',
-                badge: 'ROOM / EQUIP', badgeColor: 'amber',
-                segments: ['roomType', 'location', 'resourceName']
-            },
-            {
-                id: 'p7',
-                name: '[Prefix]-[Resource]-[Role]-[AccessType]',
+                name: '[Prefix]-[Role/Resource]-[Scope]-[AccessType]-[Environment]',
                 desc: 'Privileged Identity Management group for just-in-time access to privileged roles and resources.',
                 badge: 'PIM', badgeColor: 'red',
                 prefixOptions: ['PIM','JIT'],
-                segments: ['resource', 'role', 'accessType']
-            },
-            {
-                id: 'p8',
-                name: '[Prefix]-[Role]-[Scope]',
-                desc: 'Role-assignable group mapped to a Microsoft Entra ID directory role. The isAssignableToRole flag is set at creation and cannot be changed afterward.',
-                badge: 'ROLE-ASSIGNABLE', badgeColor: 'green',
-                prefixOptions: ['RAG','ROLE'],
-                segments: ['entraRole', 'roleScope']
+                segments: ['resource', 'scope', 'accessType', 'environment']
             }
         ],
         fields: [
-            { id: 'function',       label: 'Function / Purpose', type: 'text',   example: 'e.g. Admins, MFAExclude, LicenseE3, AppAccess',            patterns: ['p1'],           hint: 'Describes what this group is used for or what access it grants. Use a concise noun such as Admins, MFAExclude, or LicenseE3 that makes the group purpose immediately clear in the directory.' },
-            { id: 'scope',          label: 'Scope',               type: 'text',   example: 'e.g. AllUsers, IT, Finance, Guests',                        patterns: ['p1'],           hint: 'The set of users or resources this group applies to. Use AllUsers for tenant-wide groups, or a department or role name for targeted groups.' },
-            { id: 'department',     label: 'Department',          type: 'text',   example: 'e.g. Marketing, IT, Finance, HR',                           patterns: ['p2','p3','p5'], hint: 'The business unit or team that owns or uses this group. Use the official department abbreviation for consistency across the directory.' },
-            { id: 'groupName',      label: 'Group Name',          type: 'text',   example: 'e.g. Campaigns, SecurityTeam, BudgetPlanning',              patterns: ['p2'],           hint: 'A short descriptive name for the collaboration space. Should reflect the project, workload, or team purpose.' },
-            { id: 'purpose',        label: 'Purpose',             type: 'text',   example: 'e.g. Alerts, Invoices, Announcements, Recruitment',         patterns: ['p3'],           hint: 'Describes the communication function of this list. Use a noun such as Alerts, Announcements, or Invoices.' },
-            { id: 'attribute',      label: 'Attribute',           type: 'select',
-              options: ['Department','JobTitle','Location','License','Device','Custom'],
-              subField: { triggerValue: 'Custom', id: 'attributeCustom', label: 'Custom Attribute', placeholder: 'e.g. CompanyName, UsageLocation' },
-              patterns: ['p4'], hint: 'The user or device attribute used as the membership rule filter. Choose the attribute that best identifies the target population. Select Custom to enter a non-standard attribute.' },
-            { id: 'attributeValue', label: 'Attribute Value',     type: 'text',   example: 'e.g. IT, E3, ManagedDevices, Finance',                      patterns: ['p4'],           hint: 'The specific value of the attribute that triggers group membership. For example, if Attribute is Department, the value might be IT or Finance.' },
-            { id: 'mbFunction',     label: 'Function',            type: 'text',   example: 'e.g. Invoices, Helpdesk, Recruitment, Info',                patterns: ['p5'],           hint: 'The operational purpose of this shared mailbox. Use a functional noun such as Helpdesk, Invoices, or Recruitment rather than a personal name.' },
-            { id: 'roomType',       label: 'Type',                type: 'select', options: ['Room','Equip'],                                              patterns: ['p6'],           hint: 'Select Room for meeting rooms and conference spaces, or Equip for bookable equipment such as projectors or vehicles.' },
-            { id: 'location',       label: 'Location',            type: 'text',   example: 'e.g. AMS, NYC, LON, SYD',                                    patterns: ['p6'],           hint: 'A short location code identifying the building, city, or office where this resource is located. Use consistent abbreviations across all resources.' },
-            { id: 'resourceName',   label: 'Name / Number',       type: 'text',   example: 'e.g. BoardRoom01, MeetingRoom02, Projector01',              patterns: ['p6'],           hint: 'A unique identifier for this resource within its location. Use a descriptive name followed by a two-digit number for consistent sorting, e.g. BoardRoom01.' },
-            { id: 'resource',       label: 'Resource',            type: 'text',   example: 'e.g. GlobalAdmin, ExchangeAdmin, FinReport, AzureKeyVault', patterns: ['p7'],           hint: 'The application, role, or system this PIM group controls access to. Use the official product or role name, e.g. GlobalAdmin, ExchangeAdmin, or FinReport.' },
-            { id: 'role',           label: 'Role',                type: 'text',   example: 'e.g. SeniorAnalyst, Owner, Contributor, Reader',            patterns: ['p7'],           hint: 'The job function or responsibility level within the resource. Reflects the type of access being granted just-in-time, e.g. SeniorAnalyst, Owner, or Contributor.' },
-            { id: 'accessType',     label: 'Access Type',         type: 'select', options: ['Eligible','Active'],                                         patterns: ['p7'],           hint: 'Eligible means the user must activate the role before gaining access, requiring MFA or approval. Active means access is granted immediately without activation. Microsoft recommends Eligible for all privileged roles.' },
-            { id: 'environment',    label: 'Environment',         type: 'select', options: ['','Prod','Pilot','Test','Dev','Staging','Custom'],           patterns: [],               subField: { triggerValue: 'Custom', id: 'environmentCustom', label: 'Custom Environment', placeholder: 'e.g. UAT, PreProd, DR' }, hint: 'The deployment stage this group targets. Use Pilot for items being trialed with a limited audience before full rollout, or select Custom to enter a different environment name.' },
-            { id: 'entraRole',      label: 'Entra ID Role',       type: 'select',
+            { id: 'membershipType', label: 'Membership Type',     type: 'select', textCase: true,
               options: [
-                { value: 'GlobalAdmin',              label: 'Global Administrator' },
-                { value: 'PrivilegedRoleAdmin',      label: 'Privileged Role Administrator' },
-                { value: 'UserAdmin',                label: 'User Administrator' },
-                { value: 'HelpdeskAdmin',            label: 'Helpdesk Administrator' },
-                { value: 'SecurityAdmin',            label: 'Security Administrator' },
-                { value: 'SecurityReader',           label: 'Security Reader' },
-                { value: 'GlobalReader',             label: 'Global Reader' },
-                { value: 'ExchangeAdmin',            label: 'Exchange Administrator' },
-                { value: 'IntuneAdmin',              label: 'Intune Administrator' },
-                { value: 'ConditionalAccessAdmin',   label: 'Conditional Access Administrator' },
-                { value: 'Custom',                   label: 'Custom' }
+                { value: 'RA',   label: 'Role Assignable' },
+                { value: 'DYNU', label: 'Dynamic User' },
+                { value: 'DYND', label: 'Dynamic Device' }
               ],
-              subField: { triggerValue: 'Custom', id: 'entraRoleCustom', label: 'Custom Role', placeholder: 'e.g. ApplicationAdmin, BillingAdmin' },
-              patterns: ['p8'], hint: 'The Microsoft Entra ID directory role this group is assigned to. The list shows the most common privileged roles; choose Custom to enter any other role. Role-assignable groups require the isAssignableToRole flag to be set at creation; this property is immutable and cannot be changed afterward.' },
-            { id: 'roleScope',      label: 'Scope',               type: 'text',   example: 'e.g. Tier1, EMEA, Audit',                                      patterns: ['p8'],           hint: 'An optional qualifier to distinguish role-assignable groups for the same role, such as an administrative tier, region, or function. Leave blank if not needed; the segment will be omitted from the generated name.' }
+              optionsByPattern: { p2: [
+                { value: 'RA',   label: 'Role Assignable' },
+                { value: 'DYNU', label: 'Dynamic User' }
+              ] },
+              patterns: ['p1','p2'],
+              hint: 'Defines how membership is managed for this group. Choose Role Assignable if this group will be assigned a Microsoft Entra role and therefore requires assigned membership. Choose Dynamic User or Dynamic Device to populate membership automatically from user or device attributes.',
+              hintByPattern: { p2: 'Defines how membership is managed for this group. Choose Role Assignable if this group will be assigned a Microsoft Entra role and therefore requires assigned membership. Choose Dynamic User to populate membership automatically from user attributes. Microsoft 365 groups cannot use dynamic device membership.' },
+              toggleByPattern: {
+                  p1: { dynamicValues: ['DYNU','DYND'], dynamicFields: ['attribute','attributeValue'], staticFields: ['function','scope'] },
+                  p2: { dynamicValues: ['DYNU'],         dynamicFields: ['attribute','attributeValue'], staticFields: ['purpose'] }
+              } },
+            { id: 'function',       label: 'Function / Purpose', type: 'text',   example: 'e.g. Admins, LicenseAssignment, AppAccess',                 patterns: ['p1'],           hint: 'Describes what this group is used for or what access it grants, for example Admins, LicenseAssignment, or AppAccess.' },
+            { id: 'scope',          label: 'Scope',               type: 'text',   example: 'e.g. AllUsers, IT, Finance, Guests',                        patterns: ['p1','p6'],
+              exampleByPattern: { p6: 'e.g. Tier1, Partner, EMEA, Audit' },
+              hint: 'The set of users or resources this group applies to, for example AllUsers, a specific department, or a named application.',
+              hintByPattern: { p6: 'An optional qualifier to distinguish this PIM group from others for the same role or resource, such as an administrative tier, customer, region, or team.' } },
+            { id: 'department',     label: 'Department',          type: 'text',   example: 'e.g. Marketing, IT, Finance, HR',                           patterns: ['p1','p2','p3','p4','p5'],
+              hint: 'The business unit or team that owns or uses this group, for example Finance, IT, or Sales.',
+              hintByPattern: { p5: 'The department or team that owns or primarily uses this room or equipment resource.' } },
+            { id: 'purpose',        label: 'Purpose',             type: 'text',   example: 'e.g. Alerts, Invoices, Announcements, Recruitment',         patterns: ['p2','p3'],
+              exampleByPattern: { p2: 'e.g. ProjectCollaboration, TeamSite, Announcements' },
+              hint: 'Describes the communication function of this list. Use a noun such as Alerts, Announcements, or Invoices.',
+              hintByPattern: { p2: 'A short description of what this group is used for, for example ProjectCollaboration, TeamSite, or Announcements.' } },
+            { id: 'dlScope',        label: 'Scope',               type: 'select', options: ['Internal','External'],                                     patterns: ['p3'],           hint: 'Indicates whether this distribution list is used for internal communication only or also receives messages from external senders.' },
+            { id: 'sensitivity',    label: 'Sensitivity',         type: 'select', options: ['Public','Private','Confidential'],                          patterns: ['p2'],           hint: 'The sensitivity classification applied to this group, aligned with your organization\'s sensitivity labels.' },
+            { id: 'attribute',      label: 'Attribute',           type: 'select',
+              options: ['department','jobTitle','country','companyName','userType','employeeId','deviceOSType','deviceOwnership','deviceTrustType','deviceCategory','deviceManufacturer','managementType','accountEnabled','extensionAttribute','Custom'],
+              subField: { triggerValue: 'Custom', id: 'attributeCustom', label: 'Custom Attribute', placeholder: 'e.g. extensionAttribute5, onPremisesSyncEnabled' },
+              patterns: ['p1','p2'], hint: 'The user or device attribute used as the dynamic membership rule, such as department, jobTitle, or accountEnabled. Choose Custom to enter a non-standard attribute.' },
+            { id: 'attributeValue', label: 'Attribute Value',     type: 'text',   example: 'e.g. IT, E3, ManagedDevices, Finance',                      patterns: ['p1','p2'],      hint: 'The specific value of the selected attribute that determines membership, for example Sales when Attribute is Department.' },
+            { id: 'mbFunction',     label: 'Function',            type: 'text',   example: 'e.g. Invoices, Helpdesk, Recruitment, Info',                patterns: ['p4'],           hint: 'The operational purpose of this shared mailbox. Use a functional noun such as Helpdesk, Invoices, or Recruitment rather than a personal name.' },
+            { id: 'roomType',       label: 'Type',                type: 'select', options: ['Room','Equip','Custom'],
+              subField: { triggerValue: 'Custom', id: 'roomTypeCustom', label: 'Custom Type', placeholder: 'e.g. Desk, Locker, Vehicle' },
+              patterns: ['p5'],           hint: 'Select Room for meeting rooms and conference spaces, or Equip for bookable equipment such as projectors or vehicles. Select Custom to enter a non-standard resource type.' },
+            { id: 'location',       label: 'Location',            type: 'text',   example: 'e.g. AMS, NYC, LON, SYD',                                    patterns: ['p4','p5'],
+              exampleByPattern: { p4: 'e.g. NYC, LON, HQ' },
+              hint: 'A short location code identifying the building, city, or office where this resource is located. Use consistent abbreviations across all resources.',
+              hintByPattern: { p4: 'A short code identifying the office, building, or region this mailbox belongs to, for example NYC, LON, or HQ.' } },
+            { id: 'resourceName',   label: 'Name / Number',       type: 'text',   example: 'e.g. BoardRoom01, MeetingRoom02, Projector01',              patterns: ['p5'],           hint: 'A unique identifier for this resource within its location. Use a descriptive name followed by a two-digit number for consistent sorting, e.g. BoardRoom01.' },
+            { id: 'resource',       label: 'Role / Resource',     type: 'text',   example: 'e.g. GlobalAdmin, ExchangeAdmin, FinReport, AzureKeyVault', patterns: ['p6'],           hint: 'The Microsoft Entra role or Azure resource this PIM group grants just-in-time access to. Use a directory role name such as GlobalAdmin or ExchangeAdmin, or a specific Azure resource or group name such as FinReport or AzureKeyVault.' },
+            { id: 'accessType',     label: 'Access Type',         type: 'select', options: ['Eligible','Active','Custom'],
+              subField: { triggerValue: 'Custom', id: 'accessTypeCustom', label: 'Custom Access Type', placeholder: 'e.g. TimeBound, BreakGlass' },
+              patterns: ['p6'],           hint: 'Eligible means the user must activate the role before gaining access, requiring MFA or approval. Active means access is granted immediately without activation. Microsoft recommends Eligible for all privileged roles. Select Custom to enter a non-standard access type.' },
+            { id: 'environment',    label: 'Environment',         type: 'select', options: ['','Prod','Pilot','Test','Dev','Staging','Custom'],           patterns: ['p1','p2','p3','p4','p6'], subField: { triggerValue: 'Custom', id: 'environmentCustom', label: 'Custom Environment', placeholder: 'e.g. UAT, PreProd, DR' }, hint: 'The deployment stage this group targets. Use Pilot for items being trialed with a limited audience before full rollout, or select Custom to enter a different environment name.' }
         ]
     },
 
@@ -1602,7 +1625,7 @@ const CONFIG = {
 
     'defender-o365': {
         label: 'Defender for Office 365',
-        abbrev: 'DEF',
+        abbrev: 'MDO',
         patterns: [
             {
                 id: 'p1',
@@ -2024,6 +2047,7 @@ function renderFields() {
 
             const wrap  = document.createElement('div');
             wrap.className = 'field-group';
+            wrap.id = 'fieldwrap_' + field.id;
 
             const label = (field.labelByPattern && field.labelByPattern[state.pattern]) || field.label;
             const hint  = (field.hintByPattern && field.hintByPattern[state.pattern]) || field.hint;
@@ -2041,7 +2065,6 @@ function renderFields() {
 
             let input;
             if (field.type === 'multiselect') {
-                wrap.id = 'fieldwrap_' + field.id;
                 const cbGroup = document.createElement('div');
                 cbGroup.className = 'checkbox-group';
                 cbGroup.id = 'fld_' + field.id;
@@ -2184,7 +2207,8 @@ function renderFields() {
                     blank.value = '';
                     blank.textContent = 'Not selected';
                     input.appendChild(blank);
-                    (field.options || []).filter(o => (typeof o === 'string' ? o : o.value) !== '').forEach(opt => {
+                    const opts = (field.optionsByPattern && field.optionsByPattern[state.pattern]) || field.options || [];
+                    opts.filter(o => (typeof o === 'string' ? o : o.value) !== '').forEach(opt => {
                         const o = document.createElement('option');
                         o.value       = typeof opt === 'string' ? opt : opt.value;
                         o.textContent = typeof opt === 'string' ? opt : opt.label;
@@ -2272,6 +2296,33 @@ function renderFields() {
 
             container.appendChild(wrap);
         });
+
+    wireFieldToggles(allFields);
+}
+
+// A field can declare toggleByPattern to show one set of fields and hide another
+// depending on its own selected value (e.g. Membership Type swapping Function/Scope
+// for Attribute/Value). Wired after every field is rendered so sibling field-groups exist.
+function wireFieldToggles(allFields) {
+    allFields.filter(f => f.toggleByPattern && f.toggleByPattern[state.pattern]).forEach(field => {
+        const input = document.getElementById('fld_' + field.id);
+        if (!input) return;
+        const cfg = field.toggleByPattern[state.pattern];
+        const apply = () => {
+            const isDynamic = cfg.dynamicValues.includes(input.value);
+            const showIds = isDynamic ? cfg.dynamicFields : cfg.staticFields;
+            const hideIds = isDynamic ? cfg.staticFields : cfg.dynamicFields;
+            showIds.forEach(id => { const w = document.getElementById('fieldwrap_' + id); if (w) w.style.display = ''; });
+            hideIds.forEach(id => {
+                const w = document.getElementById('fieldwrap_' + id);
+                if (w) w.style.display = 'none';
+                const hiddenInput = document.getElementById('fld_' + id);
+                if (hiddenInput) hiddenInput.value = '';
+            });
+        };
+        input.addEventListener('change', () => { apply(); updatePreview(); });
+        apply();
+    });
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -2292,10 +2343,10 @@ function generateName() {
             const prefixVal = prefixEl.value;
             if (prefixVal === 'Custom') {
                 const customEl = document.getElementById('fld_prefixCustom');
-                const customVal = sanitize(customEl?.value?.trim() || '');
-                if (customVal) segs.push({ value: customVal, fixed: true });
+                const customVal = customEl?.value?.trim() || '';
+                if (customVal) segs.push({ value: processInput(customVal, casing, sep), fixed: false, sourceId: 'prefix' });
             } else if (prefixVal) {
-                segs.push({ value: prefixVal, fixed: true });
+                segs.push({ value: processInput(prefixVal, casing, sep), fixed: false, sourceId: 'prefix' });
             }
         }
     }
@@ -2309,7 +2360,7 @@ function generateName() {
         const fpEl = document.getElementById('fld_' + _freeformSkip);
         if (fpEl) {
             const fpRaw = fpEl.value.trim();
-            if (fpRaw) segs.push({ value: applyCaseToUserInput(sanitize(fpRaw), casing), fixed: false, sourceId: _freeformSkip });
+            if (fpRaw) segs.push({ value: processInput(fpRaw, casing, sep), fixed: false, sourceId: _freeformSkip });
         }
     }
 
@@ -2319,12 +2370,18 @@ function generateName() {
 
     pattern.segments.forEach(segId => {
         if (_freeformSkip && segId === _freeformSkip) return;
+
+        // Fields hidden by a toggleByPattern controller (see wireFieldToggles) never
+        // contribute to the generated name, even if a stale value lingers underneath.
+        const segWrap = document.getElementById('fieldwrap_' + segId);
+        if (segWrap && segWrap.style.display === 'none') return;
+
         const field = type.fields.find(f => f.id === segId);
 
         // ── Platform multiselect: join checked values with sep ────
         if (segId === 'platform') {
             const vals = [...document.querySelectorAll('#fld_platform input[type="checkbox"]:checked')]
-                .map(cb => applyCase(sanitize(cb.value), casing))
+                .map(cb => applyCase(sanitize(cb.value, sep), casing))
                 .filter(Boolean);
             if (vals.length) segs.push({ value: vals.join(sep), fixed: false, sourceId: segId });
             return;
@@ -2341,7 +2398,7 @@ function generateName() {
                 const subEl = document.getElementById('fld_disruptionCustom');
                 const cv = subEl?.value?.trim();
                 if (!cv) return;
-                disruptionVal = applyCaseToUserInput(sanitize(cv), casing);
+                disruptionVal = processInput(cv, casing, sep);
             } else {
                 disruptionVal = applyCase(raw, casing);
             }
@@ -2364,7 +2421,7 @@ function generateName() {
                     if (cb.value === 'Custom') {
                         const el = document.getElementById('fld_conditionCustom');
                         const cv = el?.value?.trim();
-                        return cv ? applyCaseToUserInput(sanitize(cv), casing) : null;
+                        return cv ? processInput(cv, casing, sep) : null;
                     }
                     return applyCase(cb.value, casing);
                 }).filter(Boolean);
@@ -2389,8 +2446,8 @@ function generateName() {
                 };
                 const grantVals = [...document.querySelectorAll('#fld_grantControl input[type="checkbox"]:checked')]
                     .map(cb => {
-                        if (cb.value === 'Custom') { const el = document.getElementById('fld_grantControlCustom'); const cv = el?.value?.trim(); return cv ? applyCaseToUserInput(sanitize(cv), casing) : null; }
-                        if (cb.value === 'AuthStrength') { const el = document.getElementById('fld_grantControlAuthStrength'); const cv = el?.value?.trim(); return cv ? applyCaseToUserInput(sanitize(cv), casing) : null; }
+                        if (cb.value === 'Custom') { const el = document.getElementById('fld_grantControlCustom'); const cv = el?.value?.trim(); return cv ? processInput(cv, casing, sep) : null; }
+                        if (cb.value === 'AuthStrength') { const el = document.getElementById('fld_grantControlAuthStrength'); const cv = el?.value?.trim(); return cv ? processInput(cv, casing, sep) : null; }
                         return grantValMap[cb.value] ? applyCase(grantValMap[cb.value], casing) : null;
                     }).filter(Boolean);
                 if (grantVals.length) {
@@ -2415,7 +2472,7 @@ function generateName() {
                 };
                 const sessionVals = [...document.querySelectorAll('#fld_sessionControl input[type="checkbox"]:checked')]
                     .map(cb => {
-                        if (cb.value === 'Custom') { const el = document.getElementById('fld_sessionControlCustom'); const cv = el?.value?.trim(); return cv ? applyCaseToUserInput(sanitize(cv), casing) : null; }
+                        if (cb.value === 'Custom') { const el = document.getElementById('fld_sessionControlCustom'); const cv = el?.value?.trim(); return cv ? processInput(cv, casing, sep) : null; }
                         return sessionValMap[cb.value] ? applyCase(sessionValMap[cb.value], casing) : null;
                     }).filter(Boolean);
                 if (sessionVals.length) {
@@ -2441,7 +2498,7 @@ function generateName() {
 
         // keepCase fields stay as typed
         if (field && field.keepCase) {
-            segs.push({ value: sanitize(raw), fixed: false, sourceId: segId });
+            segs.push({ value: sanitize(raw, sep), fixed: false, sourceId: segId });
             return;
         }
 
@@ -2449,7 +2506,7 @@ function generateName() {
         if (field && field.subField && matchesTrigger(raw, field.subField.triggerValue)) {
             const subEl  = document.getElementById('fld_' + field.subField.id);
             const subVal = subEl?.value?.trim();
-            if (subVal) segs.push({ value: applyCaseToUserInput(sanitize(subVal), casing), fixed: false, sourceId: segId });
+            if (subVal) segs.push({ value: processInput(subVal, casing, sep), fixed: false, sourceId: segId });
             return;
         }
 
@@ -2459,8 +2516,10 @@ function generateName() {
             return;
         }
 
-        const sanitized = sanitize(raw);
-        let val = (field && field.type === 'text') ? applyCaseToUserInput(sanitized, casing) : applyCase(sanitized, casing);
+        // textCase: select fields whose option values are all-caps acronyms (e.g. DYNU, RA) need
+        // the same lowercase-then-capitalize Pascal handling as free text, not applyCase's
+        // capitalize-first-letter-only behavior which would leave them as DYNU instead of Dynu.
+        let val = (field && (field.type === 'text' || field.textCase)) ? processInput(raw, casing, sep) : applyCase(sanitize(raw, sep), casing);
 
         // CA/EM policy: prepend numberPrefix to the number segment
         if (state.type === 'ca-policy' && pattern.numberPrefix && segId === 'number') {
@@ -2574,14 +2633,10 @@ function copyText(text) {
 // RESET
 // ═══════════════════════════════════════════════════════════════
 function resetForm() {
-    document.querySelectorAll('#fieldsContainer input, #fieldsContainer select').forEach(el => {
-        if (el.tagName === 'SELECT') el.selectedIndex = 0;
-        else if (el.type === 'checkbox' || el.type === 'radio') { el.checked = false; el.disabled = false; }
-        else el.value = '';
-    });
-    document.querySelectorAll('.subfield-wrap, #grantLogicGroup').forEach(el => el.style.display = 'none');
-    const grantAnd = document.querySelector('input[name="grantLogic"][value="AND"]');
-    if (grantAnd) grantAnd.checked = true;
+    // Rebuild all fields from scratch rather than clearing values in place, so subfields,
+    // grant-logic radios, and toggleByPattern visibility (see wireFieldToggles) all revert
+    // to their default state consistently, the same way a pattern switch already does.
+    renderFields();
     updatePreview();
 }
 
@@ -2592,8 +2647,14 @@ function addToHistory(name) {
     const abbrev = CONFIG[state.type].abbrev;
     state.history = state.history.filter(h => h.name !== name);
     state.history.unshift({ name, abbrev });
-    if (state.history.length > 8) state.history.pop();
+    if (state.history.length > 10) state.history.pop();
     localStorage.setItem('ngen-history', JSON.stringify(state.history));
+    renderHistory();
+}
+
+function clearHistory() {
+    state.history = [];
+    localStorage.removeItem('ngen-history');
     renderHistory();
 }
 
@@ -2708,43 +2769,67 @@ function generateDescription() {
 
     } else {
         // security-group
+        const membershipMap = { RA: 'role-assignable', DYNU: 'dynamic, based on user attributes', DYND: 'dynamic, based on device attributes' };
+
         if (pat === 'p1') {
-            const fn = get('function'), sc = get('scope');
-            if (fn || sc)
-                desc = `This security group is used for ${fn || '[Function]'} and applies to ${sc || '[Scope]'}.`;
+            const mtRaw   = get('membershipType');
+            const dept    = get('department');
+            const membershipClause = mtRaw ? ` This group is ${membershipMap[mtRaw]}.` : '';
+            const deptClause       = dept  ? ` It is owned by the ${dept} department.` : '';
+            if (mtRaw === 'DYNU' || mtRaw === 'DYND') {
+                const attrRaw = get('attribute');
+                const attr    = attrRaw === 'Custom' ? (get('attributeCustom') || attrRaw) : attrRaw;
+                const val     = get('attributeValue');
+                if (attrRaw || val)
+                    desc = `This security group automatically assigns membership based on the ${attr || '[Attribute]'} attribute with value ${val || '[Attribute Value]'}.${membershipClause}${deptClause}`;
+            } else {
+                const fn = get('function'), sc = get('scope');
+                if (fn || sc)
+                    desc = `This security group is used for ${fn || '[Function]'} and applies to ${sc || '[Scope]'}.${membershipClause}${deptClause}`;
+            }
         } else if (pat === 'p2') {
-            const dept = get('department'), gn = get('groupName');
-            if (dept || gn)
-                desc = `This Microsoft 365 Group supports ${gn || '[Name]'} collaboration for the ${dept || '[Department]'} department.`;
+            const mtRaw   = get('membershipType');
+            const dept    = get('department');
+            const sens    = get('sensitivity');
+            const membershipClause = mtRaw ? ` This group is ${membershipMap[mtRaw]}.` : '';
+            const sensClause       = sens  ? ` It is classified as ${sens}.` : '';
+            if (mtRaw === 'DYNU') {
+                const attrRaw = get('attribute');
+                const attr    = attrRaw === 'Custom' ? (get('attributeCustom') || attrRaw) : attrRaw;
+                const val     = get('attributeValue');
+                if (dept || attrRaw || val)
+                    desc = `This Microsoft 365 Group for the ${dept || '[Department]'} department automatically assigns membership based on the ${attr || '[Attribute]'} attribute with value ${val || '[Attribute Value]'}.${membershipClause}${sensClause}`;
+            } else {
+                const pur = get('purpose');
+                if (dept || pur)
+                    desc = `This Microsoft 365 Group supports ${pur || '[Purpose]'} for the ${dept || '[Department]'} department.${membershipClause}${sensClause}`;
+            }
         } else if (pat === 'p3') {
-            const dept = get('department'), pur = get('purpose');
-            if (dept || pur)
-                desc = `This distribution list delivers ${pur || '[Purpose]'} communications to the ${dept || '[Department]'} department.`;
+            const dept = get('department'), pur = get('purpose'), dlScopeRaw = get('dlScope');
+            if (dept || pur) {
+                const scopeClause = dlScopeRaw ? ` It accepts ${dlScopeRaw === 'External' ? 'messages from external senders' : 'internal messages only'}.` : '';
+                desc = `This distribution list delivers ${pur || '[Purpose]'} communications to the ${dept || '[Department]'} department.${scopeClause}`;
+            }
         } else if (pat === 'p4') {
-            const attrRaw = get('attribute');
-            const attr    = attrRaw === 'Custom' ? (get('attributeCustom') || '[Attribute]') : (attrRaw || '[Attribute]');
-            const val     = get('attributeValue');
-            if (attrRaw || val)
-                desc = `This dynamic group automatically assigns membership based on the ${attr} attribute with value ${val || '[Attribute Value]'}.`;
+            const dept = get('department'), fn = get('mbFunction'), loc = get('location');
+            if (dept || fn) {
+                const locClause = loc ? ` It is based in ${loc}.` : '';
+                desc = `This shared mailbox provides ${dept || '[Department]'} team members access to ${fn || '[Function]'} communications.${locClause}`;
+            }
         } else if (pat === 'p5') {
-            const dept = get('department'), fn = get('mbFunction');
-            if (dept || fn)
-                desc = `This shared mailbox provides ${dept || '[Department]'} team members access to ${fn || '[Function]'} communications.`;
+            const rtRaw = get('roomType'), dept = get('department'), loc = get('location'), nm = get('resourceName');
+            const rt = rtRaw === 'Custom' ? (get('roomTypeCustom') || '[Type]') : (rtRaw || '[Type]');
+            if (rtRaw || loc || nm) {
+                const deptClause = dept ? ` It is used by the ${dept} department.` : '';
+                desc = `This ${rt} resource is located at ${loc || '[Location]'} and is identified as ${nm || '[Name]'}.${deptClause}`;
+            }
         } else if (pat === 'p6') {
-            const rt = get('roomType'), loc = get('location'), nm = get('resourceName');
-            if (rt || loc || nm)
-                desc = `This ${rt || '[Type]'} resource is located at ${loc || '[Location]'} and is identified as ${nm || '[Name]'}.`;
-        } else if (pat === 'p7') {
-            const res = get('resource'), rol = get('role'), at = get('accessType');
-            if (res || rol || at)
-                desc = `This PIM group provides ${at || '[Access Type]'} just-in-time access to ${res || '[Resource]'} for users in the ${rol || '[Role]'} role.`;
-        } else if (pat === 'p8') {
-            const roleRaw = get('entraRole');
-            const role    = roleRaw === 'Custom' ? (get('entraRoleCustom') || '[Role]') : (roleRaw || '[Role]');
-            const scope   = get('roleScope');
-            if (roleRaw || scope) {
-                const scopeClause = scope ? ` (scope: ${scope})` : '';
-                desc = `This role-assignable group is mapped to the ${role} Microsoft Entra ID directory role${scopeClause}. The role assignment flag is set when the group is created and cannot be changed afterward.`;
+            const res = get('resource'), sc = get('scope');
+            const atRaw = get('accessType');
+            const at = atRaw === 'Custom' ? (get('accessTypeCustom') || '[Access Type]') : (atRaw || '[Access Type]');
+            if (res || sc || atRaw) {
+                const scopeClause = sc ? ` It is scoped to ${sc}.` : '';
+                desc = `This PIM group provides ${at} just-in-time access to ${res || '[Role / Resource]'}.${scopeClause}`;
             }
         }
     }
@@ -2828,44 +2913,62 @@ function copyAIPrompt() {
         }
     } else {
         // security-group
+        const membershipMap = { RA: 'Role Assignable', DYNU: 'Dynamic User', DYND: 'Dynamic Device' };
+
         if (pat === 'p1') {
-            const fn = get('function'), sc = get('scope');
-            if (fn)  lines.push(`Function: ${fn}`);
-            if (sc)  lines.push(`Scope: ${sc}`);
+            const mtRaw = get('membershipType'), dept = get('department');
+            if (mtRaw)   lines.push(`Membership Type: ${membershipMap[mtRaw] || mtRaw}`);
+            if (dept)    lines.push(`Department: ${dept}`);
+            if (mtRaw === 'DYNU' || mtRaw === 'DYND') {
+                const attrRaw = get('attribute');
+                const attr = attrRaw === 'Custom' ? (get('attributeCustom') || attrRaw) : attrRaw;
+                const val = get('attributeValue');
+                if (attr) lines.push(`Attribute: ${attr}`);
+                if (val)  lines.push(`Attribute Value: ${val}`);
+            } else {
+                const fn = get('function'), sc = get('scope');
+                if (fn)  lines.push(`Function: ${fn}`);
+                if (sc)  lines.push(`Scope: ${sc}`);
+            }
         } else if (pat === 'p2') {
-            const dept = get('department'), gn = get('groupName');
-            if (dept) lines.push(`Department: ${dept}`);
-            if (gn)   lines.push(`Group Name: ${gn}`);
+            const mtRaw = get('membershipType'), dept = get('department'), sens = get('sensitivity');
+            if (mtRaw)   lines.push(`Membership Type: ${membershipMap[mtRaw] || mtRaw}`);
+            if (dept)    lines.push(`Department: ${dept}`);
+            if (mtRaw === 'DYNU') {
+                const attrRaw = get('attribute');
+                const attr = attrRaw === 'Custom' ? (get('attributeCustom') || attrRaw) : attrRaw;
+                const val = get('attributeValue');
+                if (attr) lines.push(`Attribute: ${attr}`);
+                if (val)  lines.push(`Attribute Value: ${val}`);
+            } else {
+                const pur = get('purpose');
+                if (pur) lines.push(`Purpose: ${pur}`);
+            }
+            if (sens) lines.push(`Sensitivity: ${sens}`);
         } else if (pat === 'p3') {
-            const dept = get('department'), pur = get('purpose');
-            if (dept) lines.push(`Department: ${dept}`);
-            if (pur)  lines.push(`Purpose: ${pur}`);
+            const dlScopeRaw = get('dlScope'), dept = get('department'), pur = get('purpose');
+            if (dlScopeRaw) lines.push(`Scope: ${dlScopeRaw}`);
+            if (dept)       lines.push(`Department: ${dept}`);
+            if (pur)        lines.push(`Purpose: ${pur}`);
         } else if (pat === 'p4') {
-            const attrRaw = get('attribute');
-            const attr = attrRaw === 'Custom' ? (get('attributeCustom') || attrRaw) : attrRaw;
-            const val = get('attributeValue');
-            if (attr) lines.push(`Attribute: ${attr}`);
-            if (val)  lines.push(`Attribute Value: ${val}`);
-        } else if (pat === 'p5') {
-            const dept = get('department'), fn = get('mbFunction');
+            const dept = get('department'), fn = get('mbFunction'), loc = get('location');
             if (dept) lines.push(`Department: ${dept}`);
             if (fn)   lines.push(`Function: ${fn}`);
+            if (loc)  lines.push(`Location: ${loc}`);
+        } else if (pat === 'p5') {
+            const rtRaw = get('roomType'), dept = get('department'), loc = get('location'), nm = get('resourceName');
+            const rt = rtRaw === 'Custom' ? (get('roomTypeCustom') || rtRaw) : rtRaw;
+            if (rt)   lines.push(`Type: ${rt}`);
+            if (dept) lines.push(`Department: ${dept}`);
+            if (loc)  lines.push(`Location: ${loc}`);
+            if (nm)   lines.push(`Name: ${nm}`);
         } else if (pat === 'p6') {
-            const rt = get('roomType'), loc = get('location'), nm = get('resourceName');
-            if (rt)  lines.push(`Type: ${rt}`);
-            if (loc) lines.push(`Location: ${loc}`);
-            if (nm)  lines.push(`Name: ${nm}`);
-        } else if (pat === 'p7') {
-            const res = get('resource'), rol = get('role'), at = get('accessType');
-            if (res) lines.push(`Resource: ${res}`);
-            if (rol) lines.push(`Role: ${rol}`);
+            const res = get('resource'), sc = get('scope');
+            const atRaw = get('accessType');
+            const at = atRaw === 'Custom' ? (get('accessTypeCustom') || atRaw) : atRaw;
+            if (res) lines.push(`Role / Resource: ${res}`);
+            if (sc)  lines.push(`Scope: ${sc}`);
             if (at)  lines.push(`Access Type: ${at}`);
-        } else if (pat === 'p8') {
-            const roleRaw = get('entraRole');
-            const role = roleRaw === 'Custom' ? (get('entraRoleCustom') || roleRaw) : roleRaw;
-            const scope = get('roleScope');
-            if (role)  lines.push(`Entra ID Role: ${role}`);
-            if (scope) lines.push(`Scope: ${scope}`);
         }
     }
 
@@ -2887,8 +2990,20 @@ function copyAIPrompt() {
 // ═══════════════════════════════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════════════════════════════
-function sanitize(val) {
-    return val.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+function sanitize(val, sep) {
+    // Any run of characters that isn't a letter/digit/space becomes a single separator,
+    // then stray separators/whitespace left at the edges are trimmed off.
+    const escSep = sep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return val
+        .replace(/[^a-zA-Z0-9\s]+/g, sep)
+        .replace(new RegExp('^(?:' + escSep + '|\\s)+|(?:' + escSep + '|\\s)+$', 'g'), '');
+}
+
+// Free-text user input: sanitized + case-styled, unless Case Style is "As Typed" (none),
+// in which case the value is used exactly as entered.
+function processInput(raw, casing, sep) {
+    if (casing === 'none') return raw;
+    return applyCaseToUserInput(sanitize(raw, sep), casing);
 }
 
 function applyCase(val, casing) {
