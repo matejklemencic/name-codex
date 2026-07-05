@@ -965,7 +965,7 @@
     </div>
 </div>
 
-<footer>Name Codex v1.0 &middot; Built by Matej Klemen&#269;i&#269; &middot; <a href="https://www.matej.guru" target="_blank" rel="noopener" style="color: rgba(255,255,255,0.75); text-decoration: none;">www.matej.guru</a> &middot; &copy; 2026</footer>
+<footer>Name Codex v26.07.1 &middot; Built by Matej Klemen&#269;i&#269; &middot; <a href="https://www.matej.guru" target="_blank" rel="noopener" style="color: rgba(255,255,255,0.75); text-decoration: none;">www.matej.guru</a> &middot; &copy; 2026</footer>
 <div id="toast"></div>
 
 <script>
@@ -1311,9 +1311,11 @@ const CONFIG = {
                     { value: 'FirewallRules',       label: 'Microsoft Defender Firewall Rules' },
                     { value: 'UpdateControls',      label: 'Defender Update Controls' },
                     { value: 'EDR',                 label: 'Endpoint Detection and Response' },
-                    { value: 'DeviceControl',       label: 'Device Control' }
+                    { value: 'DeviceControl',       label: 'Device Control' },
+                    { value: 'Custom',              label: 'Custom' }
                 ],
-                hint: 'The endpoint security profile type this policy configures. Available options depend on the selected operating system, since not every profile type is supported on every platform.'
+                subField: { triggerValue: 'Custom', id: 'epsProfileTypeWindowsCustom', label: 'Custom Profile Type', placeholder: 'e.g. AccountProtection, LocalAdmin' },
+                hint: 'The endpoint security profile type this policy configures. Available options depend on the selected operating system, since not every profile type is supported on every platform. Select Custom to enter a non-standard profile type.'
             },
 
             // ── p2: macOS profile types ────────────────────────────
@@ -1322,9 +1324,11 @@ const CONFIG = {
                 options: [
                     { value: 'Antivirus',           label: 'Microsoft Defender Antivirus' },
                     { value: 'AntivirusExclusions', label: 'Microsoft Defender Antivirus Exclusions' },
-                    { value: 'EDR',                 label: 'Endpoint Detection and Response' }
+                    { value: 'EDR',                 label: 'Endpoint Detection and Response' },
+                    { value: 'Custom',              label: 'Custom' }
                 ],
-                hint: 'The endpoint security profile type this policy configures. Available options depend on the selected operating system, since not every profile type is supported on every platform.'
+                subField: { triggerValue: 'Custom', id: 'epsProfileTypeMacOSCustom', label: 'Custom Profile Type', placeholder: 'e.g. FileVault, GatekeeperControl' },
+                hint: 'The endpoint security profile type this policy configures. Available options depend on the selected operating system, since not every profile type is supported on every platform. Select Custom to enter a non-standard profile type.'
             },
 
             // ── p3: Linux profile types ────────────────────────────
@@ -1334,9 +1338,11 @@ const CONFIG = {
                     { value: 'Antivirus',           label: 'Microsoft Defender Antivirus' },
                     { value: 'AntivirusExclusions', label: 'Microsoft Defender Antivirus Exclusions' },
                     { value: 'EDR',                 label: 'Endpoint Detection and Response' },
-                    { value: 'GlobalExclusions',    label: 'Microsoft Defender Global Exclusions (AV+EDR)' }
+                    { value: 'GlobalExclusions',    label: 'Microsoft Defender Global Exclusions (AV+EDR)' },
+                    { value: 'Custom',              label: 'Custom' }
                 ],
-                hint: 'The endpoint security profile type this policy configures. Available options depend on the selected operating system, since not every profile type is supported on every platform.'
+                subField: { triggerValue: 'Custom', id: 'epsProfileTypeLinuxCustom', label: 'Custom Profile Type', placeholder: 'e.g. OnDemandScan, ProxyConfig' },
+                hint: 'The endpoint security profile type this policy configures. Available options depend on the selected operating system, since not every profile type is supported on every platform. Select Custom to enter a non-standard profile type.'
             },
 
             // ── shared: Assignments ────────────────────────────────
