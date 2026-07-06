@@ -522,11 +522,38 @@
         .seg-chip {
             background: var(--chip-bg);
             color: #fff;
-            padding: 3px 10px;
+            padding: 3px 10px 3px 6px;
             border-radius: 20px;
             font-size: 11px;
             font-weight: 600;
             white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            cursor: grab;
+            transition: opacity 0.15s, box-shadow 0.1s;
+        }
+
+        .seg-chip.dragging {
+            opacity: 0.4;
+            cursor: grabbing;
+        }
+
+        .seg-chip.drag-over-before { box-shadow: -3px 0 0 0 var(--blue); }
+        .seg-chip.drag-over-after  { box-shadow: 3px 0 0 0 var(--blue); }
+
+        .seg-grip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            line-height: 0;
+        }
+
+        .seg-grip svg {
+            display: block;
+            width: 12px;
+            height: 12px;
         }
 
         .seg-fixed { background: var(--chip-fixed); }
@@ -899,14 +926,14 @@
             <div class="options-row">
                 <div class="option-group">
                     <label>Separator</label>
-                    <select id="separator" onchange="updatePreview()">
+                    <select id="separator" onchange="onFormatPrefChange()">
                         <option value="-">Hyphen ( - )</option>
                         <option value="_">Underscore ( _ )</option>
                     </select>
                 </div>
                 <div class="option-group">
                     <label>Case Style</label>
-                    <select id="casing" onchange="updatePreview()">
+                    <select id="casing" onchange="onFormatPrefChange()">
                         <option value="pascal" selected>PascalCase</option>
                         <option value="upper">UPPERCASE</option>
                         <option value="lower">lowercase</option>
@@ -1017,11 +1044,13 @@ const CONFIG = {
               options: [
                 { value: 'RO',       label: 'Read Only' },
                 { value: 'RW',       label: 'Read and Write' },
-                { value: 'AuthOnly', label: 'Authentication Only (SSO)' }
+                { value: 'AuthOnly', label: 'Authentication Only (SSO)' },
+                { value: 'Custom',   label: 'Custom' }
               ],
-              patterns: ['p1','p2','p3','p4'], hint: 'The access level this app registration requires. RO: the app only reads data and has no write, manage, or delete permissions. RW: the app has at least one write, manage, full control, or delete permission. AuthOnly: the app is used exclusively for SSO authentication and has no API permissions assigned. This is the most stable and security-relevant segment of the name; choose carefully at creation time.' },
+              subField: { triggerValue: 'Custom', id: 'accessLevelCustom', label: 'Custom Access Level', placeholder: 'e.g. Elevated, Delegated' },
+              patterns: ['p1','p2','p3','p4'], hint: 'The access level this app registration requires. RO: the app only reads data and has no write, manage, or delete permissions. RW: the app has at least one write, manage, full control, or delete permission. AuthOnly: the app is used exclusively for SSO authentication and has no API permissions assigned. This is the most stable and security-relevant segment of the name; choose carefully at creation time. Select Custom to enter a non-standard access level.' },
             { id: 'environment', type: 'select', label: 'Environment',          options: ['','Prod','Pilot','Test','Dev','Staging','Custom'], example: 'e.g. Prod (leave blank for production-only tools)', patterns: ['p1','p2','p3','p4'], subField: { triggerValue: 'Custom', id: 'environmentCustom', label: 'Custom Environment', placeholder: 'e.g. UAT, PreProd, DR' }, hint: 'The deployment stage this app registration targets. Use Pilot for items being trialed with a limited audience before full rollout, or select Custom to enter a different environment name.' },
-            { id: 'version',     type: 'text',   label: 'Version',   example: 'e.g. v1, v2, 2026-06-16', patterns: ['p1','p2','p3','p4'], preserveLiteral: true, hint: 'An optional identifier to track changes to this app registration over time. Use either a sequential format (v1, v2, v3) or a reverse date format (e.g. 2026-06-16), which is easier to sort and compare chronologically. Leave blank if version tracking is not needed.' }
+            { id: 'version',     type: 'text',   label: 'Version',   example: 'e.g. v1, v2, 2026-06-16', patterns: ['p1','p2','p3','p4'], hint: 'An optional identifier to track changes to this app registration over time. Use either a sequential format (v1, v2, v3) or a reverse date format (e.g. 2026-06-16), which is easier to sort and compare chronologically. Leave blank if version tracking is not needed.' }
         ]
     },
 
@@ -1075,7 +1104,7 @@ const CONFIG = {
               ],
               subField: { triggerValue: 'Custom', id: 'cloudAppsCustom', label: 'Custom Scope', placeholder: 'e.g. Exchange Online, SharePoint Online, Teams, Azure Management, Authentication Context, Salesforce' },
               example: 'e.g. AllApps, MFARegistration', patterns: ['p1','p2'], hint: 'The scope this policy targets: a cloud application, a user action, or an authentication context. Use All Apps to ensure every resource is covered. Select MFA Registration or Register or Join Device for policies targeting user actions. Choose Custom to enter a specific third-party or internal application name.' },
-            { id: 'grantControl', label: 'Grant', type: 'multiselect', keepCase: true,
+            { id: 'grantControl', label: 'Grant', type: 'multiselect',
               options: [
                 { value: 'Block',           label: 'Block Access',                       exclusive: true },
                 { value: 'MFA',             label: 'Require MFA',                        mutuallyExclusive: ['AuthStrength'] },
@@ -1088,7 +1117,7 @@ const CONFIG = {
               ],
               subField: { triggerValue: 'Custom', id: 'grantControlCustom', label: 'Custom Grant Control', placeholder: 'e.g. TermsOfUse, RiskRemediation' },
               patterns: ['p1','p2','p3','p4'], hint: 'Select Block Access to deny access entirely; all other grant controls will be disabled. Otherwise select one or more controls to enforce when access is allowed. MFA and Authentication Strength are mutually exclusive. Require Password Change cannot be combined with other grant controls. Use AND to require all selected controls, or OR to require at least one.' },
-            { id: 'sessionControl', label: 'Session', type: 'multiselect', keepCase: true,
+            { id: 'sessionControl', label: 'Session', type: 'multiselect',
               options: [
                 { value: 'AppRestrictions',   label: 'App Enforced Restrictions' },
                 { value: 'AppControl',        label: 'Conditional Access App Control' },
@@ -1137,7 +1166,7 @@ const CONFIG = {
               ],
               subField: { triggerValue: 'Custom', id: 'conditionCustom', label: 'Custom Condition', placeholder: 'e.g. AuthFlow, PasswordlessOnly' },
               patterns: ['p1','p2','p3','p4'], hint: 'The conditions that trigger this policy. Select one or more conditions that apply. Location conditions (Trusted Location, Non-Trusted Location, Blocked Locations) can be combined with other conditions. Multiple selections are joined with the same separator used for the rest of the policy name.' },
-            { id: 'version',   label: 'Version',     type: 'text',     example: 'e.g. v1, v2, 2026-06-16', patterns: ['p1','p2','p3','p4'], preserveLiteral: true, hint: 'An optional identifier to track changes to this policy over time. Use either a sequential format (v1, v2, v3) or a reverse date format (e.g. 2026-06-16), which is easier to sort and compare chronologically. Leave blank if version tracking is not needed.' },
+            { id: 'version',   label: 'Version',     type: 'text',     example: 'e.g. v1, v2, 2026-06-16', patterns: ['p1','p2','p3','p4'], hint: 'An optional identifier to track changes to this policy over time. Use either a sequential format (v1, v2, v3) or a reverse date format (e.g. 2026-06-16), which is easier to sort and compare chronologically. Leave blank if version tracking is not needed.' },
             { id: 'disruption', label: 'Disruption Type', type: 'select',
               options: [
                 { value: 'MFAServiceOutage',        label: 'MFA Outage' },
@@ -1246,7 +1275,9 @@ const CONFIG = {
               hint: 'Describes the communication function of this list. Use a noun such as Alerts, Announcements, or Invoices.',
               hintByPattern: { p2: 'A short description of what this group is used for, for example ProjectCollaboration, TeamSite, or Announcements.' } },
             { id: 'dlScope',        label: 'Scope',               type: 'select', options: ['Internal','External'],                                     patterns: ['p3'],           hint: 'Indicates whether this distribution list is used for internal communication only or also receives messages from external senders.' },
-            { id: 'sensitivity',    label: 'Sensitivity',         type: 'select', options: ['Public','Private','Confidential'],                          patterns: ['p2'],           hint: 'The sensitivity classification applied to this group, aligned with your organization\'s sensitivity labels.' },
+            { id: 'sensitivity',    label: 'Sensitivity',         type: 'select', options: ['Public','Private','Confidential','Custom'],
+              subField: { triggerValue: 'Custom', id: 'sensitivityCustom', label: 'Custom Sensitivity', placeholder: 'e.g. HighlyRestricted, Internal' },
+              patterns: ['p2'],           hint: 'The sensitivity classification applied to this group, aligned with your organization\'s sensitivity labels. Select Custom to enter a non-standard sensitivity label.' },
             { id: 'attribute',      label: 'Attribute',           type: 'select',
               options: ['department','jobTitle','country','companyName','userType','employeeId','deviceOSType','deviceOwnership','deviceTrustType','deviceCategory','deviceManufacturer','managementType','accountEnabled','extensionAttribute','Custom'],
               subField: { triggerValue: 'Custom', id: 'attributeCustom', label: 'Custom Attribute', placeholder: 'e.g. extensionAttribute5, onPremisesSyncEnabled' },
@@ -1275,26 +1306,26 @@ const CONFIG = {
         patterns: [
             {
                 id: 'p1',
-                name: '[NNN]-[ScopeTag]-Windows-[ProfileType]-[Assignments]-[Environment]-[Version]',
+                name: '[NNN]-[ScopeTag]-Windows-[ProfileType]-[Assignments]-[Descriptor]-[Environment]-[Version]',
                 desc: 'Endpoint security policies for Windows devices, covering antivirus, firewall, attack surface reduction, and endpoint detection and response.',
                 badge: 'WINDOWS', badgeColor: 'blue',
-                segments: ['intuneNumber', 'intuneScopeTag', 'epsProfileTypeWindows', 'epsAssignments', 'epsEnvironment', 'epsVersion'],
+                segments: ['intuneNumber', 'intuneScopeTag', 'epsProfileTypeWindows', 'epsAssignments', 'epsDescriptor', 'epsEnvironment', 'epsVersion'],
                 fixedInfix: { afterSegmentId: 'intuneScopeTag', value: 'Windows' }
             },
             {
                 id: 'p2',
-                name: '[NNN]-[ScopeTag]-macOS-[ProfileType]-[Assignments]-[Environment]-[Version]',
+                name: '[NNN]-[ScopeTag]-macOS-[ProfileType]-[Assignments]-[Descriptor]-[Environment]-[Version]',
                 desc: 'Endpoint security policies for macOS devices, covering antivirus and endpoint detection and response.',
                 badge: 'MACOS', badgeColor: 'gray',
-                segments: ['intuneNumber', 'intuneScopeTag', 'epsProfileTypeMacOS', 'epsAssignments', 'epsEnvironment', 'epsVersion'],
+                segments: ['intuneNumber', 'intuneScopeTag', 'epsProfileTypeMacOS', 'epsAssignments', 'epsDescriptor', 'epsEnvironment', 'epsVersion'],
                 fixedInfix: { afterSegmentId: 'intuneScopeTag', value: 'macOS' }
             },
             {
                 id: 'p3',
-                name: '[NNN]-[ScopeTag]-Linux-[ProfileType]-[Assignments]-[Environment]-[Version]',
+                name: '[NNN]-[ScopeTag]-Linux-[ProfileType]-[Assignments]-[Descriptor]-[Environment]-[Version]',
                 desc: 'Endpoint security policies for Linux devices, covering antivirus, endpoint detection and response, and global exclusions.',
                 badge: 'LINUX', badgeColor: 'amber',
-                segments: ['intuneNumber', 'intuneScopeTag', 'epsProfileTypeLinux', 'epsAssignments', 'epsEnvironment', 'epsVersion'],
+                segments: ['intuneNumber', 'intuneScopeTag', 'epsProfileTypeLinux', 'epsAssignments', 'epsDescriptor', 'epsEnvironment', 'epsVersion'],
                 fixedInfix: { afterSegmentId: 'intuneScopeTag', value: 'Linux' }
             },
         ],
@@ -1303,13 +1334,13 @@ const CONFIG = {
             {
                 id: 'epsProfileTypeWindows', label: 'Profile Type', type: 'select', patterns: ['p1'],
                 options: [
-                    { value: 'SecurityExperience',  label: 'Windows Security Experience' },
+                    { value: 'AntivirusExperience', label: 'Windows Security Experience' },
                     { value: 'Antivirus',           label: 'Microsoft Defender Antivirus' },
                     { value: 'AntivirusExclusions', label: 'Microsoft Defender Antivirus Exclusions' },
                     { value: 'ASR',                 label: 'Attack Surface Reduction Rules' },
                     { value: 'Firewall',            label: 'Microsoft Defender Firewall' },
                     { value: 'FirewallRules',       label: 'Microsoft Defender Firewall Rules' },
-                    { value: 'UpdateControls',      label: 'Defender Update Controls' },
+                    { value: 'AntivirusUpdate',     label: 'Defender Update Controls' },
                     { value: 'EDR',                 label: 'Endpoint Detection and Response' },
                     { value: 'DeviceControl',       label: 'Device Control' },
                     { value: 'Custom',              label: 'Custom' }
@@ -1338,7 +1369,6 @@ const CONFIG = {
                     { value: 'Antivirus',           label: 'Microsoft Defender Antivirus' },
                     { value: 'AntivirusExclusions', label: 'Microsoft Defender Antivirus Exclusions' },
                     { value: 'EDR',                 label: 'Endpoint Detection and Response' },
-                    { value: 'GlobalExclusions',    label: 'Microsoft Defender Global Exclusions (AV+EDR)' },
                     { value: 'Custom',              label: 'Custom' }
                 ],
                 subField: { triggerValue: 'Custom', id: 'epsProfileTypeLinuxCustom', label: 'Custom Profile Type', placeholder: 'e.g. OnDemandScan, ProxyConfig' },
@@ -1357,6 +1387,13 @@ const CONFIG = {
                 hint: 'The group this policy is assigned to. Choose All Users or All Devices for a broad rollout, or Custom to target a specific group, optionally narrowed further using assignment filters.'
             },
 
+            // ── shared: Descriptor ─────────────────────────────────
+            {
+                id: 'epsDescriptor', label: 'Descriptor', type: 'text', patterns: ['p1', 'p2', 'p3'],
+                example: 'e.g. AttackSurfaceReduction, DefenderBaseline, FirewallRules',
+                hint: 'An optional description of what this policy covers, such as the rules it enforces. Leave blank if not needed.'
+            },
+
             // ── shared: Environment ────────────────────────────────
             {
                 id: 'epsEnvironment', label: 'Environment', type: 'select', patterns: ['p1', 'p2', 'p3'],
@@ -1367,7 +1404,7 @@ const CONFIG = {
 
             // ── shared: Version ────────────────────────────────────
             {
-                id: 'epsVersion', label: 'Version', type: 'text', patterns: ['p1', 'p2', 'p3'], preserveLiteral: true,
+                id: 'epsVersion', label: 'Version', type: 'text', patterns: ['p1', 'p2', 'p3'],
                 example: 'e.g. v1, v2, 2026-06-16',
                 hint: 'An optional identifier to track changes to this policy over time, such as v1 or a date.'
             },
@@ -1393,20 +1430,19 @@ const CONFIG = {
         abbrev: 'INT',
         patterns: [
             {
+                id: 'p2',
+                name: '[NNN]-[ScopeTag]-[OSType]-[Assignments]-[Descriptor]-[Environment]-[Version]',
+                desc: 'Configuration profile that pushes settings to enrolled devices, such as Wi-Fi, VPN, email, or endpoint protection. Can also cover Intune scripts and remediation scripts.',
+                badge: 'CONFIGURATION POLICY', badgeColor: 'teal',
+                segments: ['intuneNumber', 'intuneScopeTag', 'osType2', 'cfgAssignments', 'cfgDescriptor', 'cfgEnvironment', 'cfgVersion']
+            },
+            {
                 id: 'p1',
                 name: '[NNN]-[ScopeTag]-[OSType]-Compliance-[Assignments]-[Descriptor]-[Environment]-[Version]',
                 desc: 'Device compliance policy that evaluates whether a device meets your organization\'s security requirements.',
                 badge: 'COMPLIANCE POLICY', badgeColor: 'blue',
                 segments: ['intuneNumber', 'intuneScopeTag', 'osType', 'cpAssignments', 'cpDescriptor', 'cpEnvironment', 'cpVersion'],
                 fixedInfix: { afterSegmentId: 'osType', value: 'Compliance' }
-            },
-            {
-                id: 'p2',
-                name: '[NNN]-[ScopeTag]-[OSType]-Configuration-[Assignments]-[Descriptor]-[Environment]-[Version]',
-                desc: 'Configuration profile that pushes settings to enrolled devices, such as Wi-Fi, VPN, email, or endpoint protection.',
-                badge: 'CONFIGURATION POLICY', badgeColor: 'teal',
-                segments: ['intuneNumber', 'intuneScopeTag', 'osType2', 'cfgAssignments', 'cfgDescriptor', 'cfgEnvironment', 'cfgVersion'],
-                fixedInfix: { afterSegmentId: 'osType2', value: 'Configuration' }
             },
             {
                 id: 'p3',
@@ -1433,9 +1469,11 @@ const CONFIG = {
                     { value: 'macOS',   label: 'macOS' },
                     { value: 'iOS',     label: 'iOS' },
                     { value: 'iPadOS',  label: 'iPadOS' },
-                    { value: 'Android', label: 'Android' }
+                    { value: 'Android', label: 'Android' },
+                    { value: 'Custom',  label: 'Custom' }
                 ],
-                hint: 'The platform this policy targets. Each operating system requires its own policy.'
+                subField: { triggerValue: 'Custom', id: 'osTypeCustom', label: 'Custom Operating System', placeholder: 'e.g. tvOS, visionON' },
+                hint: 'The platform this policy targets. Each operating system requires its own policy. Select Custom to enter a platform not listed here.'
             },
             {
                 id: 'cpAssignments', label: 'Assignments', type: 'select', patterns: ['p1'],
@@ -1467,7 +1505,7 @@ const CONFIG = {
                 hint: 'The deployment stage this policy targets. Use Pilot for items being trialed with a limited audience before full rollout, or select Custom to enter a different environment name.'
             },
             {
-                id: 'cpVersion', label: 'Version', type: 'text', patterns: ['p1'], preserveLiteral: true,
+                id: 'cpVersion', label: 'Version', type: 'text', patterns: ['p1'],
                 example: 'e.g. v1, v2, 2026-06-16',
                 hint: 'An optional identifier to track changes to this policy over time, such as v1 or a date.'
             },
@@ -1480,9 +1518,11 @@ const CONFIG = {
                     { value: 'macOS',   label: 'macOS' },
                     { value: 'iOS',     label: 'iOS' },
                     { value: 'iPadOS',  label: 'iPadOS' },
-                    { value: 'Android', label: 'Android' }
+                    { value: 'Android', label: 'Android' },
+                    { value: 'Custom',  label: 'Custom' }
                 ],
-                hint: 'The platform this policy targets. Each operating system requires its own policy.'
+                subField: { triggerValue: 'Custom', id: 'osType2Custom', label: 'Custom Operating System', placeholder: 'e.g. tvOS, visionON' },
+                hint: 'The platform this policy targets. Each operating system requires its own policy. Select Custom to enter a platform not listed here.'
             },
             {
                 id: 'cfgAssignments', label: 'Assignments', type: 'select', patterns: ['p2'],
@@ -1514,7 +1554,7 @@ const CONFIG = {
                 hint: 'The deployment stage this policy targets. Use Pilot for items being trialed with a limited audience before full rollout, or select Custom to enter a different environment name.'
             },
             {
-                id: 'cfgVersion', label: 'Version', type: 'text', patterns: ['p2'], preserveLiteral: true,
+                id: 'cfgVersion', label: 'Version', type: 'text', patterns: ['p2'],
                 example: 'e.g. v1, v2, 2026-06-16',
                 hint: 'An optional identifier to track changes to this policy over time, such as v1 or a date.'
             },
@@ -1526,9 +1566,10 @@ const CONFIG = {
                     { value: 'iOS',     label: 'iOS / iPadOS' },
                     { value: 'Android', label: 'Android' },
                     { value: 'Windows', label: 'Windows' },
-                    { value: 'WIP',     label: 'Windows Information Protection (WIP)' }
+                    { value: 'Custom',  label: 'Custom' }
                 ],
-                hint: 'The platform this app protection policy targets.'
+                subField: { triggerValue: 'Custom', id: 'appProtPlatformCustom', label: 'Custom Platform', placeholder: 'e.g. tvOS, visionON' },
+                hint: 'The platform this app protection policy targets. Select Custom to enter a platform not listed here.'
             },
             {
                 id: 'appProtAssignments', label: 'Assignments', type: 'text', patterns: ['p3'],
@@ -1555,7 +1596,7 @@ const CONFIG = {
                 hint: 'The deployment stage this policy targets. Use Pilot for items being trialed with a limited audience before full rollout, or select Custom to enter a different environment name.'
             },
             {
-                id: 'appProtVersion', label: 'Version', type: 'text', patterns: ['p3'], preserveLiteral: true,
+                id: 'appProtVersion', label: 'Version', type: 'text', patterns: ['p3'],
                 example: 'e.g. v1, v2, 2026-06-16',
                 hint: 'An optional identifier to track changes to this policy over time, such as v1 or a date.'
             },
@@ -1607,7 +1648,7 @@ const CONFIG = {
                 hint: 'The deployment stage this policy targets. Use Pilot for items being trialed with a limited audience before full rollout, or select Custom to enter a different environment name.'
             },
             {
-                id: 'appCfgVersion', label: 'Version', type: 'text', patterns: ['p4'], preserveLiteral: true,
+                id: 'appCfgVersion', label: 'Version', type: 'text', patterns: ['p4'],
                 example: 'e.g. v1, v2, 2026-06-16',
                 hint: 'An optional identifier to track changes to this policy over time, such as v1 or a date.'
             },
@@ -1739,7 +1780,6 @@ const CONFIG = {
                 id: 'version',
                 label: 'Version',
                 type: 'text',
-                preserveLiteral: true,
                 example: 'e.g. v1, v2, 2026-06-16',
                 patterns: ['p1', 'p2', 'p3', 'p4', 'p5'],
                 hint: 'An optional identifier to track changes to this policy over time. Use either a sequential format (v1, v2, v3) or a reverse date format (e.g. 2026-06-16), which is easier to sort and compare chronologically. Leave blank if version tracking is not needed.'
@@ -1784,7 +1824,8 @@ const CONFIG = {
 const state = {
     type:    null,
     pattern: 'p1',
-    history: []
+    history: [],
+    customOrder: null
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -1805,14 +1846,69 @@ function applyStoredTheme() {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// SEPARATOR / CASE STYLE PREFERENCE (shared across all tabs)
+// ═══════════════════════════════════════════════════════════════
+function onFormatPrefChange() {
+    localStorage.setItem('ngen-format', JSON.stringify({
+        separator: document.getElementById('separator').value,
+        casing:    document.getElementById('casing').value
+    }));
+    updatePreview();
+}
+
+function applyStoredFormat() {
+    const saved = localStorage.getItem('ngen-format');
+    if (!saved) return;
+
+    let parsed;
+    try { parsed = JSON.parse(saved); } catch (e) { return; }
+
+    const sepEl  = document.getElementById('separator');
+    const caseEl = document.getElementById('casing');
+    if (sepEl  && parsed.separator && [...sepEl.options].some(o => o.value === parsed.separator))  sepEl.value  = parsed.separator;
+    if (caseEl && parsed.casing    && [...caseEl.options].some(o => o.value === parsed.casing))     caseEl.value = parsed.casing;
+}
+
+// ═══════════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
     applyStoredTheme();
+    applyStoredFormat();
     const savedHistory = localStorage.getItem('ngen-history');
     if (savedHistory) { try { state.history = JSON.parse(savedHistory); renderHistory(); } catch(e) {} }
-    selectType('ca-policy');
+    wireSegmentsContainerDragHandlers();
+    const savedTab = localStorage.getItem('ngen-last-tab');
+    const initialType = (savedTab && CONFIG[savedTab]) ? savedTab : 'ca-policy';
+    selectType(initialType);
 });
+
+// Allows dropping in the empty space of the segments row (after the last badge)
+// to move a dragged badge to the very end of the order.
+function wireSegmentsContainerDragHandlers() {
+    const segmentsEl = document.getElementById('segments');
+    if (!segmentsEl) return;
+
+    segmentsEl.addEventListener('dragover', e => {
+        e.preventDefault();
+    });
+
+    segmentsEl.addEventListener('drop', e => {
+        e.preventDefault();
+        if (!draggedSourceId) return;
+
+        const order = [...document.querySelectorAll('#segments .seg-chip')].map(el => el.dataset.sourceId);
+        const fromIdx = order.indexOf(draggedSourceId);
+        if (fromIdx === -1) { clearSegDragIndicators(); return; }
+        order.splice(fromIdx, 1);
+        order.push(draggedSourceId);
+
+        state.customOrder = order;
+        clearSegDragIndicators();
+        draggedSourceId = null;
+        updatePreview();
+    });
+}
 
 // ═══════════════════════════════════════════════════════════════
 // SELECT OBJECT TYPE
@@ -1821,6 +1917,8 @@ function selectType(type) {
     if (state.type === type) return;
     state.type    = type;
     state.pattern = CONFIG[type].patterns[0].id;
+    state.customOrder = null;
+    localStorage.setItem('ngen-last-tab', type);
 
     document.querySelectorAll('.type-card').forEach(c =>
         c.classList.toggle('active', c.dataset.type === type)
@@ -1885,6 +1983,7 @@ function selectPattern(patternId) {
     const grantLogicVal = document.querySelector('input[name="grantLogic"]:checked')?.value || 'AND';
 
     state.pattern = patternId;
+    state.customOrder = null;
 
     document.querySelectorAll('.pattern-option').forEach(el => {
         const radio  = el.querySelector('input[type="radio"]');
@@ -2371,7 +2470,7 @@ function generateName() {
     }
 
     if (pattern.fixedPrefix) {
-        segs.push({ value: pattern.fixedPrefix, fixed: true });
+        segs.push({ value: applyCase(pattern.fixedPrefix, casing), fixed: true, sourceId: '__fixedPrefix__' });
     }
 
     pattern.segments.forEach(segId => {
@@ -2496,18 +2595,6 @@ function generateName() {
         const raw = el.value.trim();
         if (!raw) return;
 
-        // Prefix selects (SG…) always stay uppercase
-        if (field && field.type === 'select' && segId === 'prefix') {
-            segs.push({ value: raw.toUpperCase(), fixed: false, sourceId: segId });
-            return;
-        }
-
-        // keepCase fields stay as typed
-        if (field && field.keepCase) {
-            segs.push({ value: sanitize(raw, sep), fixed: false, sourceId: segId });
-            return;
-        }
-
         // Sub-field override: use custom text input value when trigger option selected
         if (field && field.subField && matchesTrigger(raw, field.subField.triggerValue)) {
             const subEl  = document.getElementById('fld_' + field.subField.id);
@@ -2529,7 +2616,7 @@ function generateName() {
 
         // CA/EM policy: prepend numberPrefix to the number segment
         if (state.type === 'ca-policy' && pattern.numberPrefix && segId === 'number') {
-            val = pattern.numberPrefix + val;
+            val = applyCase(pattern.numberPrefix, casing) + val;
         }
 
         segs.push({ value: val, fixed: false, sourceId: segId });
@@ -2554,12 +2641,105 @@ function generateName() {
             }
             insertAt = count;
         }
-        segs.splice(insertAt, 0, { value: pattern.fixedInfix.value, fixed: true });
+        segs.splice(insertAt, 0, { value: applyCase(pattern.fixedInfix.value, casing), fixed: true, sourceId: '__fixedInfix__' });
     }
+
+    applyCustomSegmentOrder(segs);
 
     if (segs.length === 0) return { name: '', segs: [] };
 
     return { name: segs.map(s => s.value).join(sep), segs };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SEGMENT REORDER (drag and drop)
+// ═══════════════════════════════════════════════════════════════
+const SEG_GRIP_SVG = '<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+    '<path d="M13.7143 22.2857C18.4482 22.2857 22.2857 18.4481 22.2857 13.7143C22.2857 8.98038 18.4482 5.14282 13.7143 5.14282C8.98042 5.14282 5.14286 8.98038 5.14286 13.7143C5.14286 18.4481 8.98042 22.2857 13.7143 22.2857ZM34.2857 22.2857C39.0196 22.2857 42.8571 18.4481 42.8571 13.7143C42.8571 8.98038 39.0196 5.14282 34.2857 5.14282C29.5518 5.14282 25.7143 8.98038 25.7143 13.7143C25.7143 18.4481 29.5518 22.2857 34.2857 22.2857ZM22.2857 34.2857C22.2857 39.0195 18.4482 42.8571 13.7143 42.8571C8.98042 42.8571 5.14286 39.0195 5.14286 34.2857C5.14286 29.5518 8.98042 25.7143 13.7143 25.7143C18.4482 25.7143 22.2857 29.5518 22.2857 34.2857ZM34.2857 42.8571C39.0196 42.8571 42.8571 39.0195 42.8571 34.2857C42.8571 29.5518 39.0196 25.7143 34.2857 25.7143C29.5518 25.7143 25.7143 29.5518 25.7143 34.2857C25.7143 39.0195 29.5518 42.8571 34.2857 42.8571Z" fill="#FFFFFF"/>' +
+    '</svg>';
+
+let draggedSourceId = null;
+let dropTargetInfo  = null; // { sourceId, position: 'before' | 'after' }
+
+// Reorders segs in place to match state.customOrder, when a custom order is active.
+// Segments not present in the stored order (new fields filled in after reordering,
+// or fields carried over that were not part of the order snapshot) are appended
+// at the end, keeping their default relative order.
+function applyCustomSegmentOrder(segs) {
+    if (!state.customOrder || !state.customOrder.length) return;
+
+    const orderIndex = new Map(state.customOrder.map((id, idx) => [id, idx]));
+    const known   = segs.filter(s => orderIndex.has(s.sourceId));
+    const unknown = segs.filter(s => !orderIndex.has(s.sourceId));
+    known.sort((a, b) => orderIndex.get(a.sourceId) - orderIndex.get(b.sourceId));
+
+    const reordered = known.concat(unknown);
+    segs.splice(0, segs.length, ...reordered);
+}
+
+function clearSegDragIndicators() {
+    document.querySelectorAll('#segments .seg-chip').forEach(el => {
+        el.classList.remove('dragging', 'drag-over-before', 'drag-over-after');
+    });
+    dropTargetInfo = null;
+}
+
+function wireSegDragHandlers(chip) {
+    chip.addEventListener('dragstart', e => {
+        draggedSourceId = chip.dataset.sourceId;
+        chip.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', draggedSourceId);
+    });
+
+    chip.addEventListener('dragover', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!draggedSourceId || draggedSourceId === chip.dataset.sourceId) return;
+
+        const rect     = chip.getBoundingClientRect();
+        const position = (e.clientX - rect.left) < rect.width / 2 ? 'before' : 'after';
+
+        document.querySelectorAll('#segments .seg-chip').forEach(el => {
+            if (el !== chip) el.classList.remove('drag-over-before', 'drag-over-after');
+        });
+        chip.classList.toggle('drag-over-before', position === 'before');
+        chip.classList.toggle('drag-over-after',  position === 'after');
+        dropTargetInfo = { sourceId: chip.dataset.sourceId, position };
+    });
+
+    chip.addEventListener('drop', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropSegment();
+    });
+
+    chip.addEventListener('dragend', () => {
+        clearSegDragIndicators();
+        draggedSourceId = null;
+    });
+}
+
+function dropSegment() {
+    if (!draggedSourceId || !dropTargetInfo || draggedSourceId === dropTargetInfo.sourceId) {
+        clearSegDragIndicators();
+        return;
+    }
+
+    const order = [...document.querySelectorAll('#segments .seg-chip')].map(el => el.dataset.sourceId);
+    const fromIdx = order.indexOf(draggedSourceId);
+    if (fromIdx === -1) { clearSegDragIndicators(); return; }
+    order.splice(fromIdx, 1);
+
+    let toIdx = order.indexOf(dropTargetInfo.sourceId);
+    if (toIdx === -1) { clearSegDragIndicators(); return; }
+    if (dropTargetInfo.position === 'after') toIdx += 1;
+    order.splice(toIdx, 0, draggedSourceId);
+
+    state.customOrder = order;
+    clearSegDragIndicators();
+    draggedSourceId = null;
+    updatePreview();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -2596,7 +2776,19 @@ function updatePreview() {
     segs.forEach((seg, i) => {
         const chip       = document.createElement('span');
         chip.className   = 'seg-chip' + (seg.fixed ? ' seg-fixed' : '');
-        chip.textContent = seg.value;
+        chip.draggable   = true;
+        chip.dataset.sourceId = seg.sourceId || ('__idx' + i + '__');
+
+        const grip = document.createElement('span');
+        grip.className = 'seg-grip';
+        grip.innerHTML = SEG_GRIP_SVG;
+        chip.appendChild(grip);
+
+        const label = document.createElement('span');
+        label.textContent = seg.value;
+        chip.appendChild(label);
+
+        wireSegDragHandlers(chip);
         segmentsEl.appendChild(chip);
 
         if (i < segs.length - 1) {
@@ -2642,6 +2834,7 @@ function resetForm() {
     // Rebuild all fields from scratch rather than clearing values in place, so subfields,
     // grant-logic radios, and toggleByPattern visibility (see wireFieldToggles) all revert
     // to their default state consistently, the same way a pattern switch already does.
+    state.customOrder = null;
     renderFields();
     updatePreview();
 }
