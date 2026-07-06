@@ -698,39 +698,129 @@
 
         #toast.show { transform: translateY(0); opacity: 1; }
 
-        /* ── Generated Description ──────────────────── */
-        .desc-title {
+        /* ── AI Prompt Icon Button ────────────────── */
+        .btn-icon {
+            position: relative;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background: transparent;
+            border: 1.5px solid transparent;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .btn-icon svg { display: block; }
+
+        .btn-icon:hover { background: var(--blue-xs); }
+
+        .btn-icon[data-tooltip]::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 50%;
+            bottom: calc(100% + 8px);
+            transform: translateX(-50%);
+            background: var(--tooltip-bg);
+            color: var(--tooltip-text);
+            padding: 6px 10px;
+            border-radius: 5px;
             font-size: 11px;
-            font-weight: 700;
-            color: var(--gray);
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            margin-bottom: 8px;
+            font-weight: 400;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s;
+            z-index: 9000;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.3);
         }
 
-        .desc-box {
-            background: var(--bg-preview);
-            border: 1.5px solid var(--border);
+        .btn-icon[data-tooltip]:hover::after { opacity: 1; }
+
+        /* ── AI Prompt Modal ──────────────────────── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9500;
+        }
+
+        .modal-box {
+            background: var(--bg-panel);
             border-radius: var(--radius);
-            padding: 12px 16px;
-            margin-bottom: 14px;
-            transition: border-color 0.2s, background 0.25s;
+            box-shadow: var(--shadow);
+            width: min(640px, 92vw);
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
-        .desc-box.has-value {
-            border-color: var(--blue);
-            background: var(--blue-xs);
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
         }
 
-        .desc-text {
-            font-size: 13px;
+        .modal-title {
+            font-size: 14px;
+            font-weight: 700;
             color: var(--text);
-            line-height: 1.6;
         }
 
-        .desc-text.empty {
-            color: var(--empty-color);
-            font-style: italic;
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            line-height: 1;
+            color: var(--gray);
+            cursor: pointer;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .modal-close-btn:hover { background: var(--blue-xs); color: var(--text); }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-textarea {
+            width: 100%;
+            min-height: 360px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--bg-preview);
+            color: var(--text);
+        }
+
+        .modal-textarea:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 2px var(--blue-light);
+        }
+
+        .modal-footer {
+            padding: 14px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
         }
 
         /* ── Grant Logic Radio ───────────────────── */
@@ -966,18 +1056,11 @@
             <div class="actions">
                 <button class="btn btn-primary" onclick="copyName()">Copy</button>
                 <button class="btn btn-outline" onclick="resetForm()">Reset</button>
-            </div>
-
-            <div id="descSection" style="display:none;">
-                <hr class="divider">
-                <div class="desc-title">Generated Description</div>
-                <div class="desc-box" id="descBox">
-                    <div class="desc-text empty" id="descText">Fill in the form to generate a description&hellip;</div>
-                </div>
-                <div class="actions" style="margin-bottom:0;">
-                    <button class="btn btn-outline" onclick="copyDesc()">Copy Description</button>
-                    <button class="btn btn-outline" onclick="copyAIPrompt()">Copy AI Prompt</button>
-                </div>
+                <button class="btn-icon" id="aiPromptBtn" onclick="openAIPromptModal()" data-tooltip="Generate AI description prompt" aria-label="Generate AI description prompt">
+                    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+                        <path d="M35.5061 27.9998C37.9914 27.9998 40.0061 30.0146 40.0061 32.4998V34.31C40.0061 36.4973 39.0512 38.5757 37.3916 40.0005C34.2607 42.6885 29.78 44.0021 24 44.0021C18.221 44.0021 13.7434 42.6889 10.6176 40.0016C8.96039 38.5768 8.00708 36.5 8.00708 34.3145V32.4998C8.00708 30.0146 10.0218 27.9998 12.5071 27.9998H35.5061ZM23.7971 4.01467L24.0007 4.00098C24.76 4.00098 25.3876 4.56528 25.487 5.29744L25.5007 5.50098L25.4991 6.99898L32.5 6.99999C34.9853 6.99999 37 9.01471 37 11.5V20.5092C37 22.9945 34.9853 25.0092 32.5 25.0092H15.5C13.0147 25.0092 11 22.9945 11 20.5092V11.5C11 9.01471 13.0147 6.99999 15.5 6.99999L22.4991 6.99898L22.5007 5.50098C22.5007 4.74159 23.065 4.11399 23.7971 4.01467L24.0007 4.00098L23.7971 4.01467ZM19.4986 13C18.1186 13 17 14.1186 17 15.4986C17 16.8785 18.1186 17.9971 19.4986 17.9971C20.8785 17.9971 21.9972 16.8785 21.9972 15.4986C21.9972 14.1186 20.8785 13 19.4986 13ZM28.484 13C27.1041 13 25.9855 14.1186 25.9855 15.4986C25.9855 16.8785 27.1041 17.9971 28.484 17.9971C29.864 17.9971 30.9826 16.8785 30.9826 15.4986C30.9826 14.1186 29.864 13 28.484 13Z" fill="var(--blue)"/>
+                    </svg>
+                </button>
             </div>
 
             <hr class="divider">
@@ -994,6 +1077,21 @@
 
 <footer>Name Codex v26.07.06 &middot; Built by Matej Klemen&#269;i&#269; &middot; <a href="https://www.matej.guru" target="_blank" rel="noopener" style="color: rgba(255,255,255,0.75); text-decoration: none;">www.matej.guru</a> &middot; &copy; 2026</footer>
 <div id="toast"></div>
+
+<div id="aiPromptModalOverlay" class="modal-overlay" style="display:none;" onclick="handleModalOverlayClick(event)">
+    <div class="modal-box">
+        <div class="modal-header">
+            <span class="modal-title">AI Description Prompt</span>
+            <button class="modal-close-btn" onclick="closeAIPromptModal()" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <textarea id="aiPromptText" class="modal-textarea" readonly></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="copyAIPromptModalText()">Copy AI Prompt</button>
+        </div>
+    </div>
+</div>
 
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -1928,7 +2026,6 @@ function selectType(type) {
     renderPatterns();
     renderFields();
     updatePreview();
-    generateDescription();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -2763,7 +2860,6 @@ function updatePreview() {
         previewBox.classList.remove('has-value');
         segmentsEl.innerHTML   = '';
         if (segTitleEl) segTitleEl.textContent = totalSegs ? `Segments (0 / ${totalSegs})` : 'Segments';
-        generateDescription();
         return;
     }
 
@@ -2798,8 +2894,6 @@ function updatePreview() {
             segmentsEl.appendChild(s);
         }
     });
-
-    generateDescription();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -2904,287 +2998,266 @@ function showToast(msg) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// GENERATED DESCRIPTION (App Reg + Groups tabs)
+// AI DESCRIPTION PROMPT (all tabs)
 // ═══════════════════════════════════════════════════════════════
-function generateDescription() {
-    const section = document.getElementById('descSection');
-    const textEl  = document.getElementById('descText');
-    const descBox = document.getElementById('descBox');
-    if (!section) return;
-
-    if (state.type !== 'security-group' && state.type !== 'app-reg') {
-        section.style.display = 'none';
-        return;
+const OBJECT_TYPE_MAP = {
+    'app-reg': {
+        p1: 'Microsoft Entra ID App Registration',
+        p2: 'Microsoft Entra ID App Registration',
+        p3: 'Microsoft Entra ID App Registration',
+        p4: 'Microsoft Entra ID App Registration'
+    },
+    'ca-policy': {
+        p1: 'Conditional Access Policy',
+        p2: 'Conditional Access Policy',
+        p4: 'Conditional Access Emergency Access Policy'
+    },
+    'security-group': {
+        p1: 'Microsoft Entra ID Security Group',
+        p2: 'Microsoft 365 Group',
+        p3: 'Exchange Online Distribution List',
+        p4: 'Exchange Online Shared Mailbox',
+        p5: 'Exchange Online Room or Equipment Mailbox',
+        p6: 'Microsoft Entra Privileged Identity Management Group'
+    },
+    'endpoint-security': {
+        p1: 'Intune Endpoint Security Profile (Windows)',
+        p2: 'Intune Endpoint Security Profile (macOS)',
+        p3: 'Intune Endpoint Security Profile (Linux)'
+    },
+    'intune': {
+        p1: 'Intune Compliance Policy',
+        p2: 'Intune Configuration Profile',
+        p3: 'Intune App Protection Policy',
+        p4: 'Intune App Configuration Policy'
+    },
+    'defender-o365': {
+        p1: 'Microsoft Defender for Office 365 Anti-Phishing Policy',
+        p2: 'Microsoft Defender for Office 365 Anti-Spam Policy',
+        p3: 'Microsoft Defender for Office 365 Anti-Malware Policy',
+        p4: 'Microsoft Defender for Office 365 Safe Attachments Policy',
+        p5: 'Microsoft Defender for Office 365 Safe Links Policy',
+        p6: 'Microsoft Defender for Office 365 Quarantine Policy'
     }
-    section.style.display = 'block';
+};
 
-    const get = id => { const el = document.getElementById('fld_' + id); return el ? el.value.trim() : ''; };
-    const pat = state.pattern;
-    let desc  = '';
+// Hand-picked meanings for abbreviations that are not self-explanatory from their
+// CONFIG option label alone (bare prefix codes, or acronyms worth spelling out fully).
+// Anything not covered here still gets picked up automatically from field option labels.
+const ABBR_MEANINGS = {
+    CA: 'Conditional Access',
+    EM: 'Emergency Access',
+    SEC: 'Security Group',
+    SG: 'Security Group',
+    GRP: 'Group',
+    DL: 'Distribution List',
+    DG: 'Distribution Group',
+    DIST: 'Distribution List',
+    MB: 'Mailbox',
+    SM: 'Shared Mailbox',
+    SMB: 'Shared Mailbox',
+    SHARED: 'Shared Mailbox',
+    M365: 'Microsoft 365',
+    O365: 'Office 365',
+    PIM: 'Privileged Identity Management',
+    JIT: 'Just-In-Time Access',
+    MFA: 'Multi-Factor Authentication',
+    RA: 'Role-Assignable membership',
+    DYNU: 'Dynamic User membership',
+    DYND: 'Dynamic Device membership',
+    RO: 'Read Only access',
+    RW: 'Read and Write access',
+    ASR: 'Attack Surface Reduction Rules',
+    EDR: 'Endpoint Detection and Response'
+};
 
-    if (state.type === 'app-reg') {
-        const tool    = get('tool');
-        const fn      = get('function');
-        const company = get('company');
-        const dept    = get('department');
-        const project = get('project');
-        const alRaw   = get('accessLevel');
-        const env     = get('environment');
-
-        const alMap  = { RO: 'Read Only access', RW: 'Read and Write access', AuthOnly: 'authentication only with no API permissions assigned' };
-        const alText = alMap[alRaw] || '';
-
-        const requiresSentence = alText ? `It requires ${alText}${env ? ` and is deployed in the ${env} environment` : ''}.` : '';
-
-        if (pat === 'p1') {
-            if (tool || fn) {
-                const core = fn
-                    ? `This app registration enables ${tool || '[Tool]'} to perform ${fn} operations.`
-                    : `This app registration enables ${tool || '[Tool]'}.`;
-                desc = [core, requiresSentence].filter(Boolean).join(' ');
-            }
-        } else if (pat === 'p2') {
-            if (company || dept || tool) {
-                const core = fn
-                    ? `This app registration is owned by the ${dept || '[Department]'} department at ${company || '[Company]'} and enables ${tool || '[Tool]'} to perform ${fn} operations.`
-                    : `This app registration is owned by the ${dept || '[Department]'} department at ${company || '[Company]'} and enables ${tool || '[Tool]'}.`;
-                desc = [core, requiresSentence].filter(Boolean).join(' ');
-            }
-        } else if (pat === 'p3') {
-            if (tool || company) {
-                const core = `This app registration enables ${tool || '[Tool]'} for customer ${company || '[Customer]'}.`;
-                desc = [core, requiresSentence].filter(Boolean).join(' ');
-            }
-        } else if (pat === 'p4') {
-            if (project || tool) {
-                const core = fn
-                    ? `This app registration supports the ${project || '[Project]'} project and enables ${tool || '[Tool]'} to perform ${fn} operations.`
-                    : `This app registration supports the ${project || '[Project]'} project and enables ${tool || '[Tool]'}.`;
-                desc = [core, requiresSentence].filter(Boolean).join(' ');
-            }
-        }
-
-        desc = desc.replace(/  +/g, ' ').trim();
-
-    } else {
-        // security-group
-        const membershipMap = { RA: 'role-assignable', DYNU: 'dynamic, based on user attributes', DYND: 'dynamic, based on device attributes' };
-
-        if (pat === 'p1') {
-            const mtRaw   = get('membershipType');
-            const dept    = get('department');
-            const membershipClause = mtRaw ? ` This group is ${membershipMap[mtRaw]}.` : '';
-            const deptClause       = dept  ? ` It is owned by the ${dept} department.` : '';
-            if (mtRaw === 'DYNU' || mtRaw === 'DYND') {
-                const attrRaw = get('attribute');
-                const attr    = attrRaw === 'Custom' ? (get('attributeCustom') || attrRaw) : attrRaw;
-                const val     = get('attributeValue');
-                if (attrRaw || val)
-                    desc = `This security group automatically assigns membership based on the ${attr || '[Attribute]'} attribute with value ${val || '[Attribute Value]'}.${membershipClause}${deptClause}`;
-            } else {
-                const fn = get('function'), sc = get('scope');
-                if (fn || sc)
-                    desc = `This security group is used for ${fn || '[Function]'} and applies to ${sc || '[Scope]'}.${membershipClause}${deptClause}`;
-            }
-        } else if (pat === 'p2') {
-            const mtRaw   = get('membershipType');
-            const dept    = get('department');
-            const sens    = get('sensitivity');
-            const membershipClause = mtRaw ? ` This group is ${membershipMap[mtRaw]}.` : '';
-            const sensClause       = sens  ? ` It is classified as ${sens}.` : '';
-            if (mtRaw === 'DYNU') {
-                const attrRaw = get('attribute');
-                const attr    = attrRaw === 'Custom' ? (get('attributeCustom') || attrRaw) : attrRaw;
-                const val     = get('attributeValue');
-                if (dept || attrRaw || val)
-                    desc = `This Microsoft 365 Group for the ${dept || '[Department]'} department automatically assigns membership based on the ${attr || '[Attribute]'} attribute with value ${val || '[Attribute Value]'}.${membershipClause}${sensClause}`;
-            } else {
-                const pur = get('purpose');
-                if (dept || pur)
-                    desc = `This Microsoft 365 Group supports ${pur || '[Purpose]'} for the ${dept || '[Department]'} department.${membershipClause}${sensClause}`;
-            }
-        } else if (pat === 'p3') {
-            const dept = get('department'), pur = get('purpose'), dlScopeRaw = get('dlScope');
-            if (dept || pur) {
-                const scopeClause = dlScopeRaw ? ` It accepts ${dlScopeRaw === 'External' ? 'messages from external senders' : 'internal messages only'}.` : '';
-                desc = `This distribution list delivers ${pur || '[Purpose]'} communications to the ${dept || '[Department]'} department.${scopeClause}`;
-            }
-        } else if (pat === 'p4') {
-            const dept = get('department'), fn = get('mbFunction'), loc = get('location');
-            if (dept || fn) {
-                const locClause = loc ? ` It is based in ${loc}.` : '';
-                desc = `This shared mailbox provides ${dept || '[Department]'} team members access to ${fn || '[Function]'} communications.${locClause}`;
-            }
-        } else if (pat === 'p5') {
-            const rtRaw = get('roomType'), dept = get('department'), loc = get('location'), nm = get('resourceName');
-            const rt = rtRaw === 'Custom' ? (get('roomTypeCustom') || '[Type]') : (rtRaw || '[Type]');
-            if (rtRaw || loc || nm) {
-                const deptClause = dept ? ` It is used by the ${dept} department.` : '';
-                desc = `This ${rt} resource is located at ${loc || '[Location]'} and is identified as ${nm || '[Name]'}.${deptClause}`;
-            }
-        } else if (pat === 'p6') {
-            const res = get('resource'), sc = get('scope');
-            const atRaw = get('accessType');
-            const at = atRaw === 'Custom' ? (get('accessTypeCustom') || '[Access Type]') : (atRaw || '[Access Type]');
-            if (res || sc || atRaw) {
-                const scopeClause = sc ? ` It is scoped to ${sc}.` : '';
-                desc = `This PIM group provides ${at} just-in-time access to ${res || '[Role / Resource]'}.${scopeClause}`;
-            }
-        }
-    }
-
-    if (desc) {
-        textEl.textContent = desc;
-        textEl.className   = 'desc-text';
-        descBox.classList.add('has-value');
-    } else {
-        textEl.textContent = 'Fill in the form to generate a description…';
-        textEl.className   = 'desc-text empty';
-        descBox.classList.remove('has-value');
-    }
+// Capitalizes each word/segment of a string, e.g. "MICROSOFT RECOMMENDED" becomes
+// "Microsoft Recommended" and "ANTI-PHISHING" becomes "Anti-Phishing".
+function toTitleCase(str) {
+    return str.replace(/\w+/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
 }
 
-function copyDesc() {
-    const el = document.getElementById('descText');
-    if (!el || el.classList.contains('empty')) return;
-    const text = el.textContent;
-    const write = () => showToast('Description copied!');
-    navigator.clipboard.writeText(text).then(write).catch(() => {
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        write();
+// Resolves the current, human-readable value of a single field for the prompt's
+// segment breakdown, using whatever is actually rendered in the DOM (select option
+// labels, checked checkbox labels, custom subField overrides) rather than raw values.
+function getFriendlyFieldValue(field, segId) {
+    if (field.type === 'multiselect') {
+        const checked = [...document.querySelectorAll(`#fld_${segId} input[type="checkbox"]:checked`)];
+        const vals = checked.map(cb => {
+            if (field.subField && matchesTrigger(cb.value, field.subField.triggerValue)) {
+                const subEl = document.getElementById('fld_' + field.subField.id);
+                return subEl?.value?.trim() || '';
+            }
+            if (segId === 'grantControl' && cb.value === 'AuthStrength') {
+                const subEl = document.getElementById('fld_grantControlAuthStrength');
+                return subEl?.value?.trim() || '';
+            }
+            const lbl = cb.closest('label');
+            return lbl ? lbl.textContent.replace(/\s+/g, ' ').trim() : cb.value;
+        }).filter(Boolean);
+        return vals.join(', ');
+    }
+
+    const el = document.getElementById('fld_' + segId);
+    if (!el) return '';
+
+    const raw = (el.value || '').trim();
+    if (!raw) return '';
+
+    if (field.subField && matchesTrigger(raw, field.subField.triggerValue)) {
+        const subEl = document.getElementById('fld_' + field.subField.id);
+        return subEl?.value?.trim() || '';
+    }
+
+    if (el.tagName === 'SELECT') {
+        return el.selectedOptions[0] ? el.selectedOptions[0].textContent.trim() : raw;
+    }
+
+    return raw;
+}
+
+// Lists every currently filled-in field for the active tab and pattern as
+// "Field Label: Value" lines, in the same order the form displays them,
+// skipping empty fields and fields hidden by a toggleByPattern controller.
+function buildFieldBreakdownLines(typeConfig, patternConfig) {
+    const lines = [];
+
+    if (patternConfig.prefixOptions) {
+        const prefixEl = document.getElementById('fld_prefix');
+        if (prefixEl) {
+            let val = prefixEl.value;
+            if (val === 'Custom') {
+                const customEl = document.getElementById('fld_prefixCustom');
+                val = customEl?.value?.trim() || '';
+            }
+            if (val) lines.push(`Prefix: ${val}`);
+        }
+    }
+
+    const order = patternConfig.fieldOrder || patternConfig.segments || [];
+    const seen  = new Set();
+
+    order.forEach(segId => {
+        if (seen.has(segId)) return;
+        seen.add(segId);
+
+        const field = typeConfig.fields.find(f => f.id === segId);
+        if (!field) return;
+
+        const segWrap = document.getElementById('fieldwrap_' + segId);
+        if (segWrap && segWrap.style.display === 'none') return;
+
+        const label = (field.labelByPattern && field.labelByPattern[state.pattern]) || field.label;
+        const value = getFriendlyFieldValue(field, segId);
+        if (value) lines.push(`${label}: ${value}`);
     });
+
+    return lines;
 }
 
-function copyAIPrompt() {
-    const type    = state.type;
-    const pat     = state.pattern;
-    const pattern = CONFIG[type]?.patterns.find(p => p.id === pat);
-    const { name } = generateName();
-    const get = id => document.getElementById('fld_' + id)?.value?.trim() || '';
+// Builds the abbreviation legend, listing only abbreviations that actually
+// appear as a token in the current generated name.
+function buildAbbreviationLegend(name, sep) {
+    if (!name) return [];
 
-    const typeName = type === 'app-reg'
-        ? 'Microsoft Entra ID App Registration'
-        : 'Microsoft Entra ID group';
+    const escSep = sep.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const tokens = name.split(new RegExp(escSep)).filter(Boolean);
 
-    const lines = [
+    const derived = {};
+    const typeConfig = CONFIG[state.type];
+    (typeConfig?.fields || []).forEach(field => {
+        const optionLists = [];
+        if (Array.isArray(field.options)) optionLists.push(field.options);
+        if (field.optionsByPattern) Object.values(field.optionsByPattern).forEach(o => optionLists.push(o));
+        if (field.optionsByParent) {
+            Object.keys(field.optionsByParent).forEach(k => {
+                if (k !== 'parentField') optionLists.push(field.optionsByParent[k]);
+            });
+        }
+        optionLists.forEach(list => (list || []).forEach(opt => {
+            if (typeof opt !== 'object' || !opt.value) return;
+            if (/^[A-Z][A-Z0-9]{1,7}$/.test(opt.value)) derived[opt.value.toUpperCase()] = opt.label;
+        }));
+    });
+
+    const merged = Object.assign({}, derived, ABBR_MEANINGS);
+
+    const seen   = new Set();
+    const legend = [];
+    tokens.forEach(tok => {
+        const key = tok.toUpperCase();
+        if (!merged[key] || seen.has(key)) return;
+        if (merged[key].toUpperCase() === key) return;
+        seen.add(key);
+        legend.push(`${key} = ${merged[key]}`);
+    });
+    return legend;
+}
+
+function buildAIPromptText() {
+    const { name }      = generateName();
+    const sep           = document.getElementById('separator').value;
+    const typeConfig    = CONFIG[state.type];
+    const patternConfig = typeConfig?.patterns.find(p => p.id === state.pattern);
+
+    const objectType = (OBJECT_TYPE_MAP[state.type] && OBJECT_TYPE_MAP[state.type][state.pattern]) || typeConfig?.label || 'Microsoft 365 object';
+    const patternName = patternConfig?.badge ? toTitleCase(patternConfig.badge) : 'Default';
+
+    const breakdownLines = patternConfig ? buildFieldBreakdownLines(typeConfig, patternConfig) : [];
+    const breakdownText  = breakdownLines.length ? breakdownLines.join('\n') : 'No fields have been filled in yet.';
+
+    const legendLines = buildAbbreviationLegend(name, sep);
+    const legendText  = legendLines.length ? legendLines.join('\n') : 'None';
+
+    return [
         'You are an IT documentation assistant for Microsoft 365 and Microsoft Entra ID.',
-        `Write 2 short alternative descriptions (1-2 sentences each) for the following ${typeName}, suitable for the Description field in the Azure portal. Make each variant slightly different in focus: one more technical, one more business-oriented.`,
         '',
-        '== INPUT DATA ==',
-        `Generated name: ${name || 'Not yet generated'}`,
-        `Pattern: ${pattern?.badge || pat}`,
-    ];
-
-    const alMap = { RO: 'Read Only', RW: 'Read and Write', AuthOnly: 'Authentication Only (SSO)' };
-
-    if (type === 'app-reg') {
-        if (pat === 'p1') {
-            const tool = get('tool'), fn = get('function'), al = get('accessLevel'), env = get('environment');
-            if (tool)  lines.push(`Tool/Service: ${tool}`);
-            if (fn)    lines.push(`Function: ${fn}`);
-            if (al)    lines.push(`Access Level: ${alMap[al] || al}`);
-            if (env)   lines.push(`Environment: ${env}`);
-        } else if (pat === 'p2') {
-            const company = get('company'), dept = get('department'), tool = get('tool'), fn = get('function'), al = get('accessLevel'), env = get('environment');
-            if (company) lines.push(`Company: ${company}`);
-            if (dept)    lines.push(`Department: ${dept}`);
-            if (tool)    lines.push(`Tool/Service: ${tool}`);
-            if (fn)      lines.push(`Function: ${fn}`);
-            if (al)      lines.push(`Access Level: ${alMap[al] || al}`);
-            if (env)     lines.push(`Environment: ${env}`);
-        } else if (pat === 'p3') {
-            const customer = get('company'), tool = get('tool'), al = get('accessLevel'), env = get('environment');
-            if (customer) lines.push(`Customer: ${customer}`);
-            if (tool)     lines.push(`Tool/Service: ${tool}`);
-            if (al)       lines.push(`Access Level: ${alMap[al] || al}`);
-            if (env)      lines.push(`Environment: ${env}`);
-        } else if (pat === 'p4') {
-            const project = get('project'), tool = get('tool'), al = get('accessLevel'), env = get('environment');
-            if (project) lines.push(`Project: ${project}`);
-            if (tool)    lines.push(`Tool/Service: ${tool}`);
-            if (al)      lines.push(`Access Level: ${alMap[al] || al}`);
-            if (env)     lines.push(`Environment: ${env}`);
-        }
-    } else {
-        // security-group
-        const membershipMap = { RA: 'Role Assignable', DYNU: 'Dynamic User', DYND: 'Dynamic Device' };
-
-        if (pat === 'p1') {
-            const mtRaw = get('membershipType'), dept = get('department');
-            if (mtRaw)   lines.push(`Membership Type: ${membershipMap[mtRaw] || mtRaw}`);
-            if (dept)    lines.push(`Department: ${dept}`);
-            if (mtRaw === 'DYNU' || mtRaw === 'DYND') {
-                const attrRaw = get('attribute');
-                const attr = attrRaw === 'Custom' ? (get('attributeCustom') || attrRaw) : attrRaw;
-                const val = get('attributeValue');
-                if (attr) lines.push(`Attribute: ${attr}`);
-                if (val)  lines.push(`Attribute Value: ${val}`);
-            } else {
-                const fn = get('function'), sc = get('scope');
-                if (fn)  lines.push(`Function: ${fn}`);
-                if (sc)  lines.push(`Scope: ${sc}`);
-            }
-        } else if (pat === 'p2') {
-            const mtRaw = get('membershipType'), dept = get('department'), sens = get('sensitivity');
-            if (mtRaw)   lines.push(`Membership Type: ${membershipMap[mtRaw] || mtRaw}`);
-            if (dept)    lines.push(`Department: ${dept}`);
-            if (mtRaw === 'DYNU') {
-                const attrRaw = get('attribute');
-                const attr = attrRaw === 'Custom' ? (get('attributeCustom') || attrRaw) : attrRaw;
-                const val = get('attributeValue');
-                if (attr) lines.push(`Attribute: ${attr}`);
-                if (val)  lines.push(`Attribute Value: ${val}`);
-            } else {
-                const pur = get('purpose');
-                if (pur) lines.push(`Purpose: ${pur}`);
-            }
-            if (sens) lines.push(`Sensitivity: ${sens}`);
-        } else if (pat === 'p3') {
-            const dlScopeRaw = get('dlScope'), dept = get('department'), pur = get('purpose');
-            if (dlScopeRaw) lines.push(`Scope: ${dlScopeRaw}`);
-            if (dept)       lines.push(`Department: ${dept}`);
-            if (pur)        lines.push(`Purpose: ${pur}`);
-        } else if (pat === 'p4') {
-            const dept = get('department'), fn = get('mbFunction'), loc = get('location');
-            if (dept) lines.push(`Department: ${dept}`);
-            if (fn)   lines.push(`Function: ${fn}`);
-            if (loc)  lines.push(`Location: ${loc}`);
-        } else if (pat === 'p5') {
-            const rtRaw = get('roomType'), dept = get('department'), loc = get('location'), nm = get('resourceName');
-            const rt = rtRaw === 'Custom' ? (get('roomTypeCustom') || rtRaw) : rtRaw;
-            if (rt)   lines.push(`Type: ${rt}`);
-            if (dept) lines.push(`Department: ${dept}`);
-            if (loc)  lines.push(`Location: ${loc}`);
-            if (nm)   lines.push(`Name: ${nm}`);
-        } else if (pat === 'p6') {
-            const res = get('resource'), sc = get('scope');
-            const atRaw = get('accessType');
-            const at = atRaw === 'Custom' ? (get('accessTypeCustom') || atRaw) : atRaw;
-            if (res) lines.push(`Role / Resource: ${res}`);
-            if (sc)  lines.push(`Scope: ${sc}`);
-            if (at)  lines.push(`Access Type: ${at}`);
-        }
-    }
-
-    lines.push('== END INPUT DATA ==');
-
-    const prompt = lines.join('\n');
-    const write = () => showToast('AI Prompt copied!');
-    navigator.clipboard.writeText(prompt).then(write).catch(() => {
-        const ta = document.createElement('textarea');
-        ta.value = prompt;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        write();
-    });
+        'Based on the following object configuration, write 2 short alternative descriptions (1-2 sentences each) suitable for the Description field. Make one variant more technical (referencing specific settings or configuration), and one more business-oriented (referencing purpose or audience). Return only the two numbered descriptions, with no extra commentary before or after.',
+        '',
+        '== OBJECT TYPE ==',
+        objectType,
+        '',
+        '== GENERATED NAME ==',
+        name || 'Not yet generated',
+        '',
+        '== NAMING PATTERN ==',
+        patternName,
+        '',
+        '== SEGMENT BREAKDOWN ==',
+        breakdownText,
+        '',
+        '== ABBREVIATION LEGEND ==',
+        legendText,
+        '',
+        '== END INPUT DATA =='
+    ].join('\n');
 }
+
+function openAIPromptModal() {
+    const overlay  = document.getElementById('aiPromptModalOverlay');
+    const textarea = document.getElementById('aiPromptText');
+    textarea.value = buildAIPromptText();
+    overlay.style.display = 'flex';
+}
+
+function closeAIPromptModal() {
+    document.getElementById('aiPromptModalOverlay').style.display = 'none';
+}
+
+function handleModalOverlayClick(event) {
+    if (event.target.id === 'aiPromptModalOverlay') closeAIPromptModal();
+}
+
+function copyAIPromptModalText() {
+    const textarea = document.getElementById('aiPromptText');
+    writeToClipboard(textarea.value, () => showToast('AI prompt copied!'));
+}
+
+document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    const overlay = document.getElementById('aiPromptModalOverlay');
+    if (overlay && overlay.style.display !== 'none') closeAIPromptModal();
+});
 
 // ═══════════════════════════════════════════════════════════════
 // HELPERS
