@@ -592,39 +592,34 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            cursor: grab;
             transition: opacity 0.15s, box-shadow 0.1s;
-        }
-
-        .seg-chip.dragging {
-            opacity: 0.4;
-            cursor: grabbing;
-        }
-
-        .seg-chip.drag-over-before { box-shadow: -3px 0 0 0 var(--blue); }
-        .seg-chip.drag-over-after  { box-shadow: 3px 0 0 0 var(--blue); }
-
-        .seg-grip {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            line-height: 0;
-        }
-
-        .seg-grip svg {
-            display: block;
-            width: 12px;
-            height: 12px;
         }
 
         .seg-fixed { background: var(--chip-fixed); }
 
-        .seg-sep {
-            color: var(--gray);
-            font-size: 13px;
-            font-weight: 700;
-            line-height: 1;
+        .seg-swap-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: var(--blue);
+            padding: 3px;
+            margin: -3px;
+            border-radius: 4px;
+            cursor: pointer;
+            line-height: 0;
+            transition: background 0.15s;
+        }
+
+        .seg-swap-btn:hover {
+            background: var(--blue-xs);
+        }
+
+        .seg-swap-btn svg {
+            display: block;
+            width: 20px;
+            height: 20px;
         }
 
         /* ── Buttons ──────────────────────────────── */
@@ -1138,7 +1133,7 @@
                 <button class="btn btn-primary" onclick="copyName()">Copy</button>
                 <button class="btn btn-outline" onclick="resetForm()">Reset</button>
                 <button class="btn-icon" id="aiPromptBtn" onclick="openAIPromptModal()" data-tooltip="Generate AI description prompt" aria-label="Generate AI description prompt">
-                    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+                    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="25" height="25">
                         <path d="M35.5061 27.9998C37.9914 27.9998 40.0061 30.0146 40.0061 32.4998V34.31C40.0061 36.4973 39.0512 38.5757 37.3916 40.0005C34.2607 42.6885 29.78 44.0021 24 44.0021C18.221 44.0021 13.7434 42.6889 10.6176 40.0016C8.96039 38.5768 8.00708 36.5 8.00708 34.3145V32.4998C8.00708 30.0146 10.0218 27.9998 12.5071 27.9998H35.5061ZM23.7971 4.01467L24.0007 4.00098C24.76 4.00098 25.3876 4.56528 25.487 5.29744L25.5007 5.50098L25.4991 6.99898L32.5 6.99999C34.9853 6.99999 37 9.01471 37 11.5V20.5092C37 22.9945 34.9853 25.0092 32.5 25.0092H15.5C13.0147 25.0092 11 22.9945 11 20.5092V11.5C11 9.01471 13.0147 6.99999 15.5 6.99999L22.4991 6.99898L22.5007 5.50098C22.5007 4.74159 23.065 4.11399 23.7971 4.01467L24.0007 4.00098L23.7971 4.01467ZM19.4986 13C18.1186 13 17 14.1186 17 15.4986C17 16.8785 18.1186 17.9971 19.4986 17.9971C20.8785 17.9971 21.9972 16.8785 21.9972 15.4986C21.9972 14.1186 20.8785 13 19.4986 13ZM28.484 13C27.1041 13 25.9855 14.1186 25.9855 15.4986C25.9855 16.8785 27.1041 17.9971 28.484 17.9971C29.864 17.9971 30.9826 16.8785 30.9826 15.4986C30.9826 14.1186 29.864 13 28.484 13Z" fill="var(--blue)"/>
                     </svg>
                 </button>
@@ -2081,38 +2076,10 @@ document.addEventListener('DOMContentLoaded', () => {
     applyStoredFormat();
     const savedHistory = localStorage.getItem('ngen-history');
     if (savedHistory) { try { state.history = JSON.parse(savedHistory); renderHistory(); } catch(e) {} }
-    wireSegmentsContainerDragHandlers();
     const savedTab = localStorage.getItem('ngen-last-tab');
     const initialType = (savedTab && CONFIG[savedTab]) ? savedTab : 'ca-policy';
     selectType(initialType);
 });
-
-// Allows dropping in the empty space of the segments row (after the last badge)
-// to move a dragged badge to the very end of the order.
-function wireSegmentsContainerDragHandlers() {
-    const segmentsEl = document.getElementById('segments');
-    if (!segmentsEl) return;
-
-    segmentsEl.addEventListener('dragover', e => {
-        e.preventDefault();
-    });
-
-    segmentsEl.addEventListener('drop', e => {
-        e.preventDefault();
-        if (!draggedSourceId) return;
-
-        const order = [...document.querySelectorAll('#segments .seg-chip')].map(el => el.dataset.sourceId);
-        const fromIdx = order.indexOf(draggedSourceId);
-        if (fromIdx === -1) { clearSegDragIndicators(); return; }
-        order.splice(fromIdx, 1);
-        order.push(draggedSourceId);
-
-        state.customOrder = order;
-        clearSegDragIndicators();
-        draggedSourceId = null;
-        updatePreview();
-    });
-}
 
 // ═══════════════════════════════════════════════════════════════
 // SELECT OBJECT TYPE
@@ -2855,14 +2822,11 @@ function generateName() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// SEGMENT REORDER (drag and drop)
+// SEGMENT REORDER (click-to-swap arrows)
 // ═══════════════════════════════════════════════════════════════
-const SEG_GRIP_SVG = '<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
-    '<path d="M13.7143 22.2857C18.4482 22.2857 22.2857 18.4481 22.2857 13.7143C22.2857 8.98038 18.4482 5.14282 13.7143 5.14282C8.98042 5.14282 5.14286 8.98038 5.14286 13.7143C5.14286 18.4481 8.98042 22.2857 13.7143 22.2857ZM34.2857 22.2857C39.0196 22.2857 42.8571 18.4481 42.8571 13.7143C42.8571 8.98038 39.0196 5.14282 34.2857 5.14282C29.5518 5.14282 25.7143 8.98038 25.7143 13.7143C25.7143 18.4481 29.5518 22.2857 34.2857 22.2857ZM22.2857 34.2857C22.2857 39.0195 18.4482 42.8571 13.7143 42.8571C8.98042 42.8571 5.14286 39.0195 5.14286 34.2857C5.14286 29.5518 8.98042 25.7143 13.7143 25.7143C18.4482 25.7143 22.2857 29.5518 22.2857 34.2857ZM34.2857 42.8571C39.0196 42.8571 42.8571 39.0195 42.8571 34.2857C42.8571 29.5518 39.0196 25.7143 34.2857 25.7143C29.5518 25.7143 25.7143 29.5518 25.7143 34.2857C25.7143 39.0195 29.5518 42.8571 34.2857 42.8571Z" fill="#FFFFFF"/>' +
+const SEG_SWAP_SVG = '<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+    '<path d="M32.1035 10.057C31.4337 10.9353 31.6027 12.1903 32.481 12.8601C35.9349 15.4943 38 19.5741 38 24C38 30.9946 32.8705 36.7912 26.168 37.8331L27.5858 36.4142C28.3668 35.6332 28.3668 34.3668 27.5858 33.5858C26.8047 32.8047 25.5384 32.8047 24.7574 33.5858L19.7574 38.5858C18.9763 39.3668 18.9763 40.6332 19.7574 41.4142L24.7574 46.4142C25.5384 47.1953 26.8047 47.1953 27.5858 46.4142C28.3668 45.6332 28.3668 44.3668 27.5858 43.5858L25.8994 41.901C34.9477 40.952 42 33.2996 42 24C42 18.3129 39.3424 13.0624 34.9067 9.67956C34.0284 9.00972 32.7734 9.17872 32.1035 10.057ZM28.2426 6.58579L23.2426 1.58579C22.4616 0.804738 21.1953 0.804738 20.4142 1.58579C19.6932 2.30675 19.6378 3.44122 20.2478 4.2258L20.4142 4.41421L22.1006 6.09903C13.0523 7.04798 6 14.7004 6 24C6 29.4397 8.43029 34.4863 12.5432 37.8837C13.3948 38.5872 14.6554 38.4671 15.3589 37.6155C16.0623 36.7639 15.9422 35.5032 15.0906 34.7998C11.8881 32.1544 10 28.2337 10 24C10 17.0054 15.1295 11.2088 21.832 10.1669L20.4142 11.5858C19.6332 12.3668 19.6332 13.6332 20.4142 14.4142C21.1352 15.1352 22.2696 15.1906 23.0542 14.5806L23.2426 14.4142L28.2426 9.41421C28.9636 8.69325 29.0191 7.55878 28.409 6.7742L28.2426 6.58579Z" fill="currentColor"/>' +
     '</svg>';
-
-let draggedSourceId = null;
-let dropTargetInfo  = null; // { sourceId, position: 'before' | 'after' }
 
 // Reorders segs in place to match state.customOrder, when a custom order is active.
 // Segments not present in the stored order (new fields filled in after reordering,
@@ -2880,68 +2844,12 @@ function applyCustomSegmentOrder(segs) {
     segs.splice(0, segs.length, ...reordered);
 }
 
-function clearSegDragIndicators() {
-    document.querySelectorAll('#segments .seg-chip').forEach(el => {
-        el.classList.remove('dragging', 'drag-over-before', 'drag-over-after');
-    });
-    dropTargetInfo = null;
-}
-
-function wireSegDragHandlers(chip) {
-    chip.addEventListener('dragstart', e => {
-        draggedSourceId = chip.dataset.sourceId;
-        chip.classList.add('dragging');
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/plain', draggedSourceId);
-    });
-
-    chip.addEventListener('dragover', e => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (!draggedSourceId || draggedSourceId === chip.dataset.sourceId) return;
-
-        const rect     = chip.getBoundingClientRect();
-        const position = (e.clientX - rect.left) < rect.width / 2 ? 'before' : 'after';
-
-        document.querySelectorAll('#segments .seg-chip').forEach(el => {
-            if (el !== chip) el.classList.remove('drag-over-before', 'drag-over-after');
-        });
-        chip.classList.toggle('drag-over-before', position === 'before');
-        chip.classList.toggle('drag-over-after',  position === 'after');
-        dropTargetInfo = { sourceId: chip.dataset.sourceId, position };
-    });
-
-    chip.addEventListener('drop', e => {
-        e.preventDefault();
-        e.stopPropagation();
-        dropSegment();
-    });
-
-    chip.addEventListener('dragend', () => {
-        clearSegDragIndicators();
-        draggedSourceId = null;
-    });
-}
-
-function dropSegment() {
-    if (!draggedSourceId || !dropTargetInfo || draggedSourceId === dropTargetInfo.sourceId) {
-        clearSegDragIndicators();
-        return;
-    }
-
-    const order = [...document.querySelectorAll('#segments .seg-chip')].map(el => el.dataset.sourceId);
-    const fromIdx = order.indexOf(draggedSourceId);
-    if (fromIdx === -1) { clearSegDragIndicators(); return; }
-    order.splice(fromIdx, 1);
-
-    let toIdx = order.indexOf(dropTargetInfo.sourceId);
-    if (toIdx === -1) { clearSegDragIndicators(); return; }
-    if (dropTargetInfo.position === 'after') toIdx += 1;
-    order.splice(toIdx, 0, draggedSourceId);
-
+// Swaps the segments at index i and i + 1 by writing the resulting order to
+// state.customOrder, reusing the same order-tracking system as applyCustomSegmentOrder.
+function swapSegments(segs, i) {
+    const order = segs.map((s, idx) => s.sourceId || ('__idx' + idx + '__'));
+    [order[i], order[i + 1]] = [order[i + 1], order[i]];
     state.customOrder = order;
-    clearSegDragIndicators();
-    draggedSourceId = null;
     updatePreview();
 }
 
@@ -2950,7 +2858,6 @@ function dropSegment() {
 // ═══════════════════════════════════════════════════════════════
 function updatePreview() {
     const { name, segs } = generateName();
-    const sep = document.getElementById('separator').value;
 
     const previewEl    = document.getElementById('previewName');
     const previewBox   = document.getElementById('previewBox');
@@ -2978,26 +2885,22 @@ function updatePreview() {
     segs.forEach((seg, i) => {
         const chip       = document.createElement('span');
         chip.className   = 'seg-chip' + (seg.fixed ? ' seg-fixed' : '');
-        chip.draggable   = true;
-        chip.dataset.sourceId = seg.sourceId || ('__idx' + i + '__');
-
-        const grip = document.createElement('span');
-        grip.className = 'seg-grip';
-        grip.innerHTML = SEG_GRIP_SVG;
-        chip.appendChild(grip);
 
         const label = document.createElement('span');
         label.textContent = seg.value;
         chip.appendChild(label);
 
-        wireSegDragHandlers(chip);
         segmentsEl.appendChild(chip);
 
         if (i < segs.length - 1) {
-            const s       = document.createElement('span');
-            s.className   = 'seg-sep';
-            s.textContent = sep;
-            segmentsEl.appendChild(s);
+            const swapBtn = document.createElement('button');
+            swapBtn.type      = 'button';
+            swapBtn.className = 'seg-swap-btn';
+            swapBtn.title     = 'Swap segments';
+            swapBtn.setAttribute('aria-label', 'Swap segments');
+            swapBtn.innerHTML = SEG_SWAP_SVG;
+            swapBtn.addEventListener('click', () => swapSegments(segs, i));
+            segmentsEl.appendChild(swapBtn);
         }
     });
 }
