@@ -932,6 +932,13 @@
 
         .checkbox-option:hover { background: var(--blue-xs); }
 
+        .checkbox-option:has(input:disabled) {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .checkbox-option:has(input:disabled):hover { background: none; }
+
         .checkbox-option input[type="checkbox"] {
             accent-color: var(--blue);
             width: 14px;
@@ -940,6 +947,8 @@
             flex-shrink: 0;
             margin: 0;
         }
+
+        .checkbox-option input[type="checkbox"]:disabled { cursor: not-allowed; }
 
         /* ── Footer ───────────────────────────────── */
         footer {
@@ -1632,7 +1641,7 @@ const CONFIG = {
                 desc: 'App configuration policy that pre-configures settings inside a managed app for enrolled devices or managed apps.',
                 badge: 'APP CONFIGURATION', badgeColor: 'amber',
                 segments: ['intuneNumber', 'intuneScopeTag', 'appCfgEnrollmentType', 'appCfgTarget', 'appCfgDescriptor', 'appCfgEnvironment', 'appCfgVersion'],
-                fixedInfix: { afterSegmentId: 'appCfgTarget', value: 'AppConfig' }
+                fixedInfix: { afterSegmentId: 'appCfgEnrollmentType', value: 'AppConfig' }
             },
         ],
         fields: [
@@ -2184,10 +2193,10 @@ function selectPattern(patternId) {
     const grantRadio = document.querySelector(`input[name="grantLogic"][value="${grantLogicVal}"]`);
     if (grantRadio) grantRadio.checked = true;
 
-    // grantLogicGroup has no CONFIG representation; restore visibility manually based on checked count
-    const grantCheckedCount = document.querySelectorAll('#fld_grantControl input[type="checkbox"]:checked').length;
-    const grantLogicGroup   = document.getElementById('grantLogicGroup');
-    if (grantLogicGroup) grantLogicGroup.style.display = grantCheckedCount >= 2 ? 'block' : 'none';
+    // grantLogicGroup has no CONFIG representation; restore visibility manually based on
+    // how many checked grant controls actually contribute a value to the generated name
+    const grantLogicGroup = document.getElementById('grantLogicGroup');
+    if (grantLogicGroup) grantLogicGroup.style.display = countContributingGrantControls() >= 2 ? 'block' : 'none';
 
     // Re-apply checkbox subfield visibility for all multiselect fields with subFields
     (CONFIG[state.type]?.fields || []).filter(f => f.type === 'multiselect' && f.subField).forEach(field => {
@@ -2197,6 +2206,18 @@ function selectPattern(patternId) {
     });
 
     updatePreview();
+}
+
+// Counts checked grantControl checkboxes that will actually contribute a value to
+// the generated name: Custom/AuthStrength only count once their linked text
+// subfield has a non-blank value, mirroring the logic in generateName().
+function countContributingGrantControls() {
+    const checked = [...document.querySelectorAll('#fld_grantControl input[type="checkbox"]:checked')];
+    return checked.filter(cb => {
+        if (cb.value === 'Custom') return !!document.getElementById('fld_grantControlCustom')?.value?.trim();
+        if (cb.value === 'AuthStrength') return !!document.getElementById('fld_grantControlAuthStrength')?.value?.trim();
+        return true;
+    }).length;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -2281,7 +2302,7 @@ function renderFields() {
                 pairWrap.className = 'field-group';
 
                 const pairLbl = document.createElement('label');
-                pairLbl.textContent = 'Disruption Index (optional)';
+                pairLbl.textContent = 'Disruption Index';
                 const pairHint = document.createElement('span');
                 pairHint.className = 'field-hint';
                 pairHint.setAttribute('data-hint', 'An optional sequence number appended directly to the Disruption value. Enter the index and total to produce values like 1of2 or 2of2. Leave both blank if this is the only policy for this disruption type.');
@@ -2359,7 +2380,7 @@ function renderFields() {
                     subIn.id = 'fld_' + sf.id;
                     subIn.placeholder = sf.placeholder;
                     subIn.autocomplete = 'off';
-                    subIn.addEventListener('input', updatePreview);
+                    subIn.addEventListener('input', () => { updateAndOrVisibility(); updatePreview(); });
                     customSubWrap.appendChild(subLbl);
                     customSubWrap.appendChild(subIn);
                 }
@@ -2406,8 +2427,7 @@ function renderFields() {
 
                 const updateAndOrVisibility = () => {
                     if (!andOrGroup) return;
-                    const checkedCount = document.querySelectorAll(`#fld_${field.id} input[type="checkbox"]:checked`).length;
-                    andOrGroup.style.display = checkedCount >= 2 ? 'block' : 'none';
+                    andOrGroup.style.display = countContributingGrantControls() >= 2 ? 'block' : 'none';
                 };
 
                 (field.options || []).forEach(opt => {
@@ -2448,7 +2468,7 @@ function renderFields() {
                         authIn.id = 'fld_grantControlAuthStrength';
                         authIn.value = 'Phishing Resistant MFA';
                         authIn.autocomplete = 'off';
-                        authIn.addEventListener('input', updatePreview);
+                        authIn.addEventListener('input', () => { updateAndOrVisibility(); updatePreview(); });
                         authSubWrap.appendChild(authIn);
                         cbGroup.appendChild(authSubWrap);
                     }
