@@ -8,7 +8,7 @@ Name Codex is a free, single-file, client-side naming convention generator built
 
 ## Demo
 
-![Name Codex](docs/demo.gif)
+![Name Codex Demo](docs/namecodex_demo.gif)
 
 Try it out at [namecodex.app](https://namecodex.app).
 
