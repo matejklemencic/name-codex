@@ -1,60 +1,91 @@
 # Name Codex for Microsoft 365
 
-Consistent naming conventions for your Microsoft 365 tenant.
+A free naming convention generator for Microsoft 365 and Entra ID objects.
 
-Name Codex is a single-page, fully client-side tool for generating standardized names (and, for some object types, descriptions) for common Microsoft 365 and Microsoft Entra ID objects. Pick an object type, pick a naming pattern, fill in a few fields, and get a live-previewed name you can copy straight into the Microsoft 365 admin center, Entra admin center, or Intune.
+## Overview
 
-No build step, no backend, no external dependencies — it's a single `index.html` file you can open directly in a browser or host anywhere as a static file.
+Name Codex is a free, single-file, client-side naming convention generator built for Microsoft 365 and Entra ID objects, including App Registrations, Conditional Access Policies, Groups, Defender for Office 365 policies, Endpoint Security profiles, and Intune policies. It's built from real IT consulting experience helping organizations bring order to their tenants, and it's meant as flexible inspiration rather than a rigid standard. Pick an object type, pick a pattern, fill in a few fields, and copy out a consistent, readable name.
 
-## Supported object types & patterns
+## Demo
 
-| Object type | Patterns |
-|---|---|
-| **Conditional Access Policy** | Generic, Enterprise, MSP, Project, Extended, Microsoft Recommended, Emergency Access |
-| **App Registration** | Generic, Enterprise, MSP, Project |
-| **Groups** | Security Group, M365 Group, Distribution List, Shared Mailbox, Room/Equipment, PIM Group |
-| **Endpoint Security** | Windows, macOS, Linux |
-| **Intune** | Compliance Policy, Configuration Policy, App Protection, App Configuration |
-| **Defender for Office 365** | Anti-Phishing, Anti-Spam, Anti-Malware, Safe Attachments, Safe Links, Quarantine |
+<!-- TODO: replace docs/demo.gif with an actual screen recording of the app in use -->
+![Name Codex demo](docs/demo.gif)
 
-Each pattern defines a fixed, ordered set of fields (for example, Security Group: Prefix, Membership Type, Department, Function, Scope, Environment). Every field is optional — leave one blank and its segment is simply omitted from the generated name.
+## Features
 
-## Key features
+Name Codex covers six object types, each with its own set of naming patterns.
 
-- **Live name preview** — segments update as you type, shown both as a joined string and as individual color-coded chips.
-- **Configurable separator** — hyphen (`-`) or underscore (`_`).
-- **Configurable case style** — PascalCase, UPPERCASE, lowercase, or As Typed (verbatim, including spaces and punctuation).
-- **Custom prefixes** — most patterns offer a curated prefix dropdown (e.g. `SEC` / `SG` / `GRP` for security groups) plus a Custom option that accepts any text, dashes and all.
-- **Dynamic membership support** — Security Group and M365 Group patterns can be marked Role Assignable, Dynamic User, or Dynamic Device, which swaps in the matching Attribute / Attribute Value fields for building Entra ID dynamic membership rules.
-- **Description generator** — for App Registration and Groups, a plain-language description is generated alongside the name, ready to paste into the object's Description field.
-- **Copy AI Prompt** — packages the current field values into a ready-to-use prompt for asking an AI assistant to draft alternative descriptions.
-- **Recent Names history** — the last 10 generated names are kept locally (with a Clear button to wipe them) so you can quickly reuse or compare earlier results.
-- **Light/dark theme**, remembered between visits.
+### Conditional Access Policy
 
-## Usage
+- `CA[NNN]-[Scope]-[Effect]-[Platform]-[Target]-[Condition]-[Version]` (Extended): full context policies, including platform and version segments for platform-specific targeting or change tracking.
+- `CA[NNN]-[Scope]-[Effect]-[Target]-[Condition]` (Microsoft Recommended): follows the official naming standard from the Entra ID deployment guide.
+- `EM[NNN]-EnableInEmergency-[Disruption][i of n]-[Apps]-[Effect]-[Platform]-[Condition]` (Emergency): break-glass contingency policies, kept in Report-Only mode until a disruption occurs.
 
-1. Open `index.html` in any modern browser (double-click it, or host it on any static web server).
-2. Choose an object type from the cards at the top.
-3. Choose a naming pattern.
-4. Fill in the fields you care about — everything is optional.
-5. Adjust Separator and Case Style to match your organization's convention.
-6. Copy the generated name, and (where available) the generated description or AI prompt.
+### App Registration
 
-## Data & privacy
+- `[Tool]-[Function]-[AccessLevel]-[Env]-[Version]` (Generic): best for single-tenant organisations, focused on what the app does, its access level, and its deployment environment.
+- `[Company]-[Dept]-[Tool]-[Function]-[AccessLevel]-[Env]-[Version]` (Enterprise): best for large organisations with department-level segregation.
+- `[Tool]-[Customer]-[AccessLevel]-[Env]-[Version]` (MSP): best for MSPs managing multiple customer tenants, with the tool listed first for quick filtering by product.
+- `[Project]-[Tool]-[AccessLevel]-[Env]-[Version]` (Project): best for time-bound integrations, where the project name identifies the context instead of the company.
 
-Name Codex makes no network calls and sends no data anywhere. The only thing it persists is in your browser's `localStorage`:
+### Groups
 
-- `ngen-theme` — your last-used light/dark theme.
-- `ngen-history` — your last 10 generated names, for quick reference.
+- `[Prefix]-[MembershipType]-[Department]-[Function]-[Scope]-[Environment]` (Security): general-purpose security group for access control, policy assignment, or resource scoping.
+- `[Prefix]-[MembershipType]-[Department]-[Purpose]-[Sensitivity]-[Environment]` (M365 Group): Microsoft 365 Group with a shared mailbox, calendar, and collaboration space across Microsoft 365 services.
+- `[Prefix]-[Scope]-[Department]-[Purpose]-[Environment]` (Distribution): distribution list for sending email to a defined set of recipients.
+- `[Prefix]-[Department]-[Function]-[Location]-[Environment]` (Shared Mailbox): shared mailbox accessible by multiple users for monitoring and sending from a common email address.
+- `[Room/Equip]-[Department]-[Location]-[Name]` (Room / Equip): resource mailbox for bookable rooms or equipment, integrated with Outlook calendar scheduling.
+- `[Prefix]-[Role/Resource]-[Scope]-[AccessType]-[Environment]` (PIM): Privileged Identity Management group for just-in-time access to privileged roles and resources.
 
-Everything else lives only in memory for the current page session.
+### Endpoint Security
 
-## Project structure
+- `[NNN]-[ScopeTag]-Windows-[ProfileType]-[Assignments]-[Descriptor]-[Environment]-[Version]` (Windows): endpoint security policies for Windows devices, covering antivirus, firewall, attack surface reduction, and endpoint detection and response.
+- `[NNN]-[ScopeTag]-macOS-[ProfileType]-[Assignments]-[Descriptor]-[Environment]-[Version]` (macOS): endpoint security policies for macOS devices, covering antivirus and endpoint detection and response.
+- `[NNN]-[ScopeTag]-Linux-[ProfileType]-[Assignments]-[Descriptor]-[Environment]-[Version]` (Linux): endpoint security policies for Linux devices, covering antivirus, endpoint detection and response, and global exclusions.
 
-- `index.html` — the application (markup, styles, and logic all in one file).
-- `namecodex.png`, `*.svg` — logo and icon assets used by the UI.
-- `index - Backup *.html`, `index_*-beta.html` — earlier working versions, kept for reference.
+### Intune
+
+- `[NNN]-[ScopeTag]-[OSType]-Compliance-[Assignments]-[Descriptor]-[Environment]-[Version]` (Compliance Policy): device compliance policy that evaluates whether a device meets your organization's security requirements.
+- `[NNN]-[ScopeTag]-[OSType]-[Assignments]-[Descriptor]-[Environment]-[Version]` (Configuration Policy): configuration profile that pushes settings to enrolled devices, such as Wi-Fi, VPN, email, or endpoint protection, and can also cover Intune scripts and remediation scripts.
+- `[NNN]-[ScopeTag]-[Platform]-AppProtection-[Assignments]-[Descriptor]-[Environment]-[Version]` (App Protection): protects organizational data within managed apps, independent of device enrollment.
+- `[NNN]-[ScopeTag]-[EnrollmentType]-AppConfig-[Target]-[Descriptor]-[Environment]-[Version]` (App Configuration): pre-configures settings inside a managed app for enrolled devices or managed apps.
+
+### Defender for Office 365
+
+- `[Prefix]-[AntiPhish]-[ScopeType]-[Descriptor]-[Environment]-[Version]` (Anti-Phishing): protects against impersonation, spoofing, and phishing attacks targeting your recipients.
+- `[Prefix]-[AntiSpam]-[Direction]-[ScopeType]-[Descriptor]-[Environment]-[Version]` (Anti-Spam): filters unwanted bulk and spam email, the only policy type with separate inbound and outbound protection.
+- `[Prefix]-[AntiMalware]-[ScopeType]-[Descriptor]-[Environment]-[Version]` (Anti-Malware): scans inbound email attachments for known malware signatures.
+- `[Prefix]-[SafeAttachment]-[ScopeType]-[Descriptor]-[Environment]-[Version]` (Safe Attachments): detonates email attachments in a sandbox to detect zero-day malware before delivery, requires Defender for Office 365.
+- `[Prefix]-[SafeLinks]-[ScopeType]-[Descriptor]-[Environment]-[Version]` (Safe Links): scans and rewrites URLs in email and supported apps to protect against malicious links at time of click, requires Defender for Office 365.
+- `[Prefix]-[AccessLevel]-[Notify]` (Quarantine): defines what end users can do with their quarantined messages and whether they receive notifications, referenced by other policy types for specific verdicts.
+
+## Live Demo
+
+Try it out at [namecodex.app](https://namecodex.app).
+
+## Tech Stack
+
+- Single-file HTML, CSS, and JavaScript, no framework
+- No build step, no dependencies
+- `localStorage` for persisting theme preference and recent name history
+- Hosted on Azure Static Web Apps, deployed via GitHub Actions
+
+## Getting Started / Local Development
+
+There's nothing to install and nothing to build. Clone the repository and open `index.html` directly in your browser:
+
+```bash
+git clone https://github.com/<your-org>/name-codex.git
+cd name-codex
+start index.html   # or just double-click the file
+```
+
+Since the app is a single static file, any change can be tested immediately by refreshing the page, no dev server required.
+
+## Contributing
+
+Naming conventions are opinionated by nature, and the patterns in Name Codex reflect real-world consulting experience, but they won't fit every environment. If you have feedback on an existing pattern, a variation you use in production, or a naming convention for an object type that isn't covered yet, please open a GitHub issue. This project grows through community feedback, so practical suggestions from IT admins and consultants are the most valuable input it can get.
 
 ## Credits
 
-Built by [Matej Klemenčič](https://www.matej.guru).
+Built by [Matej](https://www.matej.guru).
